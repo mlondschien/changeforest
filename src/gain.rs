@@ -5,7 +5,7 @@ pub trait Gain {
     fn gain(&self, X: &ndarray::Array2<f64>, start: usize, stop: usize, split: usize) -> f64;
 }
 
-struct GainFromLoss {
+pub struct GainFromLoss {
     loss: Box<dyn loss::Loss>,
 }
 
