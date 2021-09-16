@@ -11,9 +11,9 @@ pub struct GainFromLoss {
 
 impl Gain for GainFromLoss {
     fn gain(&self, X: &ndarray::Array2<f64>, start: usize, stop: usize, split: usize) -> f64 {
-        self.loss.loss(&X, start, stop)
-            - self.loss.loss(&X, start, split)
-            - self.loss.loss(&X, split, stop)
+        self.loss.loss(X, start, stop) // X already is a reference here (?)
+            - self.loss.loss(X, start, split)
+            - self.loss.loss(X, split, stop)
     }
 }
 
