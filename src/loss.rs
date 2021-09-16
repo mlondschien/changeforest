@@ -41,4 +41,10 @@ mod tests {
         let change_in_mean_loss = ChangeInMeanLoss {};
         assert_approx_eq!(change_in_mean_loss.loss(&X, start, stop), expected);
     }
+
+    #[test]
+    fn failing_test() {
+        panic!("Some message");
+    }
 }
+
