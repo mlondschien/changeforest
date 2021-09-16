@@ -42,4 +42,3 @@ mod tests {
         assert_approx_eq!(change_in_mean_loss.loss(&X, start, stop), expected);
     }
 }
-
