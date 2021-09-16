@@ -8,7 +8,9 @@ pub struct ChangeInMeanLoss {}
 
 impl Loss for ChangeInMeanLoss {
     fn loss(&self, X: &ndarray::Array2<f64>, start: usize, stop: usize) -> f64 {
-        if start == stop {return 0.};
+        if start == stop {
+            return 0.;
+        };
 
         let n_total = X.nrows() as f64;
         let n_slice = (stop - start) as f64;
