@@ -3,3 +3,4 @@
 
 pub mod gain;
 pub mod loss;
+pub mod optimizer;

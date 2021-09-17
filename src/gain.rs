@@ -6,7 +6,7 @@ pub trait Gain {
 }
 
 pub struct GainFromLoss {
-    loss: Box<dyn loss::Loss>,
+    pub loss: Box<dyn loss::Loss>,
 }
 
 impl Gain for GainFromLoss {
