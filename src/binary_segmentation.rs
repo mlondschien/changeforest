@@ -35,7 +35,6 @@ impl BinarySegmentationTree {
         }
 
         let best_split = optimizer.find_best_split(self.start, self.stop);
-        println!("{}", best_split);
 
         let mut left = Box::new(BinarySegmentationTree {
             start: self.start,
