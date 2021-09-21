@@ -118,20 +118,27 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 4, 2, 0.25)]
+    #[case(0, 4, 2, 1. / 6.)]
     #[case(0, 4, 0, 0.)]
-    #[case(0, 4, 1, 1. / 12.)]
-    #[case(0, 4, 3, 1. / 12.)]
-    #[case(0, 3, 2, 1. / 6.)]
-    #[case(0, 3, 1, 1. / 24.)]
+    #[case(0, 4, 1, 1. / 18.)]
+    #[case(0, 4, 3, 1. / 18.)]
+    #[case(0, 3, 2, 1. / 9.)]
+    #[case(0, 3, 1, 1. / 36.)]
+    #[case(0, 6, 0, 0.)]
+    #[case(0, 6, 1, 1. / 90.)]
+    #[case(0, 6, 2, 1. / 36.)]
+    #[case(0, 6, 3, 1. / 18.)]
+    #[case(0, 6, 4, 5. / 18.)]
+    #[case(0, 6, 5, 1. / 90.)]
+    #[case(0, 6, 6, 0.)]
     fn test_change_in_mean_gain(
         #[case] start: usize,
         #[case] stop: usize,
         #[case] split: usize,
         #[case] expected: f64,
     ) {
-        let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.]];
-        assert_eq!(X.shape(), &[4, 2]);
+        let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.], [0., -1.], [1., 0.]];
+        assert_eq!(X.shape(), &[6, 2]);
 
         let mut change_in_mean = ChangeInMean::new(&X);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
@@ -154,18 +161,32 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 7, 4)]
+    #[case(0, 0, 0)]
+    #[case(0, 7, 2)]
     #[case(1, 7, 4)]
     #[case(2, 7, 4)]
-    #[case(0, 5, 4)]
-    #[case(0, 2, 0)]
+    #[case(3, 7, 4)]
+    #[case(1, 5, 2)]
+    #[case(1, 6, 4)]
+    #[case(1, 7, 4)]
+    #[case(2, 6, 4)]
+    #[case(2, 7, 4)]
+    #[case(3, 6, 4)]
     fn test_change_in_mean_find_best_split(
         #[case] start: usize,
         #[case] stop: usize,
         #[case] expected: usize,
     ) {
-        let X = ndarray::array![[0.], [0.], [1.], [1.], [-1.], [-1.], [-1.]];
-        assert_eq!(X.shape(), &[7, 1]);
+        let X = ndarray::array![
+            [0., 1.],
+            [0., 1.],
+            [1., -1.],
+            [1., -1.],
+            [-1., -1.],
+            [-1., -1.],
+            [-1., -1.]
+        ];
+        assert_eq!(X.shape(), &[7, 2]);
 
         let mut change_in_mean = ChangeInMean::new(&X);
 
