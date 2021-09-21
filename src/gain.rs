@@ -7,7 +7,7 @@ pub trait Segment {
     }
 
     fn gain(&mut self, start: usize, stop: usize, split: usize) -> f64 {
-        self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
+        1. + self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
     fn find_best_split(&mut self, start: usize, stop: usize) -> usize {
@@ -137,6 +137,12 @@ mod tests {
 
         let mut change_in_mean = ChangeInMean::new(&X);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
+        assert_approx_eq!(
+            change_in_mean.loss(start, stop)
+                - change_in_mean.loss(start, split)
+                - change_in_mean.loss(split, stop),
+            expected
+        );
     }
 
     #[test]
