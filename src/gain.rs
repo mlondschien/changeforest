@@ -87,12 +87,13 @@ impl<'a> Segment for ChangeInMean<'a> {
         let s_2 = (stop - split) as f64;
         let s = s_1 + s_2;
 
-        return 1. / (s * s_1 * s_2)
-            * (s_1 * X_cumsum[[stop, self.X.ncols() - 1]]
-                + s_2 * X_cumsum[[start, self.X.ncols() - 1]]
-                - s * X_cumsum[[split, self.X.ncols() - 1]])
+        let mut result = 0.;
+        for idx in 0..self.X.ncols() {
+            result += (s_1 * X_cumsum[[stop, idx]] + s_2 * X_cumsum[[start, idx]]
+                - s * X_cumsum[[split, idx]])
             .powi(2)
-            / (self.X.nrows() as f64);
+        }
+        result / (s * s_1 * s_2 * (self.X.nrows() as f64))
     }
 }
 
