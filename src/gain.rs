@@ -7,7 +7,7 @@ pub trait Segment {
     }
 
     fn gain(&mut self, start: usize, stop: usize, split: usize) -> f64 {
-        1. + self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
+        self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
     fn find_best_split(&mut self, start: usize, stop: usize) -> usize {
