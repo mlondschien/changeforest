@@ -2,6 +2,7 @@ use super::control;
 use super::optimizer;
 use ndarray;
 
+#[allow(dead_code)]
 pub struct BinarySegmentationTree {
     start: usize,
     stop: usize,
@@ -12,6 +13,7 @@ pub struct BinarySegmentationTree {
     control: control::Control,
 }
 
+#[allow(dead_code)]
 impl BinarySegmentationTree {
     fn new(X: &ndarray::Array2<f64>, control: control::Control) -> BinarySegmentationTree {
         BinarySegmentationTree {
