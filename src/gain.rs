@@ -41,13 +41,11 @@ impl<'a> ChangeInMean<'a> {
     }
 
     fn calculate_cumsum(&mut self) {
-        let mut X_cumsum: ndarray::Array2<f64> =
-            ndarray::Array2::zeros((self.X.nrows() + 1, self.X.ncols()));
+        let mut X_cumsum = ndarray::Array2::zeros((self.X.nrows() + 1, self.X.ncols()));
         let mut slice = X_cumsum.slice_mut(ndarray::s![1.., ..]);
         slice += &self.X.view();
 
         X_cumsum.accumulate_axis_inplace(ndarray::Axis(0), |&prev, curr| *curr += prev);
-        println!("{:?}", &X_cumsum);
         self.X_cumsum = Some(X_cumsum);
     }
 }
@@ -81,7 +79,7 @@ impl<'a> Segment for ChangeInMean<'a> {
             self.calculate_cumsum();
         }
 
-        let X_cumsum: &ndarray::Array2<f64> = self.X_cumsum.as_ref().unwrap();
+        let X_cumsum = self.X_cumsum.as_ref().unwrap();
 
         let s_1 = (split - start) as f64;
         let s_2 = (stop - split) as f64;
