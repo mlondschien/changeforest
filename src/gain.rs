@@ -35,7 +35,7 @@ impl<'a> ChangeInMean<'a> {
     #[allow(dead_code)] // TODO Get rid of this.
     fn new(X: &'a ndarray::Array2<f64>) -> ChangeInMean<'a> {
         ChangeInMean {
-            X: X,
+            X,
             X_cumsum: Option::None,
         }
     }
@@ -75,7 +75,7 @@ impl<'a> Segment for ChangeInMean<'a> {
             return 0.;
         }
 
-        if let None = self.X_cumsum {
+        if self.X_cumsum.is_none() {
             self.calculate_cumsum();
         }
 
