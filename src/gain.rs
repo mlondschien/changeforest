@@ -73,6 +73,10 @@ impl<'a> Segment for ChangeInMean<'a> {
     }
 
     fn gain(&mut self, start: usize, stop: usize, split: usize) -> f64 {
+        if (start == split) | (split == stop) {
+            return 0.;
+        }
+
         if let None = self.X_cumsum {
             self.calculate_cumsum();
         }
@@ -84,7 +88,11 @@ impl<'a> Segment for ChangeInMean<'a> {
         let s = s_1 + s_2;
 
         return 1. / (s * s_1 * s_2)
-            * (s_1 * X_cumsum[[start, 0]] + s_2 * X_cumsum[[stop, 0]] + s * X_cumsum[[split, 0]]);
+            * (s_1 * X_cumsum[[stop, self.X.ncols() - 1]]
+                + s_2 * X_cumsum[[start, self.X.ncols() - 1]]
+                - s * X_cumsum[[split, self.X.ncols() - 1]])
+            .powi(2)
+            / (self.X.nrows() as f64);
     }
 }
 
@@ -141,8 +149,8 @@ mod tests {
     }
 
     #[rstest]
-    //#[case(0, 7, 4)]
-    //#[case(1, 7, 4)]
+    #[case(0, 7, 4)]
+    #[case(1, 7, 4)]
     #[case(2, 7, 4)]
     #[case(0, 5, 4)]
     #[case(0, 2, 0)]
