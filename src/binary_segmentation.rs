@@ -38,7 +38,7 @@ impl BinarySegmentationTree {
         let split_candidates =
             (self.start + minimal_segment_length)..(self.stop - minimal_segment_length);
 
-        assert!(split_candidates.len() > 0);
+        assert!(!split_candidates.is_empty());
 
         let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
 
