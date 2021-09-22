@@ -21,7 +21,7 @@ impl BinarySegmentationTree {
             stop: X.nrows(),
             n: X.nrows(),
             split: Option::None,
-            control: control,
+            control,
             left: Option::None,
             right: Option::None,
         }
@@ -31,7 +31,7 @@ impl BinarySegmentationTree {
         if self.control.minimal_relative_segment_length * (self.n as f64)
             >= 2. * (self.stop - self.start) as f64
         {
-            return ();
+            return;
         }
 
         let best_split = optimizer.find_best_split(self.start, self.stop);
