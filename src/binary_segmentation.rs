@@ -1,6 +1,7 @@
 use super::control;
 use super::optimizer;
 use ndarray;
+use std;
 
 #[allow(dead_code)]
 pub struct BinarySegmentationTree {
@@ -27,47 +28,55 @@ impl BinarySegmentationTree {
         }
     }
 
-    fn grow(&mut self, optimizer: &mut impl optimizer::Optimizer) {
+    fn split_candidates(&self) -> Option<std::ops::Range<usize>> {
         let minimal_segment_length =
             (self.control.minimal_relative_segment_length * (self.n as f64)).round() as usize;
 
         if 2 * minimal_segment_length >= (self.stop - self.start) {
-            return;
+            None
+        } else {
+            Some((self.start + minimal_segment_length)..(self.stop - minimal_segment_length))
         }
+    }
 
-        let split_candidates =
-            (self.start + minimal_segment_length)..(self.stop - minimal_segment_length);
-
-        assert!(!split_candidates.is_empty());
-
-        let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
-
-        let mut left = Box::new(BinarySegmentationTree {
+    fn new_left(&self, split: usize) -> Box<BinarySegmentationTree> {
+        Box::new(BinarySegmentationTree {
             start: self.start,
-            stop: best_split,
+            stop: split,
             n: self.n,
             split: Option::None,
             left: Option::None,
             right: Option::None,
             control: self.control,
-        });
+        })
+    }
 
-        let mut right = Box::new(BinarySegmentationTree {
-            start: best_split,
+    fn new_right(&self, split: usize) -> Box<BinarySegmentationTree> {
+        Box::new(BinarySegmentationTree {
+            start: split,
             stop: self.stop,
             n: self.n,
             split: Option::None,
             left: Option::None,
             right: Option::None,
             control: self.control,
-        });
+        })
+    }
 
-        left.grow(optimizer);
-        right.grow(optimizer);
+    fn grow(&mut self, optimizer: &mut impl optimizer::Optimizer) {
+        if let Some(split_candidates) = self.split_candidates() {
+            let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
 
-        self.split = Some(best_split);
-        self.left = Some(left);
-        self.right = Some(right);
+            let mut left = self.new_left(best_split);
+            left.grow(optimizer);
+            self.left = Some(left);
+
+            let mut right = self.new_right(best_split);
+            right.grow(optimizer);
+            self.right = Some(right);
+
+            self.split = Some(best_split);
+        }
     }
 
     fn split_points(&self) -> Vec<usize> {
