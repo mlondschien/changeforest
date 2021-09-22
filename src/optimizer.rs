@@ -1,6 +1,6 @@
 use ndarray;
 
-pub trait Segment {
+pub trait Optimizer {
     #[allow(unused_variables)]
     fn loss(&self, start: usize, stop: usize) -> f64 {
         panic!("Not implemented.");
@@ -33,7 +33,7 @@ pub struct ChangeInMean<'a> {
 
 impl<'a> ChangeInMean<'a> {
     #[allow(dead_code)] // TODO Get rid of this.
-    fn new(X: &'a ndarray::Array2<f64>) -> ChangeInMean<'a> {
+    pub fn new(X: &'a ndarray::Array2<f64>) -> ChangeInMean<'a> {
         ChangeInMean {
             X,
             X_cumsum: Option::None,
@@ -50,7 +50,7 @@ impl<'a> ChangeInMean<'a> {
     }
 }
 
-impl<'a> Segment for ChangeInMean<'a> {
+impl<'a> Optimizer for ChangeInMean<'a> {
     fn loss(&self, start: usize, stop: usize) -> f64 {
         if start == stop {
             return 0.;
