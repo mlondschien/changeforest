@@ -1,5 +1,6 @@
-use super::control;
-use super::optimizer;
+use super::control::Control;
+use super::model_selection::ModelSelection;
+use super::optimizer::Optimizer;
 use ndarray;
 use std;
 
@@ -11,12 +12,12 @@ pub struct BinarySegmentationTree {
     split: Option<usize>,
     left: Option<Box<BinarySegmentationTree>>,
     right: Option<Box<BinarySegmentationTree>>,
-    control: control::Control,
+    control: Control,
 }
 
 #[allow(dead_code)]
 impl BinarySegmentationTree {
-    fn new(X: &ndarray::Array2<f64>, control: control::Control) -> BinarySegmentationTree {
+    fn new(X: &ndarray::Array2<f64>, control: Control) -> BinarySegmentationTree {
         BinarySegmentationTree {
             start: 0,
             stop: X.nrows(),
@@ -63,9 +64,13 @@ impl BinarySegmentationTree {
         })
     }
 
-    fn grow(&mut self, optimizer: &mut impl optimizer::Optimizer) {
+    fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &mut T) {
         if let Some(split_candidates) = self.split_candidates() {
             let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
+
+            if !optimizer.is_significant(self.start, self.stop, best_split, self.control) {
+                return;
+            }
 
             let mut left = self.new_left(best_split);
             left.grow(optimizer);
@@ -93,6 +98,7 @@ impl BinarySegmentationTree {
 
 #[cfg(test)]
 mod tests {
+    use super::super::control::Control;
     use super::super::testing::testing;
     use super::*;
 
@@ -102,7 +108,8 @@ mod tests {
 
         assert_eq!(X.shape(), &[100, 5]);
 
-        let control = control::Control {
+        let control = Control {
+            minimal_gain_to_split: 0.1,
             minimal_relative_segment_length: 0.1,
         };
         let mut optimizer = testing::ChangeInMean::new(&X);
@@ -111,9 +118,6 @@ mod tests {
         binary_segmentation.grow(&mut optimizer);
 
         assert_eq!(binary_segmentation.split, Some(25));
-        assert_eq!(
-            binary_segmentation.split_points(),
-            vec![14, 25, 40, 56, 69, 80]
-        );
+        assert_eq!(binary_segmentation.split_points(), vec![25, 40, 80]);
     }
 }

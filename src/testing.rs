@@ -1,6 +1,7 @@
 #[cfg(test)]
 pub mod testing {
     use super::super::gain;
+    use super::super::model_selection::ModelSelection;
     use super::super::optimizer;
     use ndarray::{s, Array, Array2};
     use ndarray_rand::rand_distr::Uniform;
@@ -45,6 +46,8 @@ pub mod testing {
     }
 
     impl<'a> optimizer::Optimizer for ChangeInMean<'a> {}
+
+    impl<'a> ModelSelection for ChangeInMean<'a> {}
 
     pub fn array() -> Array2<f64> {
         let seed = 42;
