@@ -51,6 +51,7 @@ impl BinarySegmentationTree {
             right: Option::None,
             control: self.control,
         });
+
         let mut right = Box::new(BinarySegmentationTree {
             start: best_split,
             stop: self.stop,
@@ -83,34 +84,19 @@ impl BinarySegmentationTree {
 
 #[cfg(test)]
 mod tests {
-    use super::optimizer;
+    use super::super::testing::testing;
     use super::*;
-    use ndarray::{s, Array};
-    use ndarray_rand::rand_distr::Uniform;
-    use ndarray_rand::RandomExt;
-    use rand::rngs::StdRng;
-    use rand::SeedableRng;
 
     #[test]
     fn test_binary_segmentation_change_in_mean() {
-        let seed = 42;
-        let mut rng = StdRng::seed_from_u64(seed);
-
-        let mut X = Array::zeros((100, 5)); //
-
-        X.slice_mut(s![0..25, 0]).fill(2.);
-        X.slice_mut(s![40..80, 0]).fill(1.);
-        X.slice_mut(s![0..40, 1]).fill(-2.);
-        X.slice_mut(s![40..100, 1]).fill(-3.);
-
-        let X = X + Array::random_using((100, 5), Uniform::new(0., 1.), &mut rng);
+        let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
 
         let control = control::Control {
             minimal_relative_segment_length: 0.1,
         };
-        let mut optimizer = optimizer::ChangeInMean::new(&X);
+        let mut optimizer = testing::ChangeInMean::new(&X);
         let mut binary_segmentation = BinarySegmentationTree::new(&X, control);
 
         binary_segmentation.grow(&mut optimizer);
