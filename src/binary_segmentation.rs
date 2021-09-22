@@ -102,9 +102,7 @@ mod tests {
 
         assert_eq!(X.shape(), &[100, 5]);
 
-        let control = control::Control {
-            minimal_relative_segment_length: 0.1,
-        };
+        let control = control::Control::default();
         let mut optimizer = testing::ChangeInMean::new(&X);
         let mut binary_segmentation = BinarySegmentationTree::new(&X, control);
 
