@@ -1,4 +1,5 @@
 use super::gain::Gain;
+use super::model_selection::ModelSelection;
 use super::optimizer::Optimizer;
 
 pub struct ChangeInMean<'a> {
@@ -56,6 +57,7 @@ impl<'a> Gain for ChangeInMean<'a> {
 }
 
 impl<'a> Optimizer for ChangeInMean<'a> {}
+impl<'a> ModelSelection for ChangeInMean<'a> {}
 
 #[cfg(test)]
 mod tests {
