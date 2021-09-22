@@ -68,6 +68,17 @@ impl BinarySegmentationTree {
         self.left = Some(left);
         self.right = Some(right);
     }
+
+    fn split_points(&self) -> Vec<usize> {
+        if let Some(split_point) = self.split {
+            let out = self.left.as_ref().unwrap().split_points().into_iter();
+            let out = out.chain(vec![split_point].into_iter());
+            let out = out.chain(self.right.as_ref().unwrap().split_points().into_iter());
+            out.collect()
+        } else {
+            return vec![];
+        }
+    }
 }
 
 #[cfg(test)]
@@ -105,6 +116,9 @@ mod tests {
         binary_segmentation.grow(&mut optimizer);
 
         assert_eq!(binary_segmentation.split, Some(25));
-        assert_eq!(binary_segmentation.right.unwrap().split, Some(40));
+        assert_eq!(
+            binary_segmentation.split_points(),
+            vec![14, 25, 40, 56, 69, 80]
+        );
     }
 }
