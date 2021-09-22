@@ -30,12 +30,16 @@ impl BinarySegmentationTree {
     fn grow(&mut self, optimizer: &mut impl optimizer::Optimizer) {
         let minimal_segment_length =
             (self.control.minimal_relative_segment_length * (self.n as f64)).round() as usize;
-        if minimal_segment_length >= 2 * (self.stop - self.start) {
+
+        if 2 * minimal_segment_length >= (self.stop - self.start) {
             return;
         }
 
         let split_candidates =
             (self.start + minimal_segment_length)..(self.stop - minimal_segment_length);
+
+        assert!(split_candidates.len() > 0);
+
         let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
 
         let mut left = Box::new(BinarySegmentationTree {
@@ -101,6 +105,6 @@ mod tests {
         binary_segmentation.grow(&mut optimizer);
 
         assert_eq!(binary_segmentation.split, Some(25));
-        //assert_eq!(binary_segmentation.right.unwrap().split, Some(40));
+        assert_eq!(binary_segmentation.right.unwrap().split, Some(40));
     }
 }
