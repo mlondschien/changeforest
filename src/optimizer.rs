@@ -10,12 +10,17 @@ pub trait Optimizer {
         self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
-    fn find_best_split(&mut self, start: usize, stop: usize) -> usize {
+    fn find_best_split(
+        &mut self,
+        start: usize,
+        stop: usize,
+        split_candidates: impl Iterator<Item = usize>,
+    ) -> usize {
         let mut max_index = 0;
         let mut max_value = -f64::INFINITY;
         let mut gain: f64;
 
-        for index in start..stop {
+        for index in split_candidates {
             gain = self.gain(start, stop, index);
             if gain > max_value {
                 max_index = index;
@@ -190,6 +195,9 @@ mod tests {
 
         let mut change_in_mean = ChangeInMean::new(&X);
 
-        assert_eq!(change_in_mean.find_best_split(start, stop), expected);
+        assert_eq!(
+            change_in_mean.find_best_split(start, stop, start..stop),
+            expected
+        );
     }
 }
