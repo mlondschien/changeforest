@@ -8,7 +8,7 @@ impl Control {
     pub fn default() -> Control {
         Control {
             minimal_relative_segment_length: 0.1,
-            minimal_gain_to_split: 1.,
+            minimal_gain_to_split: 0.,
         }
     }
 }
