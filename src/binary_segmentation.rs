@@ -68,21 +68,25 @@ impl BinarySegmentationTree {
 mod tests {
     use super::optimizer;
     use super::*;
-    use ndarray;
-    use ndarray_rand;
+    use ndarray::{s, Array};
+    use ndarray_rand::rand_distr::Uniform;
     use ndarray_rand::RandomExt;
+    use rand::rngs::StdRng;
+    use rand::SeedableRng;
 
     #[test]
     fn test_binary_segmentation_change_in_mean() {
-        let mut X = ndarray::Array::zeros((100, 5)); //
+        let seed = 42;
+        let mut rng = StdRng::seed_from_u64(seed);
 
-        X.slice_mut(ndarray::s![0..25, 0]).fill(2.);
-        X.slice_mut(ndarray::s![40..80, 0]).fill(1.);
-        X.slice_mut(ndarray::s![0..40, 1]).fill(-2.);
-        X.slice_mut(ndarray::s![40..100, 1]).fill(-3.);
+        let mut X = Array::zeros((100, 5)); //
 
-        let X =
-            X + ndarray::Array::random((100, 5), ndarray_rand::rand_distr::Uniform::new(0., 1.));
+        X.slice_mut(s![0..25, 0]).fill(2.);
+        X.slice_mut(s![40..80, 0]).fill(1.);
+        X.slice_mut(s![0..40, 1]).fill(-2.);
+        X.slice_mut(s![40..100, 1]).fill(-3.);
+
+        let X = X + Array::random_using((100, 5), Uniform::new(0., 1.), &mut rng);
 
         assert_eq!(X.shape(), &[100, 5]);
 
