@@ -17,7 +17,7 @@ pub struct BinarySegmentationTree {
 
 #[allow(dead_code)]
 impl BinarySegmentationTree {
-    fn new(X: &ndarray::Array2<f64>, control: Control) -> BinarySegmentationTree {
+    pub fn new(X: &ndarray::Array2<f64>, control: Control) -> BinarySegmentationTree {
         BinarySegmentationTree {
             start: 0,
             stop: X.nrows(),
@@ -64,7 +64,7 @@ impl BinarySegmentationTree {
         })
     }
 
-    fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &mut T) {
+    pub fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &mut T) {
         if let Some(split_candidates) = self.split_candidates() {
             let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
 
@@ -84,7 +84,7 @@ impl BinarySegmentationTree {
         }
     }
 
-    fn split_points(&self) -> Vec<usize> {
+    pub fn split_points(&self) -> Vec<usize> {
         if let Some(split_point) = self.split {
             let out = self.left.as_ref().unwrap().split_points().into_iter();
             let out = out.chain(vec![split_point].into_iter());

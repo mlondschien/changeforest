@@ -8,3 +8,4 @@ pub mod gain;
 pub mod model_selection;
 pub mod optimizer;
 mod testing;
+pub mod wrapper;
