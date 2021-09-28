@@ -4,14 +4,14 @@ pub trait Gain {
         panic!("Not implemented.");
     }
 
-    fn gain(&mut self, start: usize, stop: usize, split: usize) -> f64 {
+    fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
     fn n(&self) -> usize;
 
     fn gain_full(
-        &mut self,
+        &self,
         start: usize,
         stop: usize,
         split_points: Vec<usize>,
@@ -27,7 +27,7 @@ pub trait Gain {
 
     #[allow(unused_variables)]
     fn gain_approx(
-        &mut self,
+        &self,
         start: usize,
         stop: usize,
         guess: usize,
@@ -85,7 +85,7 @@ mod tests {
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[6, 2]);
 
-        let mut change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = testing::ChangeInMean::new(&X_view);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
             change_in_mean.gain_full(start, stop, vec![split])[split],

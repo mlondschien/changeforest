@@ -2,7 +2,7 @@ use super::gain;
 
 pub trait Optimizer: gain::Gain {
     fn find_best_split(
-        &mut self,
+        &self,
         start: usize,
         stop: usize,
         split_candidates: impl Iterator<Item = usize>,
@@ -58,7 +58,7 @@ mod tests {
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[7, 2]);
 
-        let mut change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = testing::ChangeInMean::new(&X_view);
 
         assert_eq!(
             change_in_mean.find_best_split(start, stop, start..stop),
