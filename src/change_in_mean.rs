@@ -3,13 +3,13 @@ use super::model_selection::ModelSelection;
 use super::optimizer::Optimizer;
 
 pub struct ChangeInMean<'a> {
-    X: &'a ndarray::Array2<f64>,
+    X: &'a ndarray::ArrayView2<'a, f64>,
     X_cumsum: Option<ndarray::Array2<f64>>,
 }
 
 impl<'a> ChangeInMean<'a> {
-    #[allow(dead_code)] // TODO Get rid of this.
-    pub fn new(X: &'a ndarray::Array2<f64>) -> ChangeInMean<'a> {
+    #[allow(dead_code)]
+    pub fn new(X: &'a ndarray::ArrayView2<'a, f64>) -> ChangeInMean<'a> {
         ChangeInMean {
             X,
             X_cumsum: Option::None,
@@ -70,7 +70,9 @@ mod tests {
     #[test]
     fn test_X_cumsum() {
         let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.]];
-        let mut change_in_mean = ChangeInMean::new(&X);
+        let X_view = X.view();
+
+        let mut change_in_mean = ChangeInMean::new(&X_view);
         change_in_mean.calculate_cumsum();
 
         let expected = ndarray::array![[0., 0.], [1., 0.], [2., 0.], [3., 1.], [4., 2.]];
@@ -83,11 +85,12 @@ mod tests {
     #[case(12, 16)]
     fn test_smart_change_in_mean_gain(#[case] start: usize, #[case] stop: usize) {
         let X = testing::array();
+        let X_view = X.view();
 
-        assert_eq!(X.shape(), &[100, 5]);
+        assert_eq!(X_view.shape(), &[100, 5]);
 
-        let mut change_in_mean = ChangeInMean::new(&X);
-        let mut simple_change_in_mean = testing::ChangeInMean::new(&X);
+        let mut change_in_mean = ChangeInMean::new(&X_view);
+        let mut simple_change_in_mean = testing::ChangeInMean::new(&X_view);
 
         for split in start..stop {
             assert_approx_eq!(

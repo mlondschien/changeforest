@@ -43,9 +43,10 @@ mod tests {
             [-1., -1.],
             [-1., -1.]
         ];
+        let X_view = X.view();
         assert_eq!(X.shape(), &[7, 2]);
 
-        let mut change_in_mean = testing::ChangeInMean::new(&X);
+        let mut change_in_mean = testing::ChangeInMean::new(&X_view);
 
         assert_eq!(
             change_in_mean.is_significant(

@@ -17,7 +17,7 @@ pub struct BinarySegmentationTree {
 
 #[allow(dead_code)]
 impl BinarySegmentationTree {
-    pub fn new(X: &ndarray::Array2<f64>, control: Control) -> BinarySegmentationTree {
+    pub fn new(X: &ndarray::ArrayView2<'_, f64>, control: Control) -> BinarySegmentationTree {
         BinarySegmentationTree {
             start: 0,
             stop: X.nrows(),
@@ -105,15 +105,16 @@ mod tests {
     #[test]
     fn test_binary_segmentation_change_in_mean() {
         let X = testing::array();
+        let X_view = X.view();
 
-        assert_eq!(X.shape(), &[100, 5]);
+        assert_eq!(X_view.shape(), &[100, 5]);
 
         let control = Control {
             minimal_gain_to_split: 0.1,
             minimal_relative_segment_length: 0.1,
         };
-        let mut optimizer = testing::ChangeInMean::new(&X);
-        let mut binary_segmentation = BinarySegmentationTree::new(&X, control);
+        let mut optimizer = testing::ChangeInMean::new(&X_view);
+        let mut binary_segmentation = BinarySegmentationTree::new(&X_view, control);
 
         binary_segmentation.grow(&mut optimizer);
 
