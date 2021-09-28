@@ -2,13 +2,7 @@ use super::control::Control;
 use super::gain::Gain;
 
 pub trait ModelSelection: Gain {
-    fn is_significant(
-        &mut self,
-        start: usize,
-        stop: usize,
-        split: usize,
-        control: Control,
-    ) -> bool {
+    fn is_significant(&self, start: usize, stop: usize, split: usize, control: Control) -> bool {
         self.gain(start, stop, split) > control.minimal_gain_to_split
     }
 }
@@ -46,7 +40,7 @@ mod tests {
         let X_view = X.view();
         assert_eq!(X.shape(), &[7, 2]);
 
-        let mut change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = testing::ChangeInMean::new(&X_view);
 
         assert_eq!(
             change_in_mean.is_significant(

@@ -1,10 +1,11 @@
 use super::gain::Gain;
 use super::model_selection::ModelSelection;
 use super::optimizer::Optimizer;
+use std::cell::{Ref, RefCell};
 
 pub struct ChangeInMean<'a> {
     X: &'a ndarray::ArrayView2<'a, f64>,
-    X_cumsum: Option<ndarray::Array2<f64>>,
+    X_cumsum: RefCell<Option<ndarray::Array2<f64>>>,
 }
 
 impl<'a> ChangeInMean<'a> {
@@ -12,17 +13,25 @@ impl<'a> ChangeInMean<'a> {
     pub fn new(X: &'a ndarray::ArrayView2<'a, f64>) -> ChangeInMean<'a> {
         ChangeInMean {
             X,
-            X_cumsum: Option::None,
+            X_cumsum: RefCell::new(Option::None),
         }
     }
 
-    fn calculate_cumsum(&mut self) {
+    fn calculate_cumsum(&self) -> ndarray::Array2<f64> {
         let mut X_cumsum = ndarray::Array2::zeros((self.X.nrows() + 1, self.X.ncols()));
         let mut slice = X_cumsum.slice_mut(ndarray::s![1.., ..]);
         slice += &self.X.view();
 
         X_cumsum.accumulate_axis_inplace(ndarray::Axis(0), |&prev, curr| *curr += prev);
-        self.X_cumsum = Some(X_cumsum);
+        X_cumsum
+    }
+
+    fn get_cumsum(&self) -> Ref<ndarray::Array2<f64>> {
+        if self.X_cumsum.borrow().is_none() {
+            self.X_cumsum.replace(Some(self.calculate_cumsum()));
+        }
+
+        Ref::map(self.X_cumsum.borrow(), |borrow| borrow.as_ref().unwrap())
     }
 }
 
@@ -31,16 +40,12 @@ impl<'a> Gain for ChangeInMean<'a> {
         self.X.nrows()
     }
 
-    fn gain(&mut self, start: usize, stop: usize, split: usize) -> f64 {
+    fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         if (start == split) | (split == stop) {
             return 0.;
         }
 
-        if self.X_cumsum.is_none() {
-            self.calculate_cumsum();
-        }
-
-        let X_cumsum = self.X_cumsum.as_ref().unwrap();
+        let X_cumsum = self.get_cumsum();
 
         let s_1 = (split - start) as f64;
         let s_2 = (stop - split) as f64;
@@ -72,11 +77,11 @@ mod tests {
         let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.]];
         let X_view = X.view();
 
-        let mut change_in_mean = ChangeInMean::new(&X_view);
-        change_in_mean.calculate_cumsum();
+        let change_in_mean = ChangeInMean::new(&X_view);
+        let X_cumsum = change_in_mean.calculate_cumsum();
 
         let expected = ndarray::array![[0., 0.], [1., 0.], [2., 0.], [3., 1.], [4., 2.]];
-        assert_eq!(change_in_mean.X_cumsum.unwrap(), expected);
+        assert_eq!(X_cumsum, expected);
     }
 
     #[rstest]
@@ -89,8 +94,8 @@ mod tests {
 
         assert_eq!(X_view.shape(), &[100, 5]);
 
-        let mut change_in_mean = ChangeInMean::new(&X_view);
-        let mut simple_change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view);
+        let simple_change_in_mean = testing::ChangeInMean::new(&X_view);
 
         for split in start..stop {
             assert_approx_eq!(
