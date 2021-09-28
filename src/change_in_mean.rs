@@ -45,8 +45,6 @@ impl<'a> Gain for ChangeInMean<'a> {
             return 0.;
         }
 
-        if self.X_cumsum.borrow().is_none() {}
-
         let X_cumsum = self.get_cumsum();
 
         let s_1 = (split - start) as f64;
