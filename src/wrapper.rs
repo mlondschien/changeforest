@@ -3,13 +3,13 @@ use crate::change_in_mean::ChangeInMean;
 use crate::control::Control;
 use ndarray;
 
-pub fn hdcd(X: ndarray::Array2<f64>) -> Vec<usize> {
+pub fn hdcd<'a>(X: &'a ndarray::ArrayView2<'a, f64>) -> Vec<usize> {
     let control = Control {
         minimal_gain_to_split: 0.1,
         minimal_relative_segment_length: 0.1,
     };
-    let mut optimizer = ChangeInMean::new(&X);
-    let mut binary_segmentation = BinarySegmentationTree::new(&X, control);
+    let mut optimizer = ChangeInMean::new(X);
+    let mut binary_segmentation = BinarySegmentationTree::new(X, control);
 
     binary_segmentation.grow(&mut optimizer);
 
@@ -27,6 +27,6 @@ mod tests {
 
         assert_eq!(X.shape(), &[100, 5]);
 
-        assert_eq!(hdcd(X), vec![25, 40, 80]);
+        assert_eq!(hdcd(&X.view()), vec![25, 40, 80]);
     }
 }

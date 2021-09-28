@@ -3,20 +3,20 @@ pub mod testing {
     use super::super::gain;
     use super::super::model_selection::ModelSelection;
     use super::super::optimizer;
-    use ndarray::{s, Array, Array2};
+    use ndarray::{s, Array, Array2, ArrayView2, Axis};
     use ndarray_rand::rand_distr::Uniform;
     use ndarray_rand::RandomExt;
     use rand::rngs::StdRng;
     use rand::SeedableRng;
 
     pub struct ChangeInMean<'a> {
-        X: &'a ndarray::Array2<f64>,
+        X: &'a ndarray::ArrayView2<'a, f64>,
     }
 
     impl<'a> ChangeInMean<'a> {
         #[allow(dead_code)]
-        pub fn new(X: &'a ndarray::Array2<f64>) -> ChangeInMean<'a> {
-            ChangeInMean { X: &X }
+        pub fn new(X: &'a ArrayView2<'a, f64>) -> ChangeInMean<'a> {
+            ChangeInMean { X }
         }
     }
 
@@ -33,13 +33,13 @@ pub mod testing {
             let n_total = self.X.nrows() as f64;
             let n_slice = (stop - start) as f64;
 
-            let slice = &self.X.slice(ndarray::s![start..stop, ..]);
+            let slice = &self.X.slice(s![start..stop, ..]);
 
             // For 1D, the change in mean loss is equal to
             // 1 / n_total * [sum_i x_i**2 - 1/n_slice (sum_i x_i)**2]
             // For 2D, the change in mean loss is just the sum of losses for each dimension.
             let loss = slice.mapv(|a| a.powi(2)).sum()
-                - slice.sum_axis(ndarray::Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice;
+                - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice;
 
             loss / n_total
         }

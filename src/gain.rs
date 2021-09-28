@@ -54,9 +54,11 @@ mod tests {
     #[case(3, 3, 0.)]
     fn test_change_in_mean_loss(#[case] start: usize, #[case] stop: usize, #[case] expected: f64) {
         let X = ndarray::array![[0., 0.], [0., 0.], [0., 1.], [0., 1.]];
+        let X_view = X.view();
+
         assert_eq!(X.shape(), &[4, 2]);
 
-        let change_in_mean = testing::ChangeInMean::new(&X);
+        let change_in_mean = testing::ChangeInMean::new(&X_view);
         assert_approx_eq!(change_in_mean.loss(start, stop), expected);
     }
 
@@ -80,9 +82,10 @@ mod tests {
         #[case] expected: f64,
     ) {
         let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.], [0., -1.], [1., 0.]];
-        assert_eq!(X.shape(), &[6, 2]);
+        let X_view = X.view();
+        assert_eq!(X_view.shape(), &[6, 2]);
 
-        let mut change_in_mean = testing::ChangeInMean::new(&X);
+        let mut change_in_mean = testing::ChangeInMean::new(&X_view);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
             change_in_mean.gain_full(start, stop, vec![split])[split],
