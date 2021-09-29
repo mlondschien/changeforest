@@ -1,0 +1,13 @@
+[package]
+name = 'hdcdr'
+version = '0.1.0'
+edition = '2018'
+
+[lib]
+crate-type = [ 'staticlib' ]
+
+[dependencies]
+extendr-api = { git = 'https://github.com/extendr/extendr', features = ["ndarray"] }
+# extendr-api = { version="0.2.0", features = ["ndarray"] }
+hdcd = { path = "../../../" }
+ndarray = "0.15.3"

@@ -1,0 +1,14 @@
+Package: hdcdr
+Type: Package
+Title: High-dimensional change point detection
+Version: 0.1.0
+Authors@R: c(person("Malte", "Londschien", ,"hdcd@londschien.ch", role = c("aut", "cre")))
+Description: High-dimensional change point detection
+License: GNU GPL3
+URL: https://github.com/mlondschien/hdcd-rs
+BugReports: https://github.com/mlondschien/hdcd-rs
+SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+Suggests:
+Language: en-US
