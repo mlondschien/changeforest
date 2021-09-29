@@ -1,6 +1,6 @@
 LIBDIR = ./rust/target/release
-STATLIB = $(LIBDIR)/libhdcd.a
-PKG_LIBS = -L$(LIBDIR) -lhdcd
+STATLIB = $(LIBDIR)/libhdcdr.a
+PKG_LIBS = -L$(LIBDIR) -lhdcdr
 
 all: C_clean
 

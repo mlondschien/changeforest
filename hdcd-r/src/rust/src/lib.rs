@@ -16,6 +16,6 @@ fn hdcd(X: ndarray::ArrayView2<f64>) -> Vec<usize> {
 // This ensures exported functions are registered with R.
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
+    mod hdcdr;
     fn hdcd;
-    mod hdcd;
 }
