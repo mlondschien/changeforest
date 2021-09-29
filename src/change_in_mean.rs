@@ -3,14 +3,14 @@ use super::model_selection::ModelSelection;
 use super::optimizer::Optimizer;
 use std::cell::{Ref, RefCell};
 
-pub struct ChangeInMean<'a> {
-    X: &'a ndarray::ArrayView2<'a, f64>,
+pub struct ChangeInMean<'a, 'b> {
+    X: &'a ndarray::ArrayView2<'b, f64>,
     X_cumsum: RefCell<Option<ndarray::Array2<f64>>>,
 }
 
-impl<'a> ChangeInMean<'a> {
+impl<'a, 'b> ChangeInMean<'a, 'b> {
     #[allow(dead_code)]
-    pub fn new(X: &'a ndarray::ArrayView2<'a, f64>) -> ChangeInMean<'a> {
+    pub fn new(X: &'a ndarray::ArrayView2<'b, f64>) -> ChangeInMean<'a, 'b> {
         ChangeInMean {
             X,
             X_cumsum: RefCell::new(Option::None),
@@ -35,7 +35,7 @@ impl<'a> ChangeInMean<'a> {
     }
 }
 
-impl<'a> Gain for ChangeInMean<'a> {
+impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
     fn n(&self) -> usize {
         self.X.nrows()
     }
@@ -61,8 +61,8 @@ impl<'a> Gain for ChangeInMean<'a> {
     }
 }
 
-impl<'a> Optimizer for ChangeInMean<'a> {}
-impl<'a> ModelSelection for ChangeInMean<'a> {}
+impl<'a, 'b> Optimizer for ChangeInMean<'a, 'b> {}
+impl<'a, 'b> ModelSelection for ChangeInMean<'a, 'b> {}
 
 #[cfg(test)]
 mod tests {

@@ -65,3 +65,41 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+  
+  R-CMD-check:
+    name: R CMD check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-pandoc@v1
+
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+        
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 'stable'
+
+      - name: Install rextendr
+        run: |
+          install.packages("rextendr", repos="http://cran.us.r-project.org")
+          install.packages("testthat", repos="http://cran.us.r-project.org")
+        shell: Rscript {0}
+
+      - name: Run R CMD check
+        run: |
+          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
+          FILE=hdcd-r.Rcheck/00check.log
+          if ! [[ -f "$FILE" ]]; then
+            echo "Log-file not found."
+            exit 1
+          fi
+          if cat $(FILE) | grep -q "WARNING"; then
+            echo "Found warnings, treated as errors."
+            exit 1
+          fi
+        shell: bash -l {0}

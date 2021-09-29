@@ -64,7 +64,7 @@ impl BinarySegmentationTree {
         })
     }
 
-    pub fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &mut T) {
+    pub fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &T) {
         if let Some(split_candidates) = self.split_candidates() {
             let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
 
@@ -91,7 +91,7 @@ impl BinarySegmentationTree {
             let out = out.chain(self.right.as_ref().unwrap().split_points().into_iter());
             out.collect()
         } else {
-            return vec![];
+            vec![]
         }
     }
 }
