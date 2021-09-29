@@ -6,6 +6,9 @@
 \usage{
 hdcd(X)
 }
+\arguments{
+\item{X}{Numerical matrix with time series.}
+}
 \description{
 Find change points in a time series.
 }

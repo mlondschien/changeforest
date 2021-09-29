@@ -9,6 +9,7 @@
 NULL
 
 #' Find change points in a time series.
+#' @param X Numerical matrix with time series.
 #' @export
 hdcd <- function(X) .Call(wrap__hdcd, X)
 
