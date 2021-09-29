@@ -79,21 +79,18 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@v1
+        
+      - uses: actions-rs/toolchain@v1
         with:
-          extra-packages: rcmdcheck
+          toolchain: 'stable'
 
-      - uses: r-lib/actions/check-r-package@v1
+      - name: Install rextendr
+        run: |
+          install.packages("rextendr", repos="http://cran.us.r-project.org")
+          install.packages("testthat", repos="http://cran.us.r-project.org")
+        shell: Rscript {0}
 
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+      - name: Run R CMD check
+        run: |
+          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
+        shell: bash -l {0}

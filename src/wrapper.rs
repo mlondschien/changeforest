@@ -3,15 +3,15 @@ use crate::change_in_mean::ChangeInMean;
 use crate::control::Control;
 use ndarray;
 
-pub fn hdcd<'a, 'b>(X: &'a ndarray::ArrayView2<'b, f64>) -> Vec<usize> {
+pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>) -> Vec<usize> {
     let control = Control {
         minimal_gain_to_split: 0.1,
         minimal_relative_segment_length: 0.1,
     };
-    let mut optimizer = ChangeInMean::new(X);
+    let optimizer = ChangeInMean::new(X);
     let mut binary_segmentation = BinarySegmentationTree::new(X, control);
 
-    binary_segmentation.grow(&mut optimizer);
+    binary_segmentation.grow(&optimizer);
 
     binary_segmentation.split_points()
 }
