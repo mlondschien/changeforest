@@ -93,7 +93,12 @@ jobs:
       - name: Run R CMD check
         run: |
           _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
-          if cat hdcdr.Rcheck/00check.log | grep -q "WARNING"; then
+          FILE=hdcd-r.Rcheck/00check.log
+          if [ -f "$FILE" ]; then
+            echo "Log-file not found."
+            exit 1
+          fi
+          if cat $(FILE) | grep -q "WARNING"; then
             echo "Found warnings, treated as errors."
             exit 1
           fi
