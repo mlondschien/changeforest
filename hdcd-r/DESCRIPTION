@@ -11,4 +11,6 @@ SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 Suggests:
+    testthat (>= 3.0.0)
 Language: en-US
+Config/testthat/edition: 3
