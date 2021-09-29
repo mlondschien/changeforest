@@ -94,7 +94,7 @@ jobs:
         run: |
           _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
           FILE=hdcd-r.Rcheck/00check.log
-          if [ -f "$FILE" ]; then
+          if ! [[ -f "$FILE" ]]; then
             echo "Log-file not found."
             exit 1
           fi
