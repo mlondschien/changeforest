@@ -13,6 +13,3 @@ def iris_dataset():
 def test_hdcd(iris_dataset):
     result = hdcd(iris_dataset)
     np.testing.assert_array_equal(result, [50, 100])
-
-def test_nothing():
-    assert False
