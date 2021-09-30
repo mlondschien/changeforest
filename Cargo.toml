@@ -5,7 +5,6 @@ edition = "2018"
 
 [lib]
 name = "hdcd"
-# crate-type = ["dylib"]
 
 [dependencies]
 ndarray = "0.15.3"
