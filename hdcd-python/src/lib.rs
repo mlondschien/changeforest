@@ -1,7 +1,6 @@
+use hdcd::wrapper;
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
-//use ndarray::ArrayView2;
-use hdcd::wrapper;
 
 #[allow(non_snake_case)] // Allow capital X for arrays.
 #[pymodule]

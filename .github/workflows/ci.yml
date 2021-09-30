@@ -72,24 +72,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - uses: r-lib/actions/setup-pandoc@v1
-
       - uses: r-lib/actions/setup-r@v1
         with:
           r-version: 'release'
           use-public-rspm: true
-        
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
-
       - name: Install rextendr
         run: |
           install.packages("rextendr", repos="http://cran.us.r-project.org")
           install.packages("testthat", repos="http://cran.us.r-project.org")
         shell: Rscript {0}
-
       - name: Run R CMD check
         run: |
           _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
@@ -103,3 +98,24 @@ jobs:
             exit 1
           fi
         shell: bash -l {0}
+
+  python-tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    container: condaforge/mambaforge
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 'stable'
+      - name: Install dependencies
+        run: |
+          apt-get update -y
+          apt-get install -y build-essential
+          cd hdcd-python
+          mamba env create -f environment.yml
+          source activate hdcd
+          maturin develop
+          pytest tests
+        shell: bash -lxeu {0}

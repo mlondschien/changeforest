@@ -10,4 +10,4 @@ crate-type = [ 'cdylib' ]
 numpy = "0.14.1"
 hdcd = { path = "../" }
 ndarray = "0.15.3"
-pyo3 = "0.14.5"
+pyo3 = {version = "0.14.5", features = ["extension-module"]}
