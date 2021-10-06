@@ -69,7 +69,6 @@ impl<'a, 'b> kNN<'a, 'b> {
             .axis_iter(Axis(0))
             .enumerate()
         {
-            println!("i={}, row={}", i, row);
             predictions[i] = row // order of neighbors by distance
                 .iter()
                 .skip(1) // To get LOOCV-like predictions
@@ -90,28 +89,29 @@ impl<'a, 'b> Gain for kNN<'a, 'b> {
     }
 
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
-        if (start == split) | (split == stop) {
+        if (split - start <= 1) | (stop - split <= 1) {
             return 0.;
         }
 
         let predictions = self.predictions(start, stop, split);
         let (left, right) = predictions.slice(s![..]).split_at(Axis(0), split);
-        left.map(log_eta).sum() + right.map(log_eta_inverse).sum()
+        let left_correction = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
+        let right_correction = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
+        left.mapv(|x| log_eta((1. - x) * left_correction)).sum()
+            + right.mapv(|x| log_eta(x * right_correction)).sum()
     }
 }
 
-fn log_eta(x: &f64) -> f64 {
-    ((0.99) * (x / (1. - x)) + 0.01).ln()
-}
-
-fn log_eta_inverse(x: &f64) -> f64 {
-    ((0.99) * ((1. - x) / x) + 0.01).ln()
+fn log_eta(x: f64) -> f64 {
+    // 1e-6 ~ 0.00247, 1 - 1e-6 ~ 0.99752
+    (0.00247875217 + 0.99752124782 * x).ln()
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    use assert_approx_eq::*;
     use ndarray::arr1;
     use rstest::*;
 
@@ -153,5 +153,30 @@ mod tests {
         let predictions = knn.predictions(start, stop, split);
 
         assert_eq!(predictions, expected);
+    }
+
+    #[rstest]
+    #[case(0, 6, arr1(&[0.0, 0.0, -3.3325539228390255, 4.796659545476027, -9.55569673879512, 0.0]))]
+    fn test_gain(#[case] start: usize, #[case] stop: usize, #[case] expected: Array1<f64>) {
+        // TODO Find out if this makes any sense.
+        let X = ndarray::array![
+            [1., 1.],
+            [1.5, 1.],
+            [0.5, 1.],
+            [3., 3.],
+            [4.5, 3.],
+            [2.5, 2.5]
+        ];
+        let X_view = X.view();
+
+        let knn = kNN::new(&X_view);
+        let mut gain = ndarray::Array::from_elem(6, f64::NAN);
+
+        for split_point in start..stop {
+            gain[split_point] = knn.gain(start, stop, split_point);
+        }
+        for idx in start..stop {
+            assert_approx_eq!(gain[idx], expected[idx]);
+        }
     }
 }
