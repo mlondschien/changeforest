@@ -1,25 +1,27 @@
-use std::cell::RefCell;
+use super::gain::Gain;
+use ndarray::{s, Array1, Array2, ArrayView2, Axis};
+use std::cell::{Ref, RefCell};
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
 pub struct kNN<'a, 'b> {
-    X: &'a ndarray::ArrayView2<'b, f64>,
-    order: RefCell<Option<ndarray::Array2<f64>>>,
+    X: &'a ArrayView2<'b, f64>,
+    ordering: RefCell<Option<Array2<usize>>>,
 }
 
 impl<'a, 'b> kNN<'a, 'b> {
     #[allow(dead_code)]
-    pub fn new(X: &'a ndarray::ArrayView2<'b, f64>) -> kNN<'a, 'b> {
+    pub fn new(X: &'a ArrayView2<'b, f64>) -> kNN<'a, 'b> {
         kNN {
             X,
-            order: RefCell::new(Option::None),
+            ordering: RefCell::new(Option::None),
         }
     }
 
     #[allow(dead_code)]
-    fn calculate_ordering(&self) -> ndarray::Array2<usize> {
+    fn calculate_ordering(&self) -> Array2<usize> {
         let n = self.X.nrows();
-        let mut distances = ndarray::Array2::<f64>::zeros((n, n));
+        let mut distances = Array2::<f64>::zeros((n, n));
 
         for i in 0..n {
             for j in 0..n {
@@ -34,8 +36,8 @@ impl<'a, 'b> kNN<'a, 'b> {
         }
 
         // A rather complex ordering = numpy.argsort(distances, 1)
-        let mut ordering = ndarray::Array2::<usize>::default((n, n));
-        for (i, mut row) in ordering.axis_iter_mut(ndarray::Axis(0)).enumerate() {
+        let mut ordering = Array2::<usize>::default((n, n));
+        for (i, mut row) in ordering.axis_iter_mut(Axis(0)).enumerate() {
             let mut order: Vec<usize> = (0..n).collect();
             order.sort_unstable_by(|a, b| {
                 distances[[i, *a]].partial_cmp(&distances[[i, *b]]).unwrap()
@@ -44,24 +46,112 @@ impl<'a, 'b> kNN<'a, 'b> {
                 *val = order[j]
             }
         }
-
         ordering
     }
+
+    fn get_ordering(&self) -> Ref<Array2<usize>> {
+        if self.ordering.borrow().is_none() {
+            self.ordering.replace(Some(self.calculate_ordering()));
+        }
+
+        Ref::map(self.ordering.borrow(), |borrow| borrow.as_ref().unwrap())
+    }
+
+    fn predictions(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
+        let ordering = self.get_ordering();
+        let segment_length = stop - start;
+        let k = (segment_length as f64).sqrt().floor();
+        let k_usize = k as usize;
+        let mut predictions = Array1::<f64>::zeros(segment_length);
+
+        for (i, row) in ordering
+            .slice(s![start..stop, ..])
+            .axis_iter(Axis(0))
+            .enumerate()
+        {
+            println!("i={}, row={}", i, row);
+            predictions[i] = row // order of neighbors by distance
+                .iter()
+                .skip(1) // To get LOOCV-like predictions
+                .filter(|j| (start <= **j) & (**j < stop)) // segment
+                .take(k_usize) // Only look at first k neighbors
+                .filter(|j| **j >= split)
+                .count() as f64
+                / k; // Proportion of neighbors from after split.
+        }
+
+        predictions
+    }
+}
+
+impl<'a, 'b> Gain for kNN<'a, 'b> {
+    fn n(&self) -> usize {
+        self.X.nrows()
+    }
+
+    fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
+        if (start == split) | (split == stop) {
+            return 0.;
+        }
+
+        let predictions = self.predictions(start, stop, split);
+        let (left, right) = predictions.slice(s![..]).split_at(Axis(0), split);
+        left.map(log_eta).sum() + right.map(log_eta_inverse).sum()
+    }
+}
+
+fn log_eta(x: &f64) -> f64 {
+    ((0.99) * (x / (1. - x)) + 0.01).ln()
+}
+
+fn log_eta_inverse(x: &f64) -> f64 {
+    ((0.99) * ((1. - x) / x) + 0.01).ln()
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    use ndarray::arr1;
+    use rstest::*;
 
     #[test]
     fn test_X_ordering() {
         let X = ndarray::array![[1.], [1.5], [3.], [-0.5]];
         let X_view = X.view();
 
-        let change_in_mean = kNN::new(&X_view);
-        let ordering = change_in_mean.calculate_ordering();
+        let knn = kNN::new(&X_view);
+        let ordering = knn.calculate_ordering();
         let expected = ndarray::array![[0, 1, 3, 2], [1, 0, 2, 3], [2, 1, 0, 3], [3, 0, 1, 2]];
         assert_eq!(ordering, expected)
+    }
+
+    #[rstest]
+    #[case(0, 6, 2, arr1(&[0.5, 0.5, 0., 1., 1., 0.5]))]
+    #[case(0, 6, 3, arr1(&[0., 0., 0., 1., 1., 0.5]))]
+    #[case(1, 6, 2, arr1(&[1., 0.5, 1., 1., 0.5]))]
+    #[case(1, 5, 2, arr1(&[1., 0.5, 0.5, 0.5]))]
+    #[case(1, 5, 5, arr1(&[0., 0., 0., 0.]))]
+    #[case(2, 2, 2, arr1(&[]))]
+    fn test_predictions(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] split: usize,
+        #[case] expected: Array1<f64>,
+    ) {
+        let X = ndarray::array![
+            [1., 1.],
+            [1.5, 1.],
+            [0.5, 1.],
+            [3., 3.],
+            [4.5, 3.],
+            [2.5, 2.5]
+        ];
+        let X_view = X.view();
+
+        let knn = kNN::new(&X_view);
+        let predictions = knn.predictions(start, stop, split);
+
+        assert_eq!(predictions, expected);
     }
 }
