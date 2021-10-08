@@ -1,8 +1,11 @@
 #[cfg(test)]
-pub mod testing {
-    use super::super::gain;
+pub use testing::{array, ChangeInMean};
+
+#[cfg(test)]
+mod testing {
     use super::super::model_selection::ModelSelection;
-    use super::super::optimizer;
+    use crate::Gain;
+    use crate::Optimizer;
     use ndarray::{s, Array, Array2, ArrayView2, Axis};
     use ndarray_rand::rand_distr::Uniform;
     use ndarray_rand::RandomExt;
@@ -20,7 +23,7 @@ pub mod testing {
         }
     }
 
-    impl<'a> gain::Gain for ChangeInMean<'a> {
+    impl<'a> Gain for ChangeInMean<'a> {
         fn n(&self) -> usize {
             self.X.nrows()
         }
@@ -44,8 +47,6 @@ pub mod testing {
             loss / n_total
         }
     }
-
-    impl<'a> optimizer::Optimizer for ChangeInMean<'a> {}
 
     impl<'a> ModelSelection for ChangeInMean<'a> {}
 

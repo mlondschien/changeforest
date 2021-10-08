@@ -1,32 +1,49 @@
-use super::gain;
+use super::super::Gain;
+use crate::optimizer::{Optimizer, Result};
+use crate::Control;
+use ndarray::Array1;
 
-pub trait Optimizer: gain::Gain {
+pub struct GridSearch<T: Gain> {
+    pub gain: T,
+}
+
+impl<T> Optimizer for GridSearch<T>
+where
+    T: Gain,
+{
     fn find_best_split(
         &self,
         start: usize,
         stop: usize,
         split_candidates: impl Iterator<Item = usize>,
-    ) -> usize {
-        let mut max_index = 0;
-        let mut max_value = -f64::INFINITY;
-        let mut gain: f64;
+    ) -> Result {
+        let mut gain = Array1::from_elem(stop - start, f64::NAN);
+
+        let mut best_split = 0;
+        let mut max_gain = -f64::INFINITY;
 
         for index in split_candidates {
-            gain = self.gain(start, stop, index);
-            if gain > max_value {
-                max_index = index;
-                max_value = gain;
+            gain[index - start] = self.gain.gain(start, stop, index);
+            if gain[index - start] > max_gain {
+                best_split = index;
+                max_gain = gain[index - start];
             }
         }
-        max_index
+
+        Result {
+            gain,
+            best_split,
+            max_gain,
+            is_significant: max_gain > 0.1,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
 
-    use super::super::testing::testing;
     use super::*;
+    use crate::testing;
     use rstest::*;
 
     #[rstest]
@@ -58,10 +75,13 @@ mod tests {
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[7, 2]);
 
-        let change_in_mean = testing::ChangeInMean::new(&X_view);
+        let gain = testing::ChangeInMean::new(&X_view);
+        let grid_search = GridSearch { gain };
 
         assert_eq!(
-            change_in_mean.find_best_split(start, stop, start..stop),
+            grid_search
+                .find_best_split(start, stop, start..stop)
+                .best_split,
             expected
         );
     }

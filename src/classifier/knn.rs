@@ -1,4 +1,4 @@
-use crate::classifier::Classifier;
+use crate::Classifier;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis};
 use std::cell::{Ref, RefCell};
 
@@ -93,8 +93,7 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
 mod tests {
 
     use super::*;
-    use crate::classifier::ClassifierGain;
-    use crate::gain::Gain;
+    use crate::gain::{ClassifierGain, Gain};
     use assert_approx_eq::*;
     use ndarray::arr1;
     use rstest::*;
