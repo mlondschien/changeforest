@@ -1,4 +1,6 @@
+use crate::control::Control;
 use crate::gain::Gain;
+use crate::model_selection::ModelSelection;
 use crate::utils::log_eta;
 use ndarray::{s, stack, Array1, Array2, Axis};
 
@@ -103,5 +105,46 @@ where
 
     fn n(&self) -> usize {
         self.classifier.n()
+    }
+}
+
+impl<T> ModelSelection for ClassifierGain<T>
+where
+    T: Classifier,
+{
+    fn is_significant(&self, start: usize, stop: usize, split: usize, control: Control) -> bool {
+        let predictions = self.classifier.predict(start, stop, split);
+        let full_likelihood = self
+            .classifier
+            .full_likelihood(&predictions, start, stop, split);
+        let delta = &full_likelihood.slice(s![0, ..]) - &full_likelihood.slice(s![1, ..]);
+        let n_permutations = 99;
+
+        let mut rng = rand::thread_rng();
+
+        let mut max_gain = 0.;
+        let mut value = 0.;
+
+        for idx in 0..(stop - start) {
+            value += delta[idx];
+            if value > max_gain {
+                max_gain = value;
+            }
+        }
+
+        let mut p_value: u32 = 1;
+
+        for _ in 0..n_permutations {
+            value = 0.;
+            for idx in rand::seq::index::sample(&mut rng, stop - start, stop - start) {
+                value += delta[idx];
+                if value > max_gain {
+                    p_value += 1;
+                    break;
+                }
+            }
+        }
+        println!("{}", p_value);
+        (p_value as f64 / n_permutations as f64) < control.alpha
     }
 }

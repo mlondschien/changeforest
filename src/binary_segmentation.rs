@@ -112,6 +112,7 @@ mod tests {
         let control = Control {
             minimal_gain_to_split: 0.1,
             minimal_relative_segment_length: 0.1,
+            alpha: 0.05,
         };
         let mut optimizer = testing::ChangeInMean::new(&X_view);
         let mut binary_segmentation = BinarySegmentationTree::new(&X_view, control);

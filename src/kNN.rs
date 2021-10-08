@@ -1,10 +1,5 @@
-use crate::classifier::{Classifier, ClassifierGain};
-use crate::control::Control;
-use crate::gain::Gain;
-use crate::model_selection::ModelSelection;
-use crate::optimizer::Optimizer;
+use crate::classifier::Classifier;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis};
-use rand;
 use std::cell::{Ref, RefCell};
 
 #[allow(non_camel_case_types)]
@@ -94,62 +89,12 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
     }
 }
 
-// impl<'a, 'b> Optimizer for kNN<'a, 'b> {}
-// impl<'a, 'b> ModelSelection for kNN<'a, 'b> {
-//     fn is_significant(&self, start: usize, stop: usize, split: usize, _: Control) -> bool {
-//         let predictions = self.predictions(start, stop, split);
-
-//         println!(
-//             "start={}, stop={}, split={}, \n predictions={}",
-//             start, stop, split, predictions
-//         );
-//         let prior_00 = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
-//         let prior_01 = ((stop - start - 1) as f64) / ((split - start) as f64);
-//         let prior_10 = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
-//         let prior_11 = ((stop - start - 1) as f64) / ((stop - split) as f64);
-
-//         predictions
-//             .slice_mut(s![..(split - start)])
-//             .mapv_inplace(|x| log_eta((1. - x) * prior_00) - log_eta(x * prior_01));
-//         predictions
-//             .slice_mut(s![(split - start)..])
-//             .mapv_inplace(|x| log_eta((1. - x) * prior_10) - log_eta(x * prior_11));
-
-//         let n_permutations = 99;
-
-//         let mut rng = rand::thread_rng();
-
-//         let mut gain = 0.;
-//         let mut value = 0.;
-
-//         for idx in 0..(stop - start) {
-//             value += predictions[idx];
-//             if value > gain {
-//                 gain = value;
-//             }
-//         }
-
-//         let mut p_value: u32 = 0;
-
-//         for _ in 0..n_permutations {
-//             value = 0.;
-//             for idx in rand::seq::index::sample(&mut rng, stop - start, stop - start) {
-//                 value += predictions[idx];
-//                 if value > gain {
-//                     p_value += 1;
-//                     break;
-//                 }
-//             }
-//         }
-//         println!("{}", p_value);
-//         p_value < 5
-//     }
-// }
-
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    use crate::classifier::ClassifierGain;
+    use crate::gain::Gain;
     use assert_approx_eq::*;
     use ndarray::arr1;
     use rstest::*;
