@@ -2,6 +2,7 @@
 pub struct Control {
     pub minimal_relative_segment_length: f64,
     pub minimal_gain_to_split: f64,
+    pub alpha: f64,
 }
 
 impl Control {
@@ -9,6 +10,7 @@ impl Control {
         Control {
             minimal_relative_segment_length: 0.1,
             minimal_gain_to_split: 0.,
+            alpha: 0.05,
         }
     }
 }

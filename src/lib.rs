@@ -3,10 +3,12 @@
 
 pub mod binary_segmentation;
 pub mod change_in_mean;
+pub mod classifier;
 pub mod control;
 pub mod gain;
 pub mod kNN;
 pub mod model_selection;
 pub mod optimizer;
 mod testing;
+pub mod utils;
 pub mod wrapper;

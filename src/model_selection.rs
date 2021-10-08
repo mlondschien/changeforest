@@ -49,7 +49,8 @@ mod tests {
                 split,
                 Control {
                     minimal_gain_to_split: minimal_gain_to_split,
-                    minimal_relative_segment_length: 0.1
+                    minimal_relative_segment_length: 0.1,
+                    alpha: 0.05
                 }
             ),
             expected

@@ -1,9 +1,5 @@
-use crate::control::Control;
-use crate::gain::Gain;
-use crate::model_selection::ModelSelection;
-use crate::optimizer::Optimizer;
+use crate::classifier::Classifier;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis};
-use rand;
 use std::cell::{Ref, RefCell};
 
 #[allow(non_camel_case_types)]
@@ -60,8 +56,10 @@ impl<'a, 'b> kNN<'a, 'b> {
 
         Ref::map(self.ordering.borrow(), |borrow| borrow.as_ref().unwrap())
     }
+}
 
-    fn predictions(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
+impl<'a, 'b> Classifier for kNN<'a, 'b> {
+    fn predict(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
         let ordering = self.get_ordering();
         let segment_length = stop - start;
         let k = (segment_length as f64).sqrt().floor();
@@ -85,96 +83,18 @@ impl<'a, 'b> kNN<'a, 'b> {
 
         predictions
     }
-}
 
-impl<'a, 'b> Gain for kNN<'a, 'b> {
     fn n(&self) -> usize {
         self.X.nrows()
     }
-
-    fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
-        if (split - start <= 1) | (stop - split <= 1) {
-            return 0.;
-        }
-
-        let predictions = self.predictions(start, stop, split);
-        prediction_log_likelihood(predictions, start, stop, split)
-    }
-}
-
-impl<'a, 'b> Optimizer for kNN<'a, 'b> {}
-impl<'a, 'b> ModelSelection for kNN<'a, 'b> {
-    fn is_significant(&self, start: usize, stop: usize, split: usize, _: Control) -> bool {
-        let mut predictions = self.predictions(start, stop, split);
-        println!(
-            "start={}, stop={}, split={}, \n predictions={}",
-            start, stop, split, predictions
-        );
-        let prior_00 = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
-        let prior_01 = ((stop - start - 1) as f64) / ((split - start) as f64);
-        let prior_10 = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
-        let prior_11 = ((stop - start - 1) as f64) / ((stop - split) as f64);
-
-        predictions
-            .slice_mut(s![..(split - start)])
-            .mapv_inplace(|x| log_eta((1. - x) * prior_00) - log_eta(x * prior_01));
-        predictions
-            .slice_mut(s![(split - start)..])
-            .mapv_inplace(|x| log_eta((1. - x) * prior_10) - log_eta(x * prior_11));
-
-        let n_permutations = 99;
-
-        let mut rng = rand::thread_rng();
-
-        let mut gain = 0.;
-        let mut value = 0.;
-
-        for idx in 0..(stop - start) {
-            value += predictions[idx];
-            if value > gain {
-                gain = value;
-            }
-        }
-
-        let mut p_value: u32 = 0;
-
-        for _ in 0..n_permutations {
-            value = 0.;
-            for idx in rand::seq::index::sample(&mut rng, stop - start, stop - start) {
-                value += predictions[idx];
-                if value > gain {
-                    p_value += 1;
-                    break;
-                }
-            }
-        }
-        println!("{}", p_value);
-        p_value < 5
-    }
-}
-
-fn prediction_log_likelihood(
-    predictions: Array1<f64>,
-    start: usize,
-    stop: usize,
-    split: usize,
-) -> f64 {
-    let (left, right) = predictions.slice(s![..]).split_at(Axis(0), split - start);
-    let left_correction = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
-    let right_correction = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
-    left.mapv(|x| log_eta((1. - x) * left_correction)).sum()
-        + right.mapv(|x| log_eta(x * right_correction)).sum()
-}
-
-fn log_eta(x: f64) -> f64 {
-    // 1e-6 ~ 0.00247, 1 - 1e-6 ~ 0.99752
-    (0.00247875217 + 0.99752124782 * x).ln()
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    use crate::classifier::ClassifierGain;
+    use crate::gain::Gain;
     use assert_approx_eq::*;
     use ndarray::arr1;
     use rstest::*;
@@ -214,7 +134,7 @@ mod tests {
         let X_view = X.view();
 
         let knn = kNN::new(&X_view);
-        let predictions = knn.predictions(start, stop, split);
+        let predictions = knn.predict(start, stop, split);
 
         assert_eq!(predictions, expected);
     }
@@ -234,13 +154,23 @@ mod tests {
         let X_view = X.view();
 
         let knn = kNN::new(&X_view);
-        let mut gain = ndarray::Array::from_elem(6, f64::NAN);
+        let knn_gain = ClassifierGain { classifier: knn };
 
         for split_point in start..stop {
-            gain[split_point] = knn.gain(start, stop, split_point);
-        }
-        for idx in start..stop {
-            assert_approx_eq!(gain[idx], expected[idx]);
+            println!(
+                "split_point={}, gain={}",
+                split_point,
+                knn_gain.gain_approx(start, stop, split_point, (start..stop).collect())
+            );
+            assert_approx_eq!(
+                expected[split_point],
+                knn_gain.gain(start, stop, split_point)
+            );
+            assert_approx_eq!(
+                expected[split_point],
+                knn_gain.gain_approx(start, stop, split_point, (start..stop).collect())
+                    [split_point]
+            )
         }
     }
 }
