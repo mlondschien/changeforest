@@ -1,6 +1,5 @@
-use super::super::Gain;
-use crate::optimizer::{Optimizer, Result};
-use crate::Control;
+use crate::optimizer::Result;
+use crate::{Gain, Optimizer};
 use ndarray::Array1;
 
 pub struct GridSearch<T: Gain> {

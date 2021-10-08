@@ -1,5 +1,4 @@
 use super::control::Control;
-use super::model_selection::ModelSelection;
 use crate::Optimizer;
 use ndarray;
 use std;
@@ -114,7 +113,7 @@ mod tests {
             minimal_relative_segment_length: 0.1,
             alpha: 0.05,
         };
-        let mut gain = testing::ChangeInMean::new(&X_view);
+        let gain = testing::ChangeInMean::new(&X_view);
         let mut optimizer = GridSearch { gain };
         let mut binary_segmentation = BinarySegmentationTree::new(&X_view, control);
 

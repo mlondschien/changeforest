@@ -1,10 +1,8 @@
 use crate::control::Control;
 use crate::model_selection::ModelSelection;
-use crate::utils::log_eta;
 use crate::Classifier;
 use crate::Gain;
-use crate::Optimizer;
-use ndarray::{s, stack, Array1, Array2, Axis};
+use ndarray::{s, Array1, Axis};
 
 pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,

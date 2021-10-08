@@ -1,7 +1,3 @@
-use crate::control::Control;
-use crate::gain::Gain;
-use crate::model_selection::ModelSelection;
-use crate::optimizer::Optimizer;
 use crate::utils::log_eta;
 use ndarray::{s, stack, Array1, Array2, Axis};
 

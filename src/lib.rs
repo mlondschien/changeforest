@@ -1,5 +1,6 @@
 // Allow capital X for arrays.
 #![allow(non_snake_case)]
+#![allow(clippy::module_inception)]
 
 mod classifier;
 mod control;
