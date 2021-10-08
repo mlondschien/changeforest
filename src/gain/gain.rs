@@ -40,8 +40,8 @@ pub trait Gain {
 #[cfg(test)]
 mod tests {
 
-    use super::super::testing::testing;
     use super::*;
+    use crate::testing;
     use assert_approx_eq::*;
     use rstest::*;
 

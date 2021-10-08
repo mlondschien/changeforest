@@ -1,6 +1,5 @@
 use super::control::Control;
-use super::model_selection::ModelSelection;
-use super::optimizer::Optimizer;
+use crate::Optimizer;
 use ndarray;
 use std;
 
@@ -64,23 +63,22 @@ impl BinarySegmentationTree {
         })
     }
 
-    pub fn grow<T: Optimizer + ModelSelection>(&mut self, optimizer: &T) {
+    pub fn grow<T: Optimizer>(&mut self, optimizer: &T) {
         if let Some(split_candidates) = self.split_candidates() {
-            let best_split = optimizer.find_best_split(self.start, self.stop, split_candidates);
-
-            if !optimizer.is_significant(self.start, self.stop, best_split, self.control) {
+            let result = optimizer.find_best_split(self.start, self.stop, split_candidates);
+            if !result.is_significant {
                 return;
             }
 
-            let mut left = self.new_left(best_split);
+            let mut left = self.new_left(result.best_split);
             left.grow(optimizer);
             self.left = Some(left);
 
-            let mut right = self.new_right(best_split);
+            let mut right = self.new_right(result.best_split);
             right.grow(optimizer);
             self.right = Some(right);
 
-            self.split = Some(best_split);
+            self.split = Some(result.best_split);
         }
     }
 
@@ -99,8 +97,9 @@ impl BinarySegmentationTree {
 #[cfg(test)]
 mod tests {
     use super::super::control::Control;
-    use super::super::testing::testing;
     use super::*;
+    use crate::optimizer::GridSearch;
+    use crate::testing;
 
     #[test]
     fn test_binary_segmentation_change_in_mean() {
@@ -114,7 +113,8 @@ mod tests {
             minimal_relative_segment_length: 0.1,
             alpha: 0.05,
         };
-        let mut optimizer = testing::ChangeInMean::new(&X_view);
+        let gain = testing::ChangeInMean::new(&X_view);
+        let mut optimizer = GridSearch { gain };
         let mut binary_segmentation = BinarySegmentationTree::new(&X_view, control);
 
         binary_segmentation.grow(&mut optimizer);

@@ -11,8 +11,8 @@ pub trait ModelSelection: Gain {
 mod tests {
 
     use super::super::control::Control;
-    use super::super::testing::testing;
     use super::*;
+    use crate::testing;
     use rstest::*;
 
     #[rstest]

@@ -1,6 +1,4 @@
-use super::gain::Gain;
-use super::model_selection::ModelSelection;
-use super::optimizer::Optimizer;
+use crate::Gain;
 use std::cell::{Ref, RefCell};
 
 pub struct ChangeInMean<'a, 'b> {
@@ -61,14 +59,11 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
     }
 }
 
-impl<'a, 'b> Optimizer for ChangeInMean<'a, 'b> {}
-impl<'a, 'b> ModelSelection for ChangeInMean<'a, 'b> {}
-
 #[cfg(test)]
 mod tests {
 
-    use super::super::testing::testing;
     use super::*;
+    use crate::testing;
     use assert_approx_eq::*;
     use rstest::*;
 
