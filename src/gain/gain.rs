@@ -10,16 +10,11 @@ pub trait Gain {
 
     fn n(&self) -> usize;
 
-    fn gain_full(
-        &self,
-        start: usize,
-        stop: usize,
-        split_points: Vec<usize>,
-    ) -> ndarray::Array1<f64> {
-        let mut gain = ndarray::Array::from_elem(self.n(), f64::NAN);
+    fn gain_full(&self, start: usize, stop: usize, split_points: &[usize]) -> ndarray::Array1<f64> {
+        let mut gain = ndarray::Array::from_elem(stop - start, f64::NAN);
 
         for split_point in split_points {
-            gain[split_point] = self.gain(start, stop, split_point);
+            gain[split_point - start] = self.gain(start, stop, *split_point);
         }
 
         gain
@@ -31,7 +26,7 @@ pub trait Gain {
         start: usize,
         stop: usize,
         guess: usize,
-        split_points: Vec<usize>,
+        split_points: &[usize],
     ) -> ndarray::Array1<f64> {
         self.gain_full(start, stop, split_points)
     }
@@ -88,11 +83,11 @@ mod tests {
         let change_in_mean = testing::ChangeInMean::new(&X_view);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
-            change_in_mean.gain_full(start, stop, vec![split])[split],
+            change_in_mean.gain_full(start, stop, &vec![split])[split - start],
             expected
         );
         assert_approx_eq!(
-            change_in_mean.gain_approx(start, stop, split, vec![split])[split],
+            change_in_mean.gain_approx(start, stop, split, &vec![split])[split - start],
             expected
         );
     }

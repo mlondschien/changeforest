@@ -23,7 +23,7 @@ where
         start: usize,
         stop: usize,
         guess: usize,
-        _: Vec<usize>,
+        _: &[usize],
     ) -> ndarray::Array1<f64> {
         let predictions = self.classifier.predict(start, stop, guess);
         let likelihoods = self
@@ -36,7 +36,8 @@ where
             &(&likelihoods.slice(s![0, ..(stop - start - 1)])
                 - &likelihoods.slice(s![1, ..(stop - start - 1)])),
         );
-        gain.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
+        gain.slice_mut(s![start..stop])
+            .accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
 
         gain + likelihoods.slice(s![1, ..]).sum()
     }
@@ -82,7 +83,6 @@ where
                 }
             }
         }
-        println!("{}", p_value);
         (p_value as f64 / n_permutations as f64) < control.alpha
     }
 }

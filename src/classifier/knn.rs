@@ -91,9 +91,10 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use crate::gain::{ClassifierGain, Gain};
+    use crate::optimizer::{Optimizer, TwoStepSearch};
+    use crate::testing;
     use assert_approx_eq::*;
     use ndarray::arr1;
     use rstest::*;
@@ -155,21 +156,39 @@ mod tests {
         let knn = kNN::new(&X_view);
         let knn_gain = ClassifierGain { classifier: knn };
 
+        let split_points: Vec<usize> = (start..stop).collect();
         for split_point in start..stop {
-            println!(
-                "split_point={}, gain={}",
-                split_point,
-                knn_gain.gain_approx(start, stop, split_point, (start..stop).collect())
-            );
             assert_approx_eq!(
-                expected[split_point],
+                expected[split_point - start],
                 knn_gain.gain(start, stop, split_point)
             );
             assert_approx_eq!(
-                expected[split_point],
-                knn_gain.gain_approx(start, stop, split_point, (start..stop).collect())
-                    [split_point]
+                expected[split_point - start],
+                knn_gain.gain_approx(start, stop, split_point, &split_points)[split_point - start]
             )
         }
+    }
+
+    #[rstest]
+    #[case(0, 100, (0..100).collect(), 40)]
+    fn test_two_step_search(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] split_candidates: Vec<usize>,
+        #[case] expected: usize,
+    ) {
+        let X = testing::array();
+        let X_view = X.view();
+
+        let classifier = kNN::new(&X_view);
+        let gain = ClassifierGain { classifier };
+        let optimizer = TwoStepSearch { gain };
+
+        assert_eq!(
+            expected,
+            optimizer
+                .find_best_split(start, stop, &split_candidates)
+                .best_split
+        );
     }
 }

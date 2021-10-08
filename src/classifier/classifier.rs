@@ -32,10 +32,6 @@ pub trait Classifier {
         if (stop - split <= 1) || (split - start <= 1) {
             return Array2::zeros((2, stop - start));
         }
-        println!(
-            "start={}, stop={}, split={}, predictions={}",
-            start, stop, split, predictions
-        );
         let mut likelihoods = stack(Axis(0), &[predictions.view(), predictions.view()]).unwrap();
         assert!(likelihoods.shape() == [2, stop - start]);
 
