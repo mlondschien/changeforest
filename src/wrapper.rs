@@ -48,7 +48,6 @@ mod tests {
         let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
-
         assert_eq!(hdcd(&X.view()), vec![25, 40, 80]);
     }
 
@@ -57,9 +56,6 @@ mod tests {
         let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
-
-        // 60 is a false positive. TODO
-        // so is 11
-        assert_eq!(hdcd_knn(&X.view()), vec![11, 25, 40, 60, 80]);
+        assert_eq!(hdcd_knn(&X.view()), vec![25, 40, 80]);
     }
 }

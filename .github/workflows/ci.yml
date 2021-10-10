@@ -97,7 +97,7 @@ jobs:
             echo "Found warnings, treated as errors."
             exit 1
           fi
-        shell: bash -l {0}
+        shell: bash -lxeu {0}
 
   python-tests:
     name: Python tests

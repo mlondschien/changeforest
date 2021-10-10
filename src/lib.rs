@@ -12,7 +12,6 @@ pub use gain::Gain;
 pub use optimizer::Optimizer;
 
 pub mod binary_segmentation;
-pub mod model_selection;
 pub mod utils;
 pub mod wrapper;
 

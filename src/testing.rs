@@ -1,4 +1,3 @@
-use crate::model_selection::ModelSelection;
 use crate::Gain;
 use ndarray::{s, Array, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
@@ -40,12 +39,14 @@ impl<'a> Gain for ChangeInMean<'a> {
 
         loss / n_total
     }
+
+    fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
+        max_gain > 0.1
+    }
 }
 
-impl<'a> ModelSelection for ChangeInMean<'a> {}
-
 pub fn array() -> Array2<f64> {
-    let seed = 42;
+    let seed = 7;
     let mut rng = StdRng::seed_from_u64(seed);
 
     let mut X = Array::zeros((100, 5)); //

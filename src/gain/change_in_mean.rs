@@ -57,6 +57,10 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         }
         result / (s * s_1 * s_2 * (self.X.nrows() as f64))
     }
+
+    fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
+        max_gain > 0.1
+    }
 }
 
 #[cfg(test)]
