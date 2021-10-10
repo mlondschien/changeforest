@@ -1,5 +1,3 @@
-use crate::control::Control;
-use crate::model_selection::ModelSelection;
 use crate::Classifier;
 use crate::Gain;
 use ndarray::{s, Array1, Axis};
@@ -12,12 +10,18 @@ impl<T> Gain for ClassifierGain<T>
 where
     T: Classifier,
 {
+    /// Return classifier-likelihood based gain when splitting segment `[start, stop)`
+    /// at `split`.
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         let predictions = self.classifier.predict(start, stop, split);
         self.classifier
             .single_likelihood(&predictions, start, stop, split)
     }
 
+    /// Return an approximation of the classifier-likelihood based gain when splitting
+    /// segment `[start, stop)` for each split in `split_candidates`.
+    ///
+    /// A single fit is generated with a split at `guess`.
     fn gain_approx(
         &self,
         start: usize,
@@ -45,13 +49,8 @@ where
     fn n(&self) -> usize {
         self.classifier.n()
     }
-}
 
-impl<T> ModelSelection for ClassifierGain<T>
-where
-    T: Classifier,
-{
-    fn is_significant(&self, start: usize, stop: usize, split: usize, control: Control) -> bool {
+    fn is_significant(&self, start: usize, stop: usize, split: usize, _: f64) -> bool {
         let predictions = self.classifier.predict(start, stop, split);
         let full_likelihood = self
             .classifier
@@ -83,6 +82,6 @@ where
                 }
             }
         }
-        (p_value as f64 / n_permutations as f64) < control.alpha
+        (p_value as f64 / (n_permutations + 1) as f64) < 0.05
     }
 }

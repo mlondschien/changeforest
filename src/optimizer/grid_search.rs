@@ -1,4 +1,3 @@
-use crate::optimizer::Result;
 use crate::{Gain, Optimizer};
 use ndarray::Array1;
 
@@ -10,7 +9,12 @@ impl<T> Optimizer for GridSearch<T>
 where
     T: Gain,
 {
-    fn find_best_split(&self, start: usize, stop: usize, split_candidates: &[usize]) -> Result {
+    fn find_best_split(
+        &self,
+        start: usize,
+        stop: usize,
+        split_candidates: &[usize],
+    ) -> (usize, f64) {
         if split_candidates.is_empty() {
             panic!("Empty split candidates.")
         }
@@ -28,13 +32,11 @@ where
             }
         }
 
-        Result {
-            start,
-            stop,
-            gain,
-            best_split,
-            max_gain,
-        }
+        (best_split, max_gain)
+    }
+
+    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
+        self.gain.is_significant(start, stop, split, max_gain)
     }
 }
 
@@ -77,9 +79,7 @@ mod tests {
         let grid_search = GridSearch { gain };
         let split_points: Vec<usize> = (start..stop).collect();
         assert_eq!(
-            grid_search
-                .find_best_split(start, stop, &split_points)
-                .best_split,
+            grid_search.find_best_split(start, stop, &split_points).0,
             expected
         );
     }

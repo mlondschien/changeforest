@@ -186,9 +186,7 @@ mod tests {
 
         assert_eq!(
             expected,
-            optimizer
-                .find_best_split(start, stop, &split_candidates)
-                .best_split
+            optimizer.find_best_split(start, stop, &split_candidates).0
         );
     }
 }

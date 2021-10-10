@@ -1,19 +1,34 @@
 pub trait Gain {
     #[allow(unused_variables)]
+    /// Get loss of segment `[start, stop)`.
+    ///
+    /// This is typically a parametric loss, i.e. minimal negative log-likelihood. Needs
+    /// not be normalized the by segment length.
     fn loss(&self, start: usize, stop: usize) -> f64 {
         panic!("Not implemented.");
     }
 
+    /// Get gain when splitting segment [start, stop) at `split`.
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
+    /// Number of observations.
     fn n(&self) -> usize;
 
-    fn gain_full(&self, start: usize, stop: usize, split_points: &[usize]) -> ndarray::Array1<f64> {
+    /// Get gain when splitting segment `[start, stop)` at points in `split_candidates`.
+    ///
+    /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
+    /// corresponding entry in `split_candidates` are `f64::NAN`.
+    fn gain_full(
+        &self,
+        start: usize,
+        stop: usize,
+        split_candidates: &[usize],
+    ) -> ndarray::Array1<f64> {
         let mut gain = ndarray::Array::from_elem(stop - start, f64::NAN);
 
-        for split_point in split_points {
+        for split_point in split_candidates {
             gain[split_point - start] = self.gain(start, stop, *split_point);
         }
 
@@ -21,6 +36,13 @@ pub trait Gain {
     }
 
     #[allow(unused_variables)]
+    /// Get an approximation of the gain when splitting segment `[start, stop)` at points in `split_candidates`.
+    ///
+    /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
+    /// corresponding entry in `split_candidates` are `f64::NAN`.
+    ///
+    /// This can be useful when combining classifier based gains and the two-step-search
+    /// optimizer.
     fn gain_approx(
         &self,
         start: usize,
@@ -30,6 +52,9 @@ pub trait Gain {
     ) -> ndarray::Array1<f64> {
         self.gain_full(start, stop, split_points)
     }
+
+    /// Check whether a certain split corresponds to a true change point.
+    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
 }
 
 #[cfg(test)]

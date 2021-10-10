@@ -1,4 +1,3 @@
-use crate::optimizer::Result;
 use crate::{Gain, Optimizer};
 
 pub struct TwoStepSearch<T: Gain> {
@@ -9,7 +8,12 @@ impl<T> Optimizer for TwoStepSearch<T>
 where
     T: Gain,
 {
-    fn find_best_split(&self, start: usize, stop: usize, split_candidates: &[usize]) -> Result {
+    fn find_best_split(
+        &self,
+        start: usize,
+        stop: usize,
+        split_candidates: &[usize],
+    ) -> (usize, f64) {
         let gain = self
             .gain
             .gain_approx(start, stop, (start + stop) / 2, split_candidates);
@@ -26,6 +30,7 @@ where
         let gain = self
             .gain
             .gain_approx(start, stop, best_split + start, split_candidates);
+
         max_gain = -f64::INFINITY;
         for index in split_candidates {
             if gain[*index - start] > max_gain {
@@ -34,13 +39,11 @@ where
             }
         }
 
-        Result {
-            start,
-            stop,
-            gain,
-            best_split,
-            max_gain,
-        }
+        (best_split, max_gain)
+    }
+
+    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
+        self.gain.is_significant(start, stop, split, max_gain)
     }
 }
 
@@ -85,9 +88,7 @@ mod tests {
 
         let split_points: Vec<usize> = (start..stop).collect();
         assert_eq!(
-            grid_search
-                .find_best_split(start, stop, &split_points)
-                .best_split,
+            grid_search.find_best_split(start, stop, &split_points).0,
             expected
         );
     }
