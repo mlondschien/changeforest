@@ -1,40 +1,34 @@
 use crate::binary_segmentation::BinarySegmentationTree;
 use crate::classifier::kNN;
 use crate::control::Control;
-use crate::gain::ChangeInMean;
-use crate::gain::ClassifierGain;
-use crate::optimizer::GridSearch;
+use crate::gain::{ChangeInMean, ClassifierGain};
+use crate::optimizer::{GridSearch, TwoStepSearch};
 use ndarray;
 
-pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>) -> Vec<usize> {
-    let control = Control {
-        minimal_gain_to_split: 0.1,
-        minimal_relative_segment_length: 0.1,
-        alpha: 0.05,
-    };
-    let gain = ChangeInMean::new(X);
-    let optimizer = GridSearch { gain };
-    let mut binary_segmentation = BinarySegmentationTree::new(X, control);
-
-    binary_segmentation.grow(&optimizer);
-
-    binary_segmentation.split_points()
-}
-
-pub fn hdcd_knn(X: &ndarray::ArrayView2<'_, f64>) -> Vec<usize> {
+pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str) -> Vec<usize> {
     let control = Control {
         minimal_gain_to_split: 0.1,
         minimal_relative_segment_length: 0.1,
         alpha: 0.05,
     };
 
-    let classifier = kNN::new(X);
-    let gain = ClassifierGain { classifier };
-    let optimizer = GridSearch { gain };
     let mut binary_segmentation = BinarySegmentationTree::new(X, control);
 
-    binary_segmentation.grow(&optimizer);
-
+    if method == "knn" {
+        let classifier = kNN::new(X);
+        let gain = ClassifierGain { classifier };
+        let optimizer = GridSearch { gain };
+        binary_segmentation.grow(&optimizer);
+    } else if method == "change_in_mean" {
+        let gain = ChangeInMean::new(X);
+        let optimizer = TwoStepSearch { gain };
+        binary_segmentation.grow(&optimizer);
+    } else {
+        panic!(
+            "method should be one of 'knn' or 'change_in_mean'. Got {}",
+            method
+        );
+    }
     binary_segmentation.split_points()
 }
 
@@ -42,20 +36,15 @@ pub fn hdcd_knn(X: &ndarray::ArrayView2<'_, f64>) -> Vec<usize> {
 mod tests {
     use super::*;
     use crate::testing;
+    use rstest::*;
 
-    #[test]
-    fn test_binary_segmentation_wrapper() {
+    #[rstest]
+    #[case("knn")]
+    #[case("change_in_mean")]
+    fn test_binary_segmentation_wrapper(#[case] method: &str) {
         let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
-        assert_eq!(hdcd(&X.view()), vec![25, 40, 80]);
-    }
-
-    #[test]
-    fn test_binary_segmentation_wrapper2() {
-        let X = testing::array();
-
-        assert_eq!(X.shape(), &[100, 5]);
-        assert_eq!(hdcd_knn(&X.view()), vec![25, 40, 80]);
+        assert_eq!(hdcd(&X.view(), method), vec![25, 40, 80]);
     }
 }
