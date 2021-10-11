@@ -12,7 +12,7 @@ _IRIS_PATH = Path(__file__).resolve().parents[2] / "testdata" / _IRIS_FILE
 def iris_dataset():
     return np.loadtxt(_IRIS_PATH, skiprows=1, delimiter=",", usecols=(0, 1, 2, 3))
 
-
-def test_hdcd(iris_dataset):
-    result = hdcd(iris_dataset)
+@pytest.mark.parametrize("method", ["knn", "change_in_mean"])
+def test_hdcd(iris_dataset, method):
+    result = hdcd(iris_dataset, method)
     np.testing.assert_array_equal(result, [50, 100])

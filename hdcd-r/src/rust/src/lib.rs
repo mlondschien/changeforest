@@ -8,8 +8,8 @@ use ndarray;
 /// Find change points in a time series.
 /// @export
 #[extendr]
-fn hdcd(X: ndarray::ArrayView2<f64>) -> Vec<usize> {
-    wrapper::hdcd(&X)
+fn hdcd(X: ndarray::ArrayView2<f64>, method: &str) -> Vec<usize> {
+    wrapper::hdcd(&X, method)
 }
 
 // Macro to generate exports.

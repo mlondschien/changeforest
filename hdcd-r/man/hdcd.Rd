@@ -4,10 +4,12 @@
 \alias{hdcd}
 \title{Find change points in a time series.}
 \usage{
-hdcd(X)
+hdcd(X, method)
 }
 \arguments{
 \item{X}{Numerical matrix with time series.}
+
+\item{method}{Either 'knn' or 'change_in_mean'.}
 }
 \description{
 Find change points in a time series.

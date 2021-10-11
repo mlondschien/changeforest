@@ -6,8 +6,8 @@ use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 #[pymodule]
 fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     #[pyfn(m)]
-    fn hdcd<'py>(X: PyReadonlyArray2<'py, f64>) -> PyResult<Vec<usize>> {
-        Ok(wrapper::hdcd(&X.as_array()))
+    fn hdcd<'py>(X: PyReadonlyArray2<'py, f64>, method: String) -> PyResult<Vec<usize>> {
+        Ok(wrapper::hdcd(&X.as_array(), &method))
     }
     Ok(())
 }
