@@ -10,6 +10,7 @@ NULL
 
 #' Find change points in a time series.
 #' @param X Numerical matrix with time series.
+#' @param method Either 'knn' or 'change_in_mean'.
 #' @export
-hdcd <- function(X) .Call(wrap__hdcd, X)
+hdcd <- function(X, method) .Call(wrap__hdcd, X, method)
 
