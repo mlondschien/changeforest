@@ -27,16 +27,6 @@ impl BinarySegmentationTree {
         }
     }
 
-    fn split_candidates(&self) -> Vec<usize> {
-        let minimal_segment_length =
-            (self.control.minimal_relative_segment_length * (self.n as f64)).round() as usize;
-        if 2 * minimal_segment_length > (self.stop - self.start) {
-            vec![]
-        } else {
-            ((self.start + minimal_segment_length)..(self.stop - minimal_segment_length)).collect()
-        }
-    }
-
     fn new_left(&self, split: usize) -> Box<BinarySegmentationTree> {
         Box::new(BinarySegmentationTree {
             start: self.start,
@@ -62,28 +52,24 @@ impl BinarySegmentationTree {
     }
 
     pub fn grow<T: Optimizer>(&mut self, optimizer: &T) {
-        let split_candidates = self.split_candidates();
+        match optimizer.find_best_split(self.start, self.stop) {
+            Ok((best_split, max_gain)) => {
+                if !optimizer.is_significant(self.start, self.stop, best_split, max_gain) {
+                    return;
+                }
 
-        if split_candidates.is_empty() {
-            return;
+                let mut left = self.new_left(best_split);
+                left.grow(optimizer);
+                self.left = Some(left);
+
+                let mut right = self.new_right(best_split);
+                right.grow(optimizer);
+                self.right = Some(right);
+
+                self.split = Some(best_split);
+            }
+            Err(_) => return,
         }
-
-        let (best_split, max_gain) =
-            optimizer.find_best_split(self.start, self.stop, &split_candidates);
-
-        if !optimizer.is_significant(self.start, self.stop, best_split, max_gain) {
-            return;
-        }
-
-        let mut left = self.new_left(best_split);
-        left.grow(optimizer);
-        self.left = Some(left);
-
-        let mut right = self.new_right(best_split);
-        right.grow(optimizer);
-        self.right = Some(right);
-
-        self.split = Some(best_split);
     }
 
     pub fn split_points(&self) -> Vec<usize> {
@@ -114,7 +100,10 @@ mod tests {
 
         let control = Control::default();
         let gain = testing::ChangeInMean::new(&X_view);
-        let mut optimizer = GridSearch { gain };
+        let mut optimizer = GridSearch {
+            gain,
+            control: &control,
+        };
         let mut binary_segmentation = BinarySegmentationTree::new(&X_view, control);
 
         binary_segmentation.grow(&mut optimizer);

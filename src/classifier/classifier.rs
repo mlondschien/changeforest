@@ -2,6 +2,8 @@ use crate::utils::log_eta;
 use ndarray::{s, stack, Array1, Array2, Axis};
 
 pub trait Classifier {
+    fn n(&self) -> usize;
+
     fn predict(&self, start: usize, stop: usize, split: usize) -> Array1<f64>;
 
     fn single_likelihood(
@@ -55,6 +57,4 @@ pub trait Classifier {
 
         likelihoods
     }
-
-    fn n(&self) -> usize;
 }

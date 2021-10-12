@@ -13,11 +13,17 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str) -> Vec<usize> {
     if method == "knn" {
         let classifier = kNN::new(X);
         let gain = ClassifierGain { classifier };
-        let optimizer = GridSearch { gain };
+        let optimizer = GridSearch {
+            gain,
+            control: &control,
+        };
         binary_segmentation.grow(&optimizer);
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
-        let optimizer = TwoStepSearch { gain };
+        let optimizer = TwoStepSearch {
+            gain,
+            control: &control,
+        };
         binary_segmentation.grow(&optimizer);
     } else {
         panic!(

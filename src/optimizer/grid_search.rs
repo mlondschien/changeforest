@@ -1,22 +1,28 @@
-use crate::{Gain, Optimizer};
+use crate::{Control, Gain, Optimizer};
 use ndarray::Array1;
 
-pub struct GridSearch<T: Gain> {
+pub struct GridSearch<'a, T: Gain> {
     pub gain: T,
+    pub control: &'a Control,
 }
 
-impl<T> Optimizer for GridSearch<T>
+impl<'a, T> Optimizer for GridSearch<'a, T>
 where
     T: Gain,
 {
-    fn find_best_split(
-        &self,
-        start: usize,
-        stop: usize,
-        split_candidates: &[usize],
-    ) -> (usize, f64) {
+    fn n(&self) -> usize {
+        self.gain.n()
+    }
+
+    fn control(&self) -> &Control {
+        self.control
+    }
+
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str> {
+        let split_candidates = self.split_candidates(start, stop);
+
         if split_candidates.is_empty() {
-            panic!("Empty split candidates.")
+            return Err("Segment too small.");
         }
 
         let mut gain = Array1::from_elem(stop - start, f64::NAN);
@@ -25,14 +31,14 @@ where
         let mut max_gain = -f64::INFINITY;
 
         for index in split_candidates {
-            gain[index - start] = self.gain.gain(start, stop, *index);
+            gain[index - start] = self.gain.gain(start, stop, index);
             if gain[index - start] > max_gain {
-                best_split = *index;
+                best_split = index;
                 max_gain = gain[index - start];
             }
         }
 
-        (best_split, max_gain)
+        Ok((best_split, max_gain))
     }
 
     fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
@@ -76,10 +82,13 @@ mod tests {
         assert_eq!(X_view.shape(), &[7, 2]);
 
         let gain = testing::ChangeInMean::new(&X_view);
-        let grid_search = GridSearch { gain };
-        let split_points: Vec<usize> = (start..stop).collect();
+        let control = Control::default().with_minimal_relative_segment_length(0.1);
+        let grid_search = GridSearch {
+            gain,
+            control: &control,
+        };
         assert_eq!(
-            grid_search.find_best_split(start, stop, &split_points).0,
+            grid_search.find_best_split(start, stop).unwrap().0,
             expected
         );
     }

@@ -1,6 +1,9 @@
 pub trait Gain {
+    /// Total number of observations.
+    fn n(&self) -> usize;
+
     #[allow(unused_variables)]
-    /// Get loss of segment `[start, stop)`.
+    /// Loss of segment `[start, stop)`.
     ///
     /// This is typically a parametric loss, i.e. minimal negative log-likelihood. Needs
     /// not be normalized the by segment length.
@@ -8,15 +11,12 @@ pub trait Gain {
         panic!("Not implemented.");
     }
 
-    /// Get gain when splitting segment [start, stop) at `split`.
+    /// Gain when splitting segment [start, stop) at `split`.
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         self.loss(start, stop) - self.loss(start, split) - self.loss(split, stop)
     }
 
-    /// Number of observations.
-    fn n(&self) -> usize;
-
-    /// Get gain when splitting segment `[start, stop)` at points in `split_candidates`.
+    /// Gain when splitting segment `[start, stop)` at points in `split_candidates`.
     ///
     /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
     /// corresponding entry in `split_candidates` are `f64::NAN`.
@@ -36,7 +36,7 @@ pub trait Gain {
     }
 
     #[allow(unused_variables)]
-    /// Get an approximation of the gain when splitting segment `[start, stop)` at points in `split_candidates`.
+    /// An approximation of the gain when splitting segment `[start, stop)` at points in `split_candidates`.
     ///
     /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
     /// corresponding entry in `split_candidates` are `f64::NAN`.
@@ -53,7 +53,7 @@ pub trait Gain {
         self.gain_full(start, stop, split_points)
     }
 
-    /// Check whether a certain split corresponds to a true change point.
+    /// Does a certain split corresponds to a true change point?
     fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
 }
 

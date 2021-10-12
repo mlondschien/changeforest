@@ -20,20 +20,20 @@ impl Control {
         }
     }
 
-    pub fn with_number_of_wild_segments(&mut self, number_of_wild_segments: usize) -> &mut Self {
+    pub fn with_number_of_wild_segments(mut self, number_of_wild_segments: usize) -> Self {
         self.number_of_wild_segments = number_of_wild_segments;
         self
     }
 
-    pub fn with_seeded_segments_alpha(&mut self, seeded_segments_alpha: f64) -> &mut Self {
+    pub fn with_seeded_segments_alpha(mut self, seeded_segments_alpha: f64) -> Self {
         self.seeded_segments_alpha = seeded_segments_alpha;
         self
     }
 
     pub fn with_minimal_relative_segment_length(
-        &mut self,
+        mut self,
         minimal_relative_segment_length: f64,
-    ) -> &mut Self {
+    ) -> Self {
         self.minimal_relative_segment_length = minimal_relative_segment_length;
         self
     }

@@ -67,8 +67,10 @@ impl Segmentation {
             SegmentationType::WBS => {
                 let mut rng = StdRng::seed_from_u64(control.seed as u64);
                 let dist = Uniform::from(0..(self.n + 1));
+
                 let mut left: usize;
                 let mut right: usize;
+
                 while self.segments.len() < control.number_of_wild_segments {
                     left = dist.sample(&mut rng);
                     right = dist.sample(&mut rng);
@@ -96,8 +98,7 @@ mod tests {
         #[case] segmentation_type: SegmentationType,
         #[case] expected: Vec<(usize, usize)>,
     ) {
-        let mut control = Control::default();
-        control
+        let control = Control::default()
             .with_number_of_wild_segments(5)
             .with_minimal_relative_segment_length(0.2);
         let mut segmentation = Segmentation::new(segmentation_type, n);

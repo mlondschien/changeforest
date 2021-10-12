@@ -10,6 +10,11 @@ impl<T> Gain for ClassifierGain<T>
 where
     T: Classifier,
 {
+    /// Total number of observations.
+    fn n(&self) -> usize {
+        self.classifier.n()
+    }
+
     /// Return classifier-likelihood based gain when splitting segment `[start, stop)`
     /// at `split`.
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
@@ -44,10 +49,6 @@ where
             .accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
 
         gain + likelihoods.slice(s![1, ..]).sum()
-    }
-
-    fn n(&self) -> usize {
-        self.classifier.n()
     }
 
     fn is_significant(&self, start: usize, stop: usize, split: usize, _: f64) -> bool {
