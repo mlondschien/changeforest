@@ -6,11 +6,7 @@ use crate::optimizer::{GridSearch, TwoStepSearch};
 use ndarray;
 
 pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str) -> Vec<usize> {
-    let control = Control {
-        minimal_gain_to_split: 0.1,
-        minimal_relative_segment_length: 0.1,
-        alpha: 0.05,
-    };
+    let control = Control::default();
 
     let mut binary_segmentation = BinarySegmentationTree::new(X, control);
 

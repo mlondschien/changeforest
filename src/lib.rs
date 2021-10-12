@@ -6,6 +6,8 @@ mod classifier;
 mod control;
 mod gain;
 mod optimizer;
+mod segmentation;
+
 pub use classifier::Classifier;
 pub use control::Control;
 pub use gain::Gain;
