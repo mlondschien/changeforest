@@ -29,7 +29,7 @@ impl<'a> Segmentation<'a> {
         segmentation
     }
 
-    pub fn generate_segments(&self) {
+    fn generate_segments(&self) {
         let mut segments = vec![];
         match self.segmentation_type {
             SegmentationType::BS => (),
@@ -135,21 +135,19 @@ mod tests {
     #[rstest]
     #[case(SegmentationType::BS, vec![])]
     #[case(SegmentationType::SBS, vec![
-        (0, 71, 17, 35.5),
-        (14, 85, 31, 35.5),
-        (29, 100, 46, 35.5),
-        (0, 50, 12, 25.0),
-        (12, 62, 24, 25.0),
-        (25, 75, 37, 25.0),
-        (37, 87, 49, 25.0),
-        (50, 100, 62, 25.0)
+        (0, 71, 17, 710.0),
+        (14, 85, 31, 1704.0),
+        (29, 100, 46, 2769.0),
+        (0, 51, 12, 510.0),
+        (24, 75, 36, 1734.0),
+        (49, 100, 61, 3009.0)
     ])]
     #[case(SegmentationType::WBS, vec![
-        (73, 78, 74, 2.5),
-        (2, 59, 16, 28.5),
-        (26, 77, 38, 25.5),
-        (22, 80, 36, 29.0),
-        (75, 97, 80, 11.0)
+        (73, 78, 74, 415.0),
+        (2, 59, 16, 684.0),
+        (26, 77, 38, 1836.0),
+        (22, 80, 36, 1856.0),
+        (75, 97, 80, 1870.0)
     ])]
     fn test_generate_segments(
         #[case] segmentation_type: SegmentationType,
@@ -161,7 +159,18 @@ mod tests {
         let optimizer = testing::TrivialOptimizer { control: &control };
         let segmentation = Segmentation::new(segmentation_type, &optimizer);
 
-        segmentation.generate_segments();
         assert_eq!(*segmentation.segments.borrow(), expected);
+    }
+
+    #[rstest]
+    #[case(SegmentationType::BS, (25, 1000.))]
+    #[case(SegmentationType::SBS, (61, 3009.))]
+    #[case(SegmentationType::WBS, (60, 2900.))]
+    fn test_optimizer(#[case] segmentation_type: SegmentationType, #[case] expected: (usize, f64)) {
+        let control = Control::default();
+        let optimizer = testing::TrivialOptimizer { control: &control };
+        let segmentation = Segmentation::new(segmentation_type, &optimizer);
+
+        assert_eq!(segmentation.find_best_split(0, 100).unwrap(), expected);
     }
 }

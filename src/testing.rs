@@ -55,7 +55,10 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &'static str> {
-        Ok(((3 * start + stop) / 4, (stop - start) as f64 / 2.))
+        Ok((
+            (3 * start + stop) / 4,
+            ((stop - start) * (start + 10)) as f64,
+        ))
     }
 
     #[allow(unused_variables)]

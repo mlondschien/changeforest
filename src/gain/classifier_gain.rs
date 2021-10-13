@@ -45,8 +45,7 @@ where
             &(&likelihoods.slice(s![0, ..(stop - start - 1)])
                 - &likelihoods.slice(s![1, ..(stop - start - 1)])),
         );
-        gain.slice_mut(s![start..stop])
-            .accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
+        gain.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
 
         gain + likelihoods.slice(s![1, ..]).sum()
     }

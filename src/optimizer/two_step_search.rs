@@ -23,7 +23,6 @@ where
         if split_candidates.is_empty() {
             return Err("Segment too small.");
         }
-
         let gain = self
             .gain
             .gain_approx(start, stop, (start + stop) / 2, &split_candidates);
@@ -39,7 +38,7 @@ where
 
         let gain = self
             .gain
-            .gain_approx(start, stop, best_split + start, &split_candidates);
+            .gain_approx(start, stop, best_split, &split_candidates);
 
         max_gain = -f64::INFINITY;
         for index in &split_candidates {
