@@ -6,12 +6,20 @@ use crate::optimizer::{GridSearch, TwoStepSearch};
 use crate::segmentation::{Segmentation, SegmentationType};
 use ndarray;
 
-pub fn hdcd(
-    X: &ndarray::ArrayView2<'_, f64>,
-    method: &str,
-    segmentation_type: SegmentationType,
-) -> Vec<usize> {
+pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &str) -> Vec<usize> {
     let control = Control::default();
+
+    let segmentation_type_enum: SegmentationType;
+
+    if segmentation_type == "bs" {
+        segmentation_type_enum = SegmentationType::BS;
+    } else if segmentation_type == "sbs" {
+        segmentation_type_enum = SegmentationType::SBS;
+    } else if segmentation_type == "wbs" {
+        segmentation_type_enum = SegmentationType::WBS;
+    } else {
+        panic!("segmentation_type must be one of 'bs', 'sbs', 'wbs'")
+    }
 
     if method == "knn" {
         let classifier = kNN::new(X);
@@ -20,7 +28,7 @@ pub fn hdcd(
             gain,
             control: &control,
         };
-        let segmentation = Segmentation::new(segmentation_type, &optimizer);
+        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
         binary_segmentation.grow();
         binary_segmentation.split_points()
@@ -30,7 +38,7 @@ pub fn hdcd(
             gain,
             control: &control,
         };
-        let segmentation = Segmentation::new(segmentation_type, &optimizer);
+        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
         binary_segmentation.grow();
         binary_segmentation.split_points()
