@@ -11,6 +11,7 @@ NULL
 #' Find change points in a time series.
 #' @param X Numerical matrix with time series.
 #' @param method Either 'knn' or 'change_in_mean'.
+#' @param segmentation_type Either 'bs', 'sbs' or 'wbs'.
 #' @export
-hdcd <- function(X, method) .Call(wrap__hdcd, X, method)
+hdcd <- function(X, method, segmentation_type) .Call(wrap__hdcd, X, method, segmentation_type)
 
