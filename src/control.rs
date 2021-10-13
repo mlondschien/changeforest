@@ -15,7 +15,7 @@ impl Control {
             minimal_gain_to_split: 0.,
             alpha: 0.05,
             number_of_wild_segments: 100,
-            seeded_segments_alpha: 0.70710678118, // 1 / sqrt(2)
+            seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)
             seed: 0,
         }
     }

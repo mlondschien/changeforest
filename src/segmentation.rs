@@ -20,14 +20,16 @@ pub struct Segmentation<'a> {
 
 impl<'a> Segmentation<'a> {
     pub fn new(segmentation_type: SegmentationType, optimizer: &'a dyn Optimizer) -> Self {
-        Segmentation {
+        let segmentation = Segmentation {
             segmentation_type,
             segments: RefCell::new(vec![]),
             optimizer,
-        }
+        };
+        segmentation.generate_segments();
+        segmentation
     }
 
-    pub fn generate_segments(&mut self, optimizer: &dyn Optimizer) {
+    pub fn generate_segments(&self) {
         let mut segments = vec![];
         match self.segmentation_type {
             SegmentationType::BS => (),
@@ -51,7 +53,7 @@ impl<'a> Segmentation<'a> {
                         start = (segment_id as f64 * segment_step) as usize;
                         stop = start + segment_length.ceil() as usize;
                         let (best_split, max_gain) =
-                            optimizer.find_best_split(start, stop).unwrap();
+                            self.optimizer.find_best_split(start, stop).unwrap();
                         segments.push((start, stop, best_split, max_gain));
                     }
                 }
@@ -67,7 +69,9 @@ impl<'a> Segmentation<'a> {
                     start = dist.sample(&mut rng);
                     stop = dist.sample(&mut rng);
                     if start < stop {
-                        if let Ok((best_split, max_gain)) = optimizer.find_best_split(start, stop) {
+                        if let Ok((best_split, max_gain)) =
+                            self.optimizer.find_best_split(start, stop)
+                        {
                             segments.push((start, stop, best_split, max_gain))
                         }
                     }
@@ -81,7 +85,7 @@ impl<'a> Segmentation<'a> {
 impl<'a> Optimizer for Segmentation<'a> {
     fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str> {
         match self.optimizer.find_best_split(start, stop) {
-            Err(e) => return Err(e),
+            Err(e) => Err(e),
             Ok((segment_best_split, segment_max_gain)) => {
                 let mut max_gain: f64 = segment_max_gain;
                 let mut best_split: usize = segment_best_split;
@@ -155,9 +159,9 @@ mod tests {
             .with_number_of_wild_segments(5)
             .with_minimal_relative_segment_length(0.2);
         let optimizer = testing::TrivialOptimizer { control: &control };
-        let mut segmentation = Segmentation::new(segmentation_type, &optimizer);
+        let segmentation = Segmentation::new(segmentation_type, &optimizer);
 
-        segmentation.generate_segments(&optimizer);
+        segmentation.generate_segments();
         assert_eq!(*segmentation.segments.borrow(), expected);
     }
 }
