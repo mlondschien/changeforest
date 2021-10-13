@@ -1,4 +1,4 @@
-use crate::Gain;
+use crate::{Control, Gain, Optimizer};
 use ndarray::{s, Array, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
@@ -42,6 +42,32 @@ impl<'a> Gain for ChangeInMean<'a> {
 
     fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
         max_gain > 0.1
+    }
+}
+
+pub struct TrivialOptimizer<'a> {
+    pub control: &'a Control,
+}
+
+impl<'a> Optimizer for TrivialOptimizer<'a> {
+    fn n(&self) -> usize {
+        100
+    }
+
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &'static str> {
+        Ok((
+            (3 * start + stop) / 4,
+            ((stop - start) * (start + 10)) as f64,
+        ))
+    }
+
+    #[allow(unused_variables)]
+    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
+        stop <= 50
+    }
+
+    fn control(&self) -> &Control {
+        self.control
     }
 }
 

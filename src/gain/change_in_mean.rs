@@ -7,7 +7,6 @@ pub struct ChangeInMean<'a, 'b> {
 }
 
 impl<'a, 'b> ChangeInMean<'a, 'b> {
-    #[allow(dead_code)]
     pub fn new(X: &'a ndarray::ArrayView2<'b, f64>) -> ChangeInMean<'a, 'b> {
         ChangeInMean {
             X,
@@ -55,7 +54,7 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
                 - s * X_cumsum[[split, idx]])
             .powi(2)
         }
-        result / (s * s_1 * s_2 * (self.X.nrows() as f64))
+        result / (s * s_1 * s_2 * (self.n() as f64))
     }
 
     fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {

@@ -59,6 +59,10 @@ impl<'a, 'b> kNN<'a, 'b> {
 }
 
 impl<'a, 'b> Classifier for kNN<'a, 'b> {
+    fn n(&self) -> usize {
+        self.X.nrows()
+    }
+
     fn predict(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
         let ordering = self.get_ordering();
         let segment_length = stop - start;
@@ -83,15 +87,12 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
 
         predictions
     }
-
-    fn n(&self) -> usize {
-        self.X.nrows()
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::control;
     use crate::gain::{ClassifierGain, Gain};
     use crate::optimizer::{Optimizer, TwoStepSearch};
     use crate::testing;
@@ -170,23 +171,19 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 100, (0..100).collect(), 40)]
-    fn test_two_step_search(
-        #[case] start: usize,
-        #[case] stop: usize,
-        #[case] split_candidates: Vec<usize>,
-        #[case] expected: usize,
-    ) {
+    #[case(0, 100, 40)]
+    fn test_two_step_search(#[case] start: usize, #[case] stop: usize, #[case] expected: usize) {
         let X = testing::array();
         let X_view = X.view();
 
         let classifier = kNN::new(&X_view);
         let gain = ClassifierGain { classifier };
-        let optimizer = TwoStepSearch { gain };
+        let control = control::Control::default().with_minimal_relative_segment_length(0.);
+        let optimizer = TwoStepSearch {
+            gain,
+            control: &control,
+        };
 
-        assert_eq!(
-            expected,
-            optimizer.find_best_split(start, stop, &split_candidates).0
-        );
+        assert_eq!(expected, optimizer.find_best_split(start, stop).unwrap().0);
     }
 }

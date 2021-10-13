@@ -1,26 +1,35 @@
-use crate::{Gain, Optimizer};
+use crate::{Control, Gain, Optimizer};
 
-pub struct TwoStepSearch<T: Gain> {
+pub struct TwoStepSearch<'a, T: Gain> {
     pub gain: T,
+    pub control: &'a Control,
 }
 
-impl<T> Optimizer for TwoStepSearch<T>
+impl<'a, T> Optimizer for TwoStepSearch<'a, T>
 where
     T: Gain,
 {
-    fn find_best_split(
-        &self,
-        start: usize,
-        stop: usize,
-        split_candidates: &[usize],
-    ) -> (usize, f64) {
+    fn n(&self) -> usize {
+        self.gain.n()
+    }
+
+    fn control(&self) -> &Control {
+        self.control
+    }
+
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str> {
+        let split_candidates = self.split_candidates(start, stop);
+
+        if split_candidates.is_empty() {
+            return Err("Segment too small.");
+        }
         let gain = self
             .gain
-            .gain_approx(start, stop, (start + stop) / 2, split_candidates);
+            .gain_approx(start, stop, (start + stop) / 2, &split_candidates);
         let mut best_split = 0;
         let mut max_gain = -f64::INFINITY;
 
-        for index in split_candidates {
+        for index in &split_candidates {
             if gain[*index - start] > max_gain {
                 best_split = *index;
                 max_gain = gain[*index - start];
@@ -29,17 +38,17 @@ where
 
         let gain = self
             .gain
-            .gain_approx(start, stop, best_split + start, split_candidates);
+            .gain_approx(start, stop, best_split, &split_candidates);
 
         max_gain = -f64::INFINITY;
-        for index in split_candidates {
+        for index in &split_candidates {
             if gain[*index - start] > max_gain {
                 best_split = *index;
                 max_gain = gain[*index - start];
             }
         }
 
-        (best_split, max_gain)
+        Ok((best_split, max_gain))
     }
 
     fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
@@ -55,7 +64,6 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(0, 0, 0)]
     #[case(0, 7, 2)]
     #[case(1, 7, 4)]
     #[case(2, 7, 4)]
@@ -84,11 +92,14 @@ mod tests {
         assert_eq!(X_view.shape(), &[7, 2]);
 
         let gain = testing::ChangeInMean::new(&X_view);
-        let grid_search = TwoStepSearch { gain };
+        let control = Control::default().with_minimal_relative_segment_length(0.);
+        let grid_search = TwoStepSearch {
+            gain,
+            control: &control,
+        };
 
-        let split_points: Vec<usize> = (start..stop).collect();
         assert_eq!(
-            grid_search.find_best_split(start, stop, &split_points).0,
+            grid_search.find_best_split(start, stop).unwrap().0,
             expected
         );
     }
