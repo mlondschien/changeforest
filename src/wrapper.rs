@@ -57,16 +57,13 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case("knn", SegmentationType::BS)]
-    #[case("knn", SegmentationType::WBS)]
-    #[case("knn", SegmentationType::SBS)]
-    #[case("change_in_mean", SegmentationType::BS)]
-    #[case("change_in_mean", SegmentationType::WBS)]
-    #[case("change_in_mean", SegmentationType::SBS)]
-    fn test_binary_segmentation_wrapper(
-        #[case] method: &str,
-        #[case] segmentation_type: SegmentationType,
-    ) {
+    #[case("knn", "bs")]
+    #[case("knn", "wbs")]
+    #[case("knn", "sbs")]
+    #[case("change_in_mean", "bs")]
+    #[case("change_in_mean", "wbs")]
+    #[case("change_in_mean", "sbs")]
+    fn test_binary_segmentation_wrapper(#[case] method: &str, #[case] segmentation_type: &str) {
         let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
