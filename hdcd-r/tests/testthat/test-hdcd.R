@@ -5,10 +5,13 @@ test_that("hdcd_iris", {
 
     expect_equal(hdcd(X, "knn", "bs"), c(50, 100))
     expect_equal(hdcd(X, "change_in_mean", "bs"), c(50, 100))
+    expect_equal(hdcd(X, "random_forest", "bs"), c(50, 100))
 
     expect_equal(hdcd(X, "knn", "sbs"), c(50, 100))
     expect_equal(hdcd(X, "change_in_mean", "sbs"), c(50, 100))
+    expect_equal(hdcd(X, "random_forest", "sbs"), c(50, 100))
         
     expect_equal(hdcd(X, "knn", "wbs"), c(50, 100))
     expect_equal(hdcd(X, "change_in_mean", "wbs"), c(50, 100))
+    expect_equal(hdcd(X, "random_forest", "wbs"), c(50, 100))
 })

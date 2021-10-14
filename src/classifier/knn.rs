@@ -3,14 +3,12 @@ use ndarray::{s, Array1, Array2, ArrayView2, Axis};
 use std::cell::{Ref, RefCell};
 
 #[allow(non_camel_case_types)]
-#[allow(dead_code)]
 pub struct kNN<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
     ordering: RefCell<Option<Array2<usize>>>,
 }
 
 impl<'a, 'b> kNN<'a, 'b> {
-    #[allow(dead_code)]
     pub fn new(X: &'a ArrayView2<'b, f64>) -> kNN<'a, 'b> {
         kNN {
             X,
