@@ -1,5 +1,5 @@
 use crate::binary_segmentation::BinarySegmentationTree;
-use crate::classifier::kNN;
+use crate::classifier::{kNN, RandomForest};
 use crate::control::Control;
 use crate::gain::{ChangeInMean, ClassifierGain};
 use crate::optimizer::{GridSearch, TwoStepSearch};
@@ -24,7 +24,18 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
     if method == "knn" {
         let classifier = kNN::new(X);
         let gain = ClassifierGain { classifier };
-        let optimizer = GridSearch {
+        let optimizer = TwoStepSearch {
+            gain,
+            control: &control,
+        };
+        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
+        let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
+        binary_segmentation.grow();
+        binary_segmentation.split_points()
+    } else if method == "random_forest" {
+        let classifier = RandomForest::new(X);
+        let gain = ClassifierGain { classifier };
+        let optimizer = TwoStepSearch {
             gain,
             control: &control,
         };
@@ -34,7 +45,7 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
         binary_segmentation.split_points()
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
-        let optimizer = TwoStepSearch {
+        let optimizer = GridSearch {
             gain,
             control: &control,
         };
@@ -44,7 +55,7 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
         binary_segmentation.split_points()
     } else {
         panic!(
-            "method should be one of 'knn' or 'change_in_mean'. Got {}",
+            "method should be one of 'knn', 'random_forest' or 'change_in_mean'. Got {}",
             method
         );
     }
@@ -63,6 +74,9 @@ mod tests {
     #[case("change_in_mean", "bs")]
     #[case("change_in_mean", "wbs")]
     #[case("change_in_mean", "sbs")]
+    #[case("random_forest", "bs")]
+    #[case("random_forest", "wbs")]
+    #[case("random_forest", "sbs")]
     fn test_binary_segmentation_wrapper(#[case] method: &str, #[case] segmentation_type: &str) {
         let X = testing::array();
 

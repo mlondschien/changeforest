@@ -31,10 +31,10 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
             &X_slice,
             &y,
             RandomForestRegressorParameters {
-                max_depth: None,
+                max_depth: Some(4),
                 min_samples_leaf: 1,
                 min_samples_split: 2,
-                n_trees: 1000,
+                n_trees: 100,
                 m: Option::None,
                 keep_samples: true,
             },
