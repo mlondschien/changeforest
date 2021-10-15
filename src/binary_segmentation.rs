@@ -3,12 +3,12 @@ use ndarray;
 
 #[allow(dead_code)]
 pub struct BinarySegmentationTree<'a> {
-    start: usize,
-    stop: usize,
-    n: usize,
-    split: Option<usize>,
-    left: Option<Box<BinarySegmentationTree<'a>>>,
-    right: Option<Box<BinarySegmentationTree<'a>>>,
+    pub start: usize,
+    pub stop: usize,
+    pub n: usize,
+    pub split: Option<usize>,
+    pub left: Option<Box<BinarySegmentationTree<'a>>>,
+    pub right: Option<Box<BinarySegmentationTree<'a>>>,
     optimizer: &'a dyn Optimizer,
 }
 
@@ -73,15 +73,49 @@ impl<'a> BinarySegmentationTree<'a> {
             self.split = Some(best_split);
         }
     }
+}
+
+pub struct BinarySegmentationResult {
+    start: usize,
+    stop: usize,
+    best_split: Option<usize>,
+    left: Option<Box<BinarySegmentationResult>>,
+    right: Option<Box<BinarySegmentationResult>>,
+}
+
+impl BinarySegmentationResult {
+    pub fn from_tree(tree: &BinarySegmentationTree) -> Self {
+        let left = match &tree.left {
+            Some(tree) => Some(Box::new(BinarySegmentationResult::from_tree(&tree))),
+            None => None,
+        };
+
+        let right = match &tree.right {
+            Some(tree) => Some(Box::new(BinarySegmentationResult::from_tree(&tree))),
+            None => None,
+        };
+
+        BinarySegmentationResult {
+            start: tree.start,
+            stop: tree.stop,
+            best_split: tree.split,
+            left: left,
+            right: right,
+        }
+    }
 
     pub fn split_points(&self) -> Vec<usize> {
-        if let Some(split_point) = self.split {
-            let out = self.left.as_ref().unwrap().split_points().into_iter();
-            let out = out.chain(vec![split_point].into_iter());
-            let out = out.chain(self.right.as_ref().unwrap().split_points().into_iter());
-            out.collect()
-        } else {
-            vec![]
+        match self.best_split {
+            Some(split_point) => self
+                .left
+                .as_ref()
+                .unwrap()
+                .split_points()
+                .into_iter()
+                .chain(vec![split_point].into_iter())
+                .chain(self.right.as_ref().unwrap().split_points().into_iter())
+                .collect(),
+            None => vec![],
         }
     }
 }
@@ -111,6 +145,42 @@ mod tests {
         binary_segmentation.grow();
 
         assert_eq!(binary_segmentation.split, Some(25));
-        assert_eq!(binary_segmentation.split_points(), vec![25, 40, 80]);
+    }
+
+    #[test]
+    fn test_binary_segmentation_result() {
+        let X = testing::array();
+        let X_view = X.view();
+
+        assert_eq!(X_view.shape(), &[100, 5]);
+
+        let control = Control::default();
+        let gain = testing::ChangeInMean::new(&X_view);
+        let optimizer = GridSearch {
+            gain,
+            control: &control,
+        };
+        let mut tree = BinarySegmentationTree::new(&X_view, &optimizer);
+
+        tree.grow();
+
+        let result = BinarySegmentationResult::from_tree(&tree);
+
+        assert_eq!(result.split_points(), vec![25, 40, 80]);
+        assert_eq!(result.start, 0);
+        assert_eq!(result.stop, 100);
+        assert_eq!(result.best_split, Some(25));
+
+        let right = result.right.unwrap();
+        assert_eq!(right.split_points(), vec![40, 80]);
+        assert_eq!(right.start, 25);
+        assert_eq!(right.stop, 100);
+        assert_eq!(right.best_split, Some(40));
+
+        let left = result.left.unwrap();
+        assert_eq!(left.split_points(), vec![]);
+        assert_eq!(left.start, 0);
+        assert_eq!(left.stop, 25);
+        assert_eq!(left.best_split, None);
     }
 }
