@@ -1,5 +1,4 @@
 use crate::Optimizer;
-use ndarray;
 
 #[allow(dead_code)]
 pub struct BinarySegmentationTree<'a> {
@@ -97,15 +96,15 @@ pub struct BinarySegmentationResult {
 
 impl BinarySegmentationResult {
     pub fn from_tree(tree: &BinarySegmentationTree) -> Self {
-        let left = match &tree.left {
-            Some(tree) => Some(Box::new(BinarySegmentationResult::from_tree(&tree))),
-            None => None,
-        };
+        let left = tree
+            .left
+            .as_ref()
+            .map(|tree| Box::new(BinarySegmentationResult::from_tree(tree)));
 
-        let right = match &tree.right {
-            Some(tree) => Some(Box::new(BinarySegmentationResult::from_tree(&tree))),
-            None => None,
-        };
+        let right = tree
+            .right
+            .as_ref()
+            .map(|tree| Box::new(BinarySegmentationResult::from_tree(tree)));
 
         BinarySegmentationResult {
             start: tree.start,
@@ -113,8 +112,8 @@ impl BinarySegmentationResult {
             best_split: tree.split,
             max_gain: tree.max_gain,
             is_significant: tree.is_significant,
-            left: left,
-            right: right,
+            left,
+            right,
         }
     }
 
