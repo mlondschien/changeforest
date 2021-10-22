@@ -11,7 +11,7 @@ fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         method: String,
         segmentation_type: String,
     ) -> PyResult<Vec<usize>> {
-        Ok(wrapper::hdcd(&X.as_array(), &method, &segmentation_type))
+        Ok(wrapper::hdcd(&X.as_array(), &method, &segmentation_type).split_points())
     }
     Ok(())
 }

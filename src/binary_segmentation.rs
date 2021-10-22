@@ -76,11 +76,11 @@ impl<'a> BinarySegmentationTree<'a> {
 }
 
 pub struct BinarySegmentationResult {
-    start: usize,
-    stop: usize,
-    best_split: Option<usize>,
-    left: Option<Box<BinarySegmentationResult>>,
-    right: Option<Box<BinarySegmentationResult>>,
+    pub start: usize,
+    pub stop: usize,
+    pub best_split: Option<usize>,
+    pub left: Option<Box<BinarySegmentationResult>>,
+    pub right: Option<Box<BinarySegmentationResult>>,
 }
 
 impl BinarySegmentationResult {
