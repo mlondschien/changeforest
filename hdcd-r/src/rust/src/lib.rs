@@ -12,6 +12,7 @@ struct MyBinarySegmentationResult {
     pub result: BinarySegmentationResult,
 }
 
+// https://github.com/extendr/extendr/issues/308
 impl From<MyBinarySegmentationResult> for Robj {
     fn from(my_result: MyBinarySegmentationResult) -> Self {
         let left: Robj = match my_result.result.left {
