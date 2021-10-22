@@ -4,18 +4,19 @@
 // BS, SBS and WBS
 #![allow(clippy::upper_case_acronyms)]
 
-mod classifier;
+mod binary_segmentation;
+pub mod classifier;
 mod control;
 mod gain;
-mod optimizer;
+pub mod optimizer;
 mod segmentation;
 
+pub use binary_segmentation::{BinarySegmentationResult, BinarySegmentationTree};
 pub use classifier::Classifier;
 pub use control::Control;
-pub use gain::Gain;
+pub use gain::{ClassifierGain, Gain};
 pub use optimizer::Optimizer;
-
-pub mod binary_segmentation;
+pub use segmentation::{Segmentation, SegmentationType};
 pub mod utils;
 pub mod wrapper;
 

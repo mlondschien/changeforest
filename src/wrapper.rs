@@ -1,15 +1,20 @@
-use crate::binary_segmentation::BinarySegmentationTree;
 use crate::classifier::{kNN, RandomForest};
 use crate::control::Control;
 use crate::gain::{ChangeInMean, ClassifierGain};
 use crate::optimizer::{GridSearch, TwoStepSearch};
 use crate::segmentation::{Segmentation, SegmentationType};
+use crate::{BinarySegmentationResult, BinarySegmentationTree};
 use ndarray;
 
-pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &str) -> Vec<usize> {
+pub fn hdcd(
+    X: &ndarray::ArrayView2<'_, f64>,
+    method: &str,
+    segmentation_type: &str,
+) -> BinarySegmentationResult {
     let control = Control::default();
 
     let segmentation_type_enum: SegmentationType;
+    let mut tree: BinarySegmentationTree;
 
     if segmentation_type == "bs" {
         segmentation_type_enum = SegmentationType::BS;
@@ -29,9 +34,9 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
             control: &control,
         };
         let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
-        binary_segmentation.grow();
-        binary_segmentation.split_points()
+        tree = BinarySegmentationTree::new(X, &segmentation);
+        tree.grow();
+        BinarySegmentationResult::from_tree(&tree)
     } else if method == "random_forest" {
         let classifier = RandomForest::new(X);
         let gain = ClassifierGain { classifier };
@@ -40,9 +45,9 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
             control: &control,
         };
         let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
-        binary_segmentation.grow();
-        binary_segmentation.split_points()
+        tree = BinarySegmentationTree::new(X, &segmentation);
+        tree.grow();
+        BinarySegmentationResult::from_tree(&tree)
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
         let optimizer = GridSearch {
@@ -50,9 +55,9 @@ pub fn hdcd(X: &ndarray::ArrayView2<'_, f64>, method: &str, segmentation_type: &
             control: &control,
         };
         let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        let mut binary_segmentation = BinarySegmentationTree::new(X, &segmentation);
-        binary_segmentation.grow();
-        binary_segmentation.split_points()
+        tree = BinarySegmentationTree::new(X, &segmentation);
+        tree.grow();
+        BinarySegmentationResult::from_tree(&tree)
     } else {
         panic!(
             "method should be one of 'knn', 'random_forest' or 'change_in_mean'. Got {}",
@@ -81,6 +86,9 @@ mod tests {
         let X = testing::array();
 
         assert_eq!(X.shape(), &[100, 5]);
-        assert_eq!(hdcd(&X.view(), method, segmentation_type), vec![25, 40, 80]);
+        assert_eq!(
+            hdcd(&X.view(), method, segmentation_type).split_points(),
+            vec![25, 40, 80]
+        );
     }
 }

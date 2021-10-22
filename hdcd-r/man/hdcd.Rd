@@ -4,12 +4,14 @@
 \alias{hdcd}
 \title{Find change points in a time series.}
 \usage{
-hdcd(X, method)
+hdcd(X, method, segmentation)
 }
 \arguments{
 \item{X}{Numerical matrix with time series.}
 
-\item{method}{Either 'knn' or 'change_in_mean'.}
+\item{method}{Either 'knn','change_in_mean' of 'random_forest'.}
+
+\item{segmentation_type}{Either 'bs', 'sbs' or 'wbs'.}
 }
 \description{
 Find change points in a time series.
