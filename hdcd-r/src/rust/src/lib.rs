@@ -35,11 +35,21 @@ impl From<MyBinarySegmentationResult> for Robj {
             r!(my_result.result.start as i32),
             r!(my_result.result.stop as i32),
             r!(my_result.result.best_split.map(|u| u as i32)),
+            r!(my_result.result.max_gain),
+            r!(my_result.result.is_significant),
             r!(left),
             r!(right),
         ])
         .into_robj()
-        .set_names(&["start", "stop", "best_split", "left", "right"])
+        .set_names(&[
+            "start",
+            "stop",
+            "best_split",
+            "max_gain",
+            "is_significant",
+            "left",
+            "right",
+        ])
         .expect("From<Tree> failed")
     }
 }
