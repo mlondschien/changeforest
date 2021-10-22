@@ -7,6 +7,8 @@ pub struct BinarySegmentationTree<'a> {
     pub stop: usize,
     pub n: usize,
     pub split: Option<usize>,
+    pub max_gain: Option<f64>,
+    pub is_significant: bool,
     pub left: Option<Box<BinarySegmentationTree<'a>>>,
     pub right: Option<Box<BinarySegmentationTree<'a>>>,
     optimizer: &'a dyn Optimizer,
@@ -23,6 +25,8 @@ impl<'a> BinarySegmentationTree<'a> {
             stop: X.nrows(),
             n: X.nrows(),
             split: Option::None,
+            max_gain: Option::None,
+            is_significant: false,
             left: Option::None,
             right: Option::None,
             optimizer,
@@ -35,6 +39,8 @@ impl<'a> BinarySegmentationTree<'a> {
             stop: split,
             n: self.n,
             split: Option::None,
+            max_gain: Option::None,
+            is_significant: false,
             left: Option::None,
             right: Option::None,
             optimizer: self.optimizer,
@@ -47,6 +53,8 @@ impl<'a> BinarySegmentationTree<'a> {
             stop: self.stop,
             n: self.n,
             split: Option::None,
+            max_gain: Option::None,
+            is_significant: false,
             left: Option::None,
             right: Option::None,
             optimizer: self.optimizer,
@@ -55,10 +63,14 @@ impl<'a> BinarySegmentationTree<'a> {
 
     pub fn grow(&mut self) {
         if let Ok((best_split, max_gain)) = self.optimizer.find_best_split(self.start, self.stop) {
-            if !self
+            self.split = Some(best_split);
+            self.max_gain = Some(max_gain);
+
+            self.is_significant = self
                 .optimizer
-                .is_significant(self.start, self.stop, best_split, max_gain)
-            {
+                .is_significant(self.start, self.stop, best_split, max_gain);
+
+            if !self.is_significant {
                 return;
             }
 
@@ -69,8 +81,6 @@ impl<'a> BinarySegmentationTree<'a> {
             let mut right = self.new_right(best_split);
             right.grow();
             self.right = Some(right);
-
-            self.split = Some(best_split);
         }
     }
 }
@@ -79,6 +89,8 @@ pub struct BinarySegmentationResult {
     pub start: usize,
     pub stop: usize,
     pub best_split: Option<usize>,
+    pub max_gain: Option<f64>,
+    pub is_significant: bool,
     pub left: Option<Box<BinarySegmentationResult>>,
     pub right: Option<Box<BinarySegmentationResult>>,
 }
@@ -99,24 +111,31 @@ impl BinarySegmentationResult {
             start: tree.start,
             stop: tree.stop,
             best_split: tree.split,
+            max_gain: tree.max_gain,
+            is_significant: tree.is_significant,
             left: left,
             right: right,
         }
     }
 
     pub fn split_points(&self) -> Vec<usize> {
-        match self.best_split {
-            Some(split_point) => self
-                .left
-                .as_ref()
-                .unwrap()
-                .split_points()
-                .into_iter()
-                .chain(vec![split_point].into_iter())
-                .chain(self.right.as_ref().unwrap().split_points().into_iter())
-                .collect(),
-            None => vec![],
+        let mut split_points = vec![];
+
+        if let Some(left_boxed) = &self.left {
+            split_points.append(&mut left_boxed.split_points());
         }
+
+        if let Some(best_split) = self.best_split {
+            if self.is_significant {
+                split_points.push(best_split);
+            }
+        }
+
+        if let Some(right_boxed) = &self.right {
+            split_points.append(&mut right_boxed.split_points());
+        }
+
+        split_points
     }
 }
 
@@ -170,17 +189,20 @@ mod tests {
         assert_eq!(result.start, 0);
         assert_eq!(result.stop, 100);
         assert_eq!(result.best_split, Some(25));
+        assert_eq!(result.is_significant, true);
 
         let right = result.right.unwrap();
         assert_eq!(right.split_points(), vec![40, 80]);
         assert_eq!(right.start, 25);
         assert_eq!(right.stop, 100);
         assert_eq!(right.best_split, Some(40));
+        assert_eq!(right.is_significant, true);
 
         let left = result.left.unwrap();
         assert_eq!(left.split_points(), vec![]);
         assert_eq!(left.start, 0);
         assert_eq!(left.stop, 25);
-        assert_eq!(left.best_split, None);
+        assert_eq!(left.best_split, Some(10));
+        assert_eq!(left.is_significant, false);
     }
 }
