@@ -95,6 +95,9 @@ mod tests {
             control: &control,
         };
 
-        assert_eq!(expected, optimizer.find_best_split(start, stop).unwrap().0);
+        assert_eq!(
+            expected,
+            optimizer.find_best_split(start, stop).unwrap().best_split
+        );
     }
 }

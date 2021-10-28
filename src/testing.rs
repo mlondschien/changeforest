@@ -1,5 +1,6 @@
+use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
-use ndarray::{s, Array, Array2, ArrayView2, Axis};
+use ndarray::{s, Array, Array1, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
 use rand::rngs::StdRng;
@@ -54,11 +55,14 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
         100
     }
 
-    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &'static str> {
-        Ok((
-            (3 * start + stop) / 4,
-            ((stop - start) * (start + 10)) as f64,
-        ))
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &'static str> {
+        Ok(OptimizerResult {
+            start,
+            stop,
+            best_split: (3 * start + stop) / 4,
+            max_gain: ((stop - start) * (start + 10)) as f64,
+            gain: Array1::<f64>::zeros(stop - start),
+        })
     }
 
     #[allow(unused_variables)]

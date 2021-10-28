@@ -33,9 +33,9 @@ pub fn hdcd(
             gain,
             control: &control,
         };
-        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        tree = BinarySegmentationTree::new(X, &segmentation);
-        tree.grow();
+        let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
+        tree = BinarySegmentationTree::new(X);
+        tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(&tree)
     } else if method == "random_forest" {
         let classifier = RandomForest::new(X);
@@ -44,9 +44,9 @@ pub fn hdcd(
             gain,
             control: &control,
         };
-        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        tree = BinarySegmentationTree::new(X, &segmentation);
-        tree.grow();
+        let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
+        tree = BinarySegmentationTree::new(X);
+        tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(&tree)
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
@@ -54,9 +54,9 @@ pub fn hdcd(
             gain,
             control: &control,
         };
-        let segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
-        tree = BinarySegmentationTree::new(X, &segmentation);
-        tree.grow();
+        let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
+        tree = BinarySegmentationTree::new(X);
+        tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(&tree)
     } else {
         panic!(

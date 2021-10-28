@@ -1,3 +1,4 @@
+use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
 
 pub struct TwoStepSearch<'a, T: Gain> {
@@ -17,7 +18,7 @@ where
         self.control
     }
 
-    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str> {
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
         let split_candidates = self.split_candidates(start, stop);
 
         if split_candidates.is_empty() {
@@ -48,7 +49,13 @@ where
             }
         }
 
-        Ok((best_split, max_gain))
+        Ok(OptimizerResult {
+            start,
+            stop,
+            best_split,
+            max_gain,
+            gain,
+        })
     }
 
     fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
@@ -99,7 +106,7 @@ mod tests {
         };
 
         assert_eq!(
-            grid_search.find_best_split(start, stop).unwrap().0,
+            grid_search.find_best_split(start, stop).unwrap().best_split,
             expected
         );
     }
