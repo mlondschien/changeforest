@@ -1,24 +1,20 @@
-use crate::Optimizer;
+use crate::Segmentation;
 
 #[allow(dead_code)]
-pub struct BinarySegmentationTree<'a> {
+pub struct BinarySegmentationTree {
     pub start: usize,
     pub stop: usize,
     pub n: usize,
     pub split: Option<usize>,
     pub max_gain: Option<f64>,
     pub is_significant: bool,
-    pub left: Option<Box<BinarySegmentationTree<'a>>>,
-    pub right: Option<Box<BinarySegmentationTree<'a>>>,
-    optimizer: &'a dyn Optimizer,
+    pub left: Option<Box<BinarySegmentationTree>>,
+    pub right: Option<Box<BinarySegmentationTree>>,
 }
 
 #[allow(dead_code)]
-impl<'a> BinarySegmentationTree<'a> {
-    pub fn new(
-        X: &ndarray::ArrayView2<'_, f64>,
-        optimizer: &'a impl Optimizer,
-    ) -> BinarySegmentationTree<'a> {
+impl BinarySegmentationTree {
+    pub fn new(X: &ndarray::ArrayView2<'_, f64>) -> BinarySegmentationTree {
         BinarySegmentationTree {
             start: 0,
             stop: X.nrows(),
@@ -28,11 +24,10 @@ impl<'a> BinarySegmentationTree<'a> {
             is_significant: false,
             left: Option::None,
             right: Option::None,
-            optimizer,
         }
     }
 
-    fn new_left(&self, split: usize) -> Box<BinarySegmentationTree<'a>> {
+    fn new_left(&self, split: usize) -> Box<BinarySegmentationTree> {
         Box::new(BinarySegmentationTree {
             start: self.start,
             stop: split,
@@ -42,11 +37,10 @@ impl<'a> BinarySegmentationTree<'a> {
             is_significant: false,
             left: Option::None,
             right: Option::None,
-            optimizer: self.optimizer,
         })
     }
 
-    fn new_right(&self, split: usize) -> Box<BinarySegmentationTree<'a>> {
+    fn new_right(&self, split: usize) -> Box<BinarySegmentationTree> {
         Box::new(BinarySegmentationTree {
             start: split,
             stop: self.stop,
@@ -56,29 +50,31 @@ impl<'a> BinarySegmentationTree<'a> {
             is_significant: false,
             left: Option::None,
             right: Option::None,
-            optimizer: self.optimizer,
         })
     }
 
-    pub fn grow(&mut self) {
-        if let Ok((best_split, max_gain)) = self.optimizer.find_best_split(self.start, self.stop) {
-            self.split = Some(best_split);
-            self.max_gain = Some(max_gain);
+    pub fn grow(&mut self, segmentation: &mut Segmentation) {
+        if let Ok(optimizer_result) = segmentation.find_best_split(self.start, self.stop) {
+            self.split = Some(optimizer_result.best_split);
+            self.max_gain = Some(optimizer_result.max_gain);
 
-            self.is_significant = self
-                .optimizer
-                .is_significant(self.start, self.stop, best_split, max_gain);
+            self.is_significant = segmentation.is_significant(
+                self.start,
+                self.stop,
+                optimizer_result.best_split,
+                optimizer_result.max_gain,
+            );
 
             if !self.is_significant {
                 return;
             }
 
-            let mut left = self.new_left(best_split);
-            left.grow();
+            let mut left = self.new_left(optimizer_result.best_split);
+            left.grow(segmentation);
             self.left = Some(left);
 
-            let mut right = self.new_right(best_split);
-            right.grow();
+            let mut right = self.new_right(optimizer_result.best_split);
+            right.grow(segmentation);
             self.right = Some(right);
         }
     }
@@ -143,6 +139,7 @@ mod tests {
     use super::super::control::Control;
     use super::*;
     use crate::optimizer::GridSearch;
+    use crate::segmentation::{Segmentation, SegmentationType};
     use crate::testing;
 
     #[test]
@@ -158,9 +155,10 @@ mod tests {
             gain,
             control: &control,
         };
-        let mut binary_segmentation = BinarySegmentationTree::new(&X_view, &optimizer);
+        let mut segmentation = Segmentation::new(SegmentationType::BS, &optimizer);
+        let mut binary_segmentation = BinarySegmentationTree::new(&X_view);
 
-        binary_segmentation.grow();
+        binary_segmentation.grow(&mut segmentation);
 
         assert_eq!(binary_segmentation.split, Some(25));
     }
@@ -178,9 +176,10 @@ mod tests {
             gain,
             control: &control,
         };
-        let mut tree = BinarySegmentationTree::new(&X_view, &optimizer);
+        let mut segmentation = Segmentation::new(SegmentationType::BS, &optimizer);
+        let mut tree = BinarySegmentationTree::new(&X_view);
 
-        tree.grow();
+        tree.grow(&mut segmentation);
 
         let result = BinarySegmentationResult::from_tree(&tree);
 

@@ -1,10 +1,11 @@
+use crate::optimizer::OptimizerResult;
 use crate::Control;
 
 pub trait Optimizer {
     /// Find the element of `split_candidates` to split segment `[start, stop)`.
     ///
     /// Returns a tuple with the best split and the maximal gain.
-    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str>;
+    fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str>;
 
     /// Does a certain split corresponds to a true change point?
     fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
