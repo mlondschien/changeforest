@@ -1,5 +1,5 @@
 use crate::optimizer::OptimizerResult;
-use crate::{Control, Optimizer};
+use crate::Optimizer;
 use rand::{
     distributions::{Distribution, Uniform},
     rngs::StdRng,
@@ -121,7 +121,7 @@ impl<'a> Segmentation<'a> {
 mod tests {
 
     use super::*;
-    use crate::testing;
+    use crate::{testing, Control};
     use rstest::*;
 
     #[rstest]
