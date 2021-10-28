@@ -1,3 +1,4 @@
+use crate::optimizer::OptimizerResult;
 use crate::Segmentation;
 
 #[allow(dead_code)]
@@ -10,6 +11,7 @@ pub struct BinarySegmentationTree {
     pub is_significant: bool,
     pub left: Option<Box<BinarySegmentationTree>>,
     pub right: Option<Box<BinarySegmentationTree>>,
+    optimizer_result: Option<OptimizerResult>,
 }
 
 #[allow(dead_code)]
@@ -24,6 +26,7 @@ impl BinarySegmentationTree {
             is_significant: false,
             left: Option::None,
             right: Option::None,
+            optimizer_result: Option::None,
         }
     }
 
@@ -37,6 +40,7 @@ impl BinarySegmentationTree {
             is_significant: false,
             left: Option::None,
             right: Option::None,
+            optimizer_result: Option::None,
         })
     }
 
@@ -50,6 +54,7 @@ impl BinarySegmentationTree {
             is_significant: false,
             left: Option::None,
             right: Option::None,
+            optimizer_result: Option::None,
         })
     }
 
@@ -76,6 +81,8 @@ impl BinarySegmentationTree {
             let mut right = self.new_right(optimizer_result.best_split);
             right.grow(segmentation);
             self.right = Some(right);
+
+            self.optimizer_result = Some(optimizer_result);
         }
     }
 }
@@ -161,6 +168,11 @@ mod tests {
         binary_segmentation.grow(&mut segmentation);
 
         assert_eq!(binary_segmentation.split, Some(25));
+
+        let optimizer_result = binary_segmentation.optimizer_result.unwrap();
+        assert_eq!(optimizer_result.best_split, 25);
+        assert_eq!(optimizer_result.start, 0);
+        assert_eq!(optimizer_result.stop, 100);
     }
 
     #[test]
