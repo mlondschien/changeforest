@@ -1,5 +1,6 @@
 use crate::optimizer::OptimizerResult;
 use crate::Segmentation;
+use ndarray::Array1;
 
 #[allow(dead_code)]
 pub struct BinarySegmentationTree {
@@ -11,7 +12,7 @@ pub struct BinarySegmentationTree {
     pub is_significant: bool,
     pub left: Option<Box<BinarySegmentationTree>>,
     pub right: Option<Box<BinarySegmentationTree>>,
-    optimizer_result: Option<OptimizerResult>,
+    pub optimizer_result: Option<OptimizerResult>,
 }
 
 #[allow(dead_code)]
@@ -93,21 +94,20 @@ pub struct BinarySegmentationResult {
     pub best_split: Option<usize>,
     pub max_gain: Option<f64>,
     pub is_significant: bool,
+    pub gain: Option<Array1<f64>>,
     pub left: Option<Box<BinarySegmentationResult>>,
     pub right: Option<Box<BinarySegmentationResult>>,
 }
 
 impl BinarySegmentationResult {
-    pub fn from_tree(tree: &BinarySegmentationTree) -> Self {
+    pub fn from_tree(tree: BinarySegmentationTree) -> Self {
         let left = tree
             .left
-            .as_ref()
-            .map(|tree| Box::new(BinarySegmentationResult::from_tree(tree)));
+            .map(|tree| Box::new(BinarySegmentationResult::from_tree(*tree)));
 
         let right = tree
             .right
-            .as_ref()
-            .map(|tree| Box::new(BinarySegmentationResult::from_tree(tree)));
+            .map(|tree| Box::new(BinarySegmentationResult::from_tree(*tree)));
 
         BinarySegmentationResult {
             start: tree.start,
@@ -115,6 +115,7 @@ impl BinarySegmentationResult {
             best_split: tree.split,
             max_gain: tree.max_gain,
             is_significant: tree.is_significant,
+            gain: tree.optimizer_result.map(|result| result.gain),
             left,
             right,
         }
@@ -193,7 +194,7 @@ mod tests {
 
         tree.grow(&mut segmentation);
 
-        let result = BinarySegmentationResult::from_tree(&tree);
+        let result = BinarySegmentationResult::from_tree(tree);
 
         assert_eq!(result.split_points(), vec![25, 40, 80]);
         assert_eq!(result.start, 0);
