@@ -71,17 +71,15 @@ impl BinarySegmentationTree {
                 optimizer_result.max_gain,
             );
 
-            if !self.is_significant {
-                return;
+            if self.is_significant {
+                let mut left = self.new_left(optimizer_result.best_split);
+                left.grow(segmentation);
+                self.left = Some(left);
+
+                let mut right = self.new_right(optimizer_result.best_split);
+                right.grow(segmentation);
+                self.right = Some(right);
             }
-
-            let mut left = self.new_left(optimizer_result.best_split);
-            left.grow(segmentation);
-            self.left = Some(left);
-
-            let mut right = self.new_right(optimizer_result.best_split);
-            right.grow(segmentation);
-            self.right = Some(right);
 
             self.optimizer_result = Some(optimizer_result);
         }
@@ -201,6 +199,7 @@ mod tests {
         assert_eq!(result.stop, 100);
         assert_eq!(result.best_split, Some(25));
         assert_eq!(result.is_significant, true);
+        assert!(result.gain.is_some());
 
         let right = result.right.unwrap();
         assert_eq!(right.split_points(), vec![40, 80]);
@@ -208,6 +207,7 @@ mod tests {
         assert_eq!(right.stop, 100);
         assert_eq!(right.best_split, Some(40));
         assert_eq!(right.is_significant, true);
+        assert!(right.gain.is_some());
 
         let left = result.left.unwrap();
         assert_eq!(left.split_points(), vec![]);
@@ -215,5 +215,6 @@ mod tests {
         assert_eq!(left.stop, 25);
         assert_eq!(left.best_split, Some(10));
         assert_eq!(left.is_significant, false);
+        assert!(left.gain.is_some()); // even though is_significant is false
     }
 }

@@ -31,12 +31,19 @@ impl From<MyBinarySegmentationResult> for Robj {
             None => ().into(),
         };
 
+        // No From<Option<Vec>> for Robj: https://github.com/extendr/extendr/issues/313
+        let gain: Robj = match my_result.result.gain {
+            Some(gain) => gain.to_vec().into(),
+            None => ().into(),
+        };
+
         List::from_values(&[
             r!(my_result.result.start as i32),
             r!(my_result.result.stop as i32),
             r!(my_result.result.best_split.map(|u| u as i32)),
             r!(my_result.result.max_gain),
             r!(my_result.result.is_significant),
+            r!(gain),
             r!(left),
             r!(right),
         ])
@@ -47,6 +54,7 @@ impl From<MyBinarySegmentationResult> for Robj {
             "best_split",
             "max_gain",
             "is_significant",
+            "gain",
             "left",
             "right",
         ])
