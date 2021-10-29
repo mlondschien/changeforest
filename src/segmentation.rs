@@ -104,14 +104,6 @@ impl<'a> Segmentation<'a> {
         }
     }
 
-    // fn control(&self) -> &'a Control {
-    //     self.optimizer.control()
-    // }
-
-    // fn n(&self) -> usize {
-    //     self.optimizer.n()
-    // }
-
     pub fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
         self.optimizer.is_significant(start, stop, split, max_gain)
     }
