@@ -1,10 +1,10 @@
-use crate::{Control, Optimizer};
+use crate::optimizer::OptimizerResult;
+use crate::Optimizer;
 use rand::{
     distributions::{Distribution, Uniform},
     rngs::StdRng,
     SeedableRng,
 };
-use std::cell::RefCell;
 
 pub enum SegmentationType {
     BS,
@@ -13,30 +13,29 @@ pub enum SegmentationType {
 }
 
 pub struct Segmentation<'a> {
-    segmentation_type: SegmentationType,
-    segments: RefCell<Vec<(usize, usize, usize, f64)>>,
+    segments: Vec<OptimizerResult>,
     optimizer: &'a dyn Optimizer,
 }
 
 impl<'a> Segmentation<'a> {
     pub fn new(segmentation_type: SegmentationType, optimizer: &'a dyn Optimizer) -> Self {
-        let segmentation = Segmentation {
-            segmentation_type,
-            segments: RefCell::new(vec![]),
+        Segmentation {
+            segments: Self::get_segments(optimizer, segmentation_type),
             optimizer,
-        };
-        segmentation.generate_segments();
-        segmentation
+        }
     }
 
-    fn generate_segments(&self) {
+    fn get_segments(
+        optimizer: &dyn Optimizer,
+        segmentation_type: SegmentationType,
+    ) -> Vec<OptimizerResult> {
         let mut segments = vec![];
-        match self.segmentation_type {
+        match segmentation_type {
             SegmentationType::BS => (),
             SegmentationType::SBS => {
                 // See Definition 1 of https://arxiv.org/pdf/2002.06633.pdf
-                let n_layers = ((2. * self.control().minimal_relative_segment_length).ln()
-                    / self.control().seeded_segments_alpha.ln())
+                let n_layers = ((2. * optimizer.control().minimal_relative_segment_length).ln()
+                    / optimizer.control().seeded_segments_alpha.ln())
                 .ceil();
                 let mut segment_length: f64;
                 let mut alpha_k: f64;
@@ -45,91 +44,76 @@ impl<'a> Segmentation<'a> {
                 let mut start: usize;
                 let mut stop: usize;
                 for k in 1..(n_layers as i32) {
-                    alpha_k = self.control().seeded_segments_alpha.powi(k);
-                    segment_length = (self.n() as f64) * alpha_k;
+                    alpha_k = optimizer.control().seeded_segments_alpha.powi(k);
+                    segment_length = (optimizer.n() as f64) * alpha_k;
                     n_segments = 2. * (1. / alpha_k).ceil() - 1.;
-                    segment_step = (self.n() as f64 - segment_length) / (n_segments - 1.);
+                    segment_step = (optimizer.n() as f64 - segment_length) / (n_segments - 1.);
                     for segment_id in 0..(n_segments as usize) {
                         start = (segment_id as f64 * segment_step) as usize;
                         stop = start + segment_length.ceil() as usize;
-                        let (best_split, max_gain) =
-                            self.optimizer.find_best_split(start, stop).unwrap();
-                        segments.push((start, stop, best_split, max_gain));
+                        segments.push(optimizer.find_best_split(start, stop).unwrap());
                     }
                 }
             }
             SegmentationType::WBS => {
-                let mut rng = StdRng::seed_from_u64(self.control().seed as u64);
-                let dist = Uniform::from(0..(self.n() + 1));
+                let mut rng = StdRng::seed_from_u64(optimizer.control().seed as u64);
+                let dist = Uniform::from(0..(optimizer.n() + 1));
 
                 let mut start: usize;
                 let mut stop: usize;
 
-                while segments.len() < self.control().number_of_wild_segments {
+                while segments.len() < optimizer.control().number_of_wild_segments {
                     start = dist.sample(&mut rng);
                     stop = dist.sample(&mut rng);
                     if start < stop {
-                        if let Ok((best_split, max_gain)) =
-                            self.optimizer.find_best_split(start, stop)
-                        {
-                            segments.push((start, stop, best_split, max_gain))
+                        if let Ok(optimizer_result) = optimizer.find_best_split(start, stop) {
+                            segments.push(optimizer_result)
                         }
                     }
                 }
             }
         }
-        self.segments.replace(segments);
+        segments
     }
 }
 
-impl<'a> Optimizer for Segmentation<'a> {
-    fn find_best_split(&self, start: usize, stop: usize) -> Result<(usize, f64), &str> {
+impl<'a> Segmentation<'a> {
+    pub fn find_best_split(&mut self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
         match self.optimizer.find_best_split(start, stop) {
             Err(e) => Err(e),
-            Ok((segment_best_split, segment_max_gain)) => {
-                let mut max_gain: f64 = segment_max_gain;
-                let mut best_split: usize = segment_best_split;
+            Ok(optimizer_result) => {
+                let mut idx_opt = self.segments.len();
+                let mut best_gain = optimizer_result.max_gain;
 
-                for (_, _, _best_split, _max_gain) in self
+                for (idx, current_result) in self
                     .segments
-                    .borrow()
                     .iter()
-                    .filter(|(s1, s2, _, _)| (start <= *s1) & (stop >= *s2))
+                    .enumerate()
+                    .filter(|(_, res)| (res.start >= start) & (res.stop <= stop))
                 {
-                    if *_max_gain > max_gain {
-                        max_gain = *_max_gain;
-                        best_split = *_best_split;
+                    if current_result.max_gain > best_gain {
+                        best_gain = current_result.max_gain;
+                        idx_opt = idx
                     }
                 }
 
-                self.segments.borrow_mut().push((
-                    start,
-                    stop,
-                    segment_best_split,
-                    segment_max_gain,
-                ));
-                Ok((best_split, max_gain))
+                self.segments.push(optimizer_result);
+                // swap_remove does not maintain order of items but is O(1)
+                Ok(self.segments.swap_remove(idx_opt))
             }
         }
     }
 
-    fn control(&self) -> &'a Control {
-        self.optimizer.control()
-    }
-
-    fn n(&self) -> usize {
-        self.optimizer.n()
-    }
-
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
+    pub fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
         self.optimizer.is_significant(start, stop, split, max_gain)
     }
 }
+
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    use crate::testing;
+    use crate::{testing, Control};
     use rstest::*;
 
     #[rstest]
@@ -159,7 +143,14 @@ mod tests {
         let optimizer = testing::TrivialOptimizer { control: &control };
         let segmentation = Segmentation::new(segmentation_type, &optimizer);
 
-        assert_eq!(*segmentation.segments.borrow(), expected);
+        for ((start, stop, best_split, max_gain), result) in
+            expected.iter().zip(segmentation.segments)
+        {
+            assert_eq!(*start, result.start);
+            assert_eq!(*stop, result.stop);
+            assert_eq!(*best_split, result.best_split);
+            assert_eq!(*max_gain, result.max_gain);
+        }
     }
 
     #[rstest]
@@ -169,8 +160,9 @@ mod tests {
     fn test_optimizer(#[case] segmentation_type: SegmentationType, #[case] expected: (usize, f64)) {
         let control = Control::default();
         let optimizer = testing::TrivialOptimizer { control: &control };
-        let segmentation = Segmentation::new(segmentation_type, &optimizer);
+        let mut segmentation = Segmentation::new(segmentation_type, &optimizer);
 
-        assert_eq!(segmentation.find_best_split(0, 100).unwrap(), expected);
+        let result = segmentation.find_best_split(0, 100).unwrap();
+        assert_eq!((result.best_split, result.max_gain), expected);
     }
 }
