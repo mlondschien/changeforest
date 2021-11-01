@@ -62,12 +62,6 @@ impl From<MyBinarySegmentationResult> for Robj {
     }
 }
 
-/// Find change points in a time series.
-///
-/// @param X Numerical matrix with time series.
-/// @param method Either 'knn','change_in_mean' of 'random_forest'.
-/// @param segmentation_type Either 'bs', 'sbs' or 'wbs'.
-/// @export
 #[extendr]
 fn hdcd_api(
     X: ndarray::ArrayView2<f64>,
