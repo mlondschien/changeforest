@@ -14,5 +14,5 @@ NULL
 #' @param method Either 'knn','change_in_mean' of 'random_forest'.
 #' @param segmentation_type Either 'bs', 'sbs' or 'wbs'.
 #' @export
-hdcd <- function(X, method, segmentation) .Call(wrap__hdcd, X, method, segmentation)
+hdcd_api <- function(X, method, segmentation) .Call(wrap__hdcd_api, X, method, segmentation)
 
