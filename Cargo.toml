@@ -9,7 +9,7 @@ name = "hdcd"
 [dependencies]
 ndarray = "0.15.3"
 rand = "0.8.4"
-smartcore = { git = 'https://github.com/mlondschien/smartcore', branch='issue-115', features = ["ndarray-bindings"] }
+smartcore = { git = 'https://github.com/smartcorelib/smartcore', rev = '521dab49ef92a955eb860ca195c89feab17c4b59', features = ["ndarray-bindings"] }
 
 [dev-dependencies]
 rstest = "0.11.0"
