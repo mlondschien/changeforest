@@ -11,6 +11,8 @@ BugReports: https://github.com/mlondschien/hdcd-rs
 SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
 Encoding: UTF-8
 RoxygenNote: 7.1.2
+Imports:
+    R6
 Suggests:
     testthat (>= 3.0.0)
 Language: en-US
