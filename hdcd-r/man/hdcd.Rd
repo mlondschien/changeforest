@@ -4,7 +4,7 @@
 \alias{hdcd}
 \title{Find change points in a time series.}
 \usage{
-hdcd(X, method, segmentation)
+hdcd(X, method, segmentation, control)
 }
 \arguments{
 \item{X}{Numerical matrix with time series.}

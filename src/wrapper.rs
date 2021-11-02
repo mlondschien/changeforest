@@ -10,9 +10,8 @@ pub fn hdcd(
     X: &ndarray::ArrayView2<'_, f64>,
     method: &str,
     segmentation_type: &str,
+    control: &Control,
 ) -> BinarySegmentationResult {
-    let control = Control::default();
-
     let segmentation_type_enum: SegmentationType;
     let mut tree: BinarySegmentationTree;
 
@@ -84,10 +83,11 @@ mod tests {
     #[case("random_forest", "sbs")]
     fn test_binary_segmentation_wrapper(#[case] method: &str, #[case] segmentation_type: &str) {
         let X = testing::array();
+        let control = Control::default();
 
         assert_eq!(X.shape(), &[100, 5]);
         assert_eq!(
-            hdcd(&X.view(), method, segmentation_type).split_points(),
+            hdcd(&X.view(), method, segmentation_type, &control).split_points(),
             vec![25, 40, 80]
         );
     }

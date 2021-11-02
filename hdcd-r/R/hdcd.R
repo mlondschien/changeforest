@@ -73,8 +73,8 @@ to_binary_segmentation_result = function(result) {
 #' @param method Either 'knn','change_in_mean' of 'random_forest'.
 #' @param segmentation Either 'bs', 'sbs' or 'wbs'.
 #' @export
-hdcd = function(X,  method, segmentation) {
-    result = hdcd_api(X, method, segmentation)
+hdcd = function(X,  method, segmentation, control) {
+    result = hdcd_api(X, method, segmentation, control)
 
     to_binary_segmentation_result(result)
 }
