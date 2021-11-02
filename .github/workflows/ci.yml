@@ -95,6 +95,7 @@ jobs:
           fi
           if cat $(FILE) | grep -q "WARNING"; then
             echo "Found warnings, treated as errors."
+            cat $(FILE)
             exit 1
           fi
         shell: bash -lxeu {0}
