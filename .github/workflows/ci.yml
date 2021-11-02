@@ -67,15 +67,19 @@ jobs:
           args: -- -D warnings
   
   R-CMD-check:
-    name: R CMD check
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+         R: ['3.6.1', '4.1.1', 'release']
+    
+    name: R CMD check (${{ matrix.R }})
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-pandoc@v1
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: 'release'
+          r-version: ${{ matrix.R }}
           use-public-rspm: true
       - uses: actions-rs/toolchain@v1
         with:
@@ -88,18 +92,20 @@ jobs:
       - name: Run R CMD check
         run: |
           _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
-          FILE=hdcd-r.Rcheck/00check.log
-          if ! [[ -f "$FILE" ]]; then
+          CHECK_LOG_FILE=hdcd-r.Rcheck/00check.log
+          CHECK_INSTALL_FILE=hdcd-r.Rcheck/00install.out
+          if ! [[ -f "$CHECK_LOG_FILE" ]]; then
             echo "Log-file not found."
             exit 1
           fi
-          if cat $FILE | grep -q "ERROR"; then
-            cat $FILE
+          if cat $CHECK_LOG_FILE | grep -q "ERROR"; then
+            cat $CHECK_INSTALL_FILE
+            cat $CHECK_LOG_FILE
             exit 1
           fi
-          if cat $FILE | grep -q "WARNING"; then
+          if cat $CHECK_LOG_FILE | grep -q "WARNING"; then
             echo "Found warnings, treated as errors."
-            cat $FILE
+            cat $CHECK_LOG_FILE
             exit 1
           fi
         # e: pipefail
