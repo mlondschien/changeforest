@@ -71,7 +71,7 @@ jobs:
 
     strategy:
       matrix:
-         R: ['3.6.1', '4.1.1', 'release']
+         R: ['4.1.1', 'release']
     
     name: R CMD check (${{ matrix.R }})
     steps:
