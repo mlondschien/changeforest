@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{An object of class `binary_segmentation_result`.}
+
+\item{...}{Not used.}
 }
 \description{
 Print an object of class `binary_segmentation_result`.
