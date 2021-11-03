@@ -67,7 +67,7 @@ jobs:
           args: -- -D warnings
   
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: thomaschln/r-devtools
 
     strategy:
       matrix:
@@ -77,17 +77,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-pandoc@v1
-      - uses: r-lib/actions/setup-r@v1
-        with:
-          r-version: ${{ matrix.R }}
-          use-public-rspm: true
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
       - name: Install rextendr
         run: |
           install.packages("rextendr", repos="http://cran.us.r-project.org")
-          install.packages("testthat", repos="http://cran.us.r-project.org")
         shell: Rscript {0}
       - name: Run R CMD check
         run: |
