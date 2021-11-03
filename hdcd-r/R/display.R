@@ -47,8 +47,8 @@ to_data_frame = function(node, parent_indent="", prefix="") {
 
 #' Print an object of class `binary_segmentation_result`.
 #'
-#' @param binary_segmentation_result An object of class binary_segmentation_result.
+#' @param x An object of class `binary_segmentation_result`.
 #' @export
-print.binary_segmentation_result = function(binary_segmentation_result) {
-    print(to_data_frame(binary_segmentation_result))
+print.binary_segmentation_result = function(x, ...) {
+    print(to_data_frame(x))
 }
