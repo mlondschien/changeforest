@@ -1,4 +1,4 @@
-use hdcd::wrapper;
+use hdcd::{wrapper, Control};
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 
@@ -11,7 +11,8 @@ fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         method: String,
         segmentation_type: String,
     ) -> PyResult<Vec<usize>> {
-        Ok(wrapper::hdcd(&X.as_array(), &method, &segmentation_type).split_points())
+        let control = Control::default();
+        Ok(wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control).split_points())
     }
     Ok(())
 }
