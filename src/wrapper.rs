@@ -10,9 +10,8 @@ pub fn hdcd(
     X: &ndarray::ArrayView2<'_, f64>,
     method: &str,
     segmentation_type: &str,
+    control: &Control,
 ) -> BinarySegmentationResult {
-    let control = Control::default();
-
     let segmentation_type_enum: SegmentationType;
     let mut tree: BinarySegmentationTree;
 
@@ -29,10 +28,7 @@ pub fn hdcd(
     if method == "knn" {
         let classifier = kNN::new(X);
         let gain = ClassifierGain { classifier };
-        let optimizer = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+        let optimizer = TwoStepSearch { gain, control };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
@@ -40,20 +36,14 @@ pub fn hdcd(
     } else if method == "random_forest" {
         let classifier = RandomForest::new(X);
         let gain = ClassifierGain { classifier };
-        let optimizer = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+        let optimizer = TwoStepSearch { gain, control };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(tree)
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
-        let optimizer = GridSearch {
-            gain,
-            control: &control,
-        };
+        let optimizer = GridSearch { gain, control };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
@@ -84,10 +74,11 @@ mod tests {
     #[case("random_forest", "sbs")]
     fn test_binary_segmentation_wrapper(#[case] method: &str, #[case] segmentation_type: &str) {
         let X = testing::array();
+        let control = Control::default();
 
         assert_eq!(X.shape(), &[100, 5]);
         assert_eq!(
-            hdcd(&X.view(), method, segmentation_type).split_points(),
+            hdcd(&X.view(), method, segmentation_type, &control).split_points(),
             vec![25, 40, 80]
         );
     }

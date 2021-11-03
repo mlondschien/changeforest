@@ -8,5 +8,5 @@
 #' @useDynLib hdcdr, .registration = TRUE
 NULL
 
-hdcd_api <- function(X, method, segmentation) .Call(wrap__hdcd_api, X, method, segmentation)
+hdcd_api <- function(X, method, segmentation, control) .Call(wrap__hdcd_api, X, method, segmentation, control)
 
