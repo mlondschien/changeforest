@@ -4,10 +4,10 @@
 \alias{print.binary_segmentation_result}
 \title{Print an object of class `binary_segmentation_result`.}
 \usage{
-\method{print}{binary_segmentation_result}(binary_segmentation_result)
+\method{print}{binary_segmentation_result}(x, ...)
 }
 \arguments{
-\item{binary_segmentation_result}{An object of class binary_segmentation_result.}
+\item{x}{An object of class `binary_segmentation_result`.}
 }
 \description{
 Print an object of class `binary_segmentation_result`.
