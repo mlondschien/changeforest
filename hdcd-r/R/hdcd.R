@@ -72,8 +72,9 @@ to_binary_segmentation_result = function(result) {
 #' @param X Numerical matrix with time series.
 #' @param method Either 'knn','change_in_mean' of 'random_forest'.
 #' @param segmentation Either 'bs', 'sbs' or 'wbs'.
+#' @param control Object of class Control containing hyperparameters.
 #' @export
-hdcd = function(X,  method, segmentation, control) {
+hdcd = function(X,  method, segmentation, control=Control$new()) {
     result = hdcd_api(X, method, segmentation, control)
 
     to_binary_segmentation_result(result)

@@ -4,7 +4,7 @@
 \alias{hdcd}
 \title{Find change points in a time series.}
 \usage{
-hdcd(X, method, segmentation, control)
+hdcd(X, method, segmentation, control = Control$new())
 }
 \arguments{
 \item{X}{Numerical matrix with time series.}
@@ -12,6 +12,8 @@ hdcd(X, method, segmentation, control)
 \item{method}{Either 'knn','change_in_mean' of 'random_forest'.}
 
 \item{segmentation}{Either 'bs', 'sbs' or 'wbs'.}
+
+\item{control}{Object of class Control containing hyperparameters.}
 }
 \description{
 Find change points in a time series.
