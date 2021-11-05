@@ -8,7 +8,7 @@ pub trait Optimizer {
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str>;
 
     /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
+    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool;
 
     /// Total number of observations.
     fn n(&self) -> usize;

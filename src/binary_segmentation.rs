@@ -70,12 +70,7 @@ impl BinarySegmentationTree {
             self.split = Some(optimizer_result.best_split);
             self.max_gain = Some(optimizer_result.max_gain);
 
-            self.is_significant = segmentation.is_significant(
-                self.start,
-                self.stop,
-                optimizer_result.best_split,
-                optimizer_result.max_gain,
-            );
+            self.is_significant = segmentation.is_significant(&optimizer_result);
 
             if self.is_significant {
                 let mut left = self.new_left(optimizer_result.best_split);

@@ -1,7 +1,6 @@
-use crate::gain::gain_from_likelihoods;
-use crate::gain::{ApproxGain, ApproxGainResult};
+use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::optimizer::OptimizerResult;
-use crate::{Control, Gain, Optimizer};
+use crate::{Control, Optimizer};
 use ndarray::{s, stack, Array, Array1, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
@@ -42,8 +41,8 @@ impl<'a> Gain for ChangeInMean<'a> {
         loss
     }
 
-    fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
-        max_gain > 0.1 * (self.n() as f64)
+    fn is_significant(&self, max_gain: f64, gain_result: &GainResult, control: &Control) -> bool {
+        max_gain > control.minimal_gain_to_split * (self.n() as f64)
     }
 }
 
@@ -119,8 +118,8 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
     }
 
     #[allow(unused_variables)]
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
-        stop <= 50
+    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
+        optimizer_result.stop <= 50
     }
 
     fn control(&self) -> &Control {

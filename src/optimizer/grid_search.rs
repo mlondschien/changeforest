@@ -47,8 +47,10 @@ where
         })
     }
 
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
-        self.gain.is_significant(start, stop, split, max_gain)
+    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
+        let gain_result = optimizer_result.gain_results.last().unwrap();
+        self.gain
+            .is_significant(optimizer_result.max_gain, gain_result, self.control())
     }
 }
 

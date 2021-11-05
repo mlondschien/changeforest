@@ -1,4 +1,5 @@
-use crate::gain::{ApproxGain, ApproxGainResult, Gain};
+use crate::control::Control;
+use crate::gain::{ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::Classifier;
 use ndarray::{s, Array1, Array2, Axis};
 
@@ -23,12 +24,20 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
-    fn is_significant(&self, start: usize, stop: usize, split: usize, _: f64) -> bool {
-        let predictions = self.classifier.predict(start, stop, split);
-        let full_likelihood = self
-            .classifier
-            .full_likelihood(&predictions, start, stop, split);
-        let delta = &full_likelihood.slice(s![0, ..]) - &full_likelihood.slice(s![1, ..]);
+    fn is_significant(&self, _: f64, gain_result: &GainResult, control: &Control) -> bool {
+        let likelihoods: &Array2<f64>;
+        let start: usize;
+        let stop: usize;
+
+        if let GainResult::ApproxGainResult(result) = gain_result {
+            likelihoods = &result.likelihoods;
+            start = result.start;
+            stop = result.stop;
+        } else {
+            panic!();
+        }
+
+        let delta = &likelihoods.slice(s![0, ..]) - &likelihoods.slice(s![1, ..]);
         let n_permutations = 99;
 
         let mut rng = rand::thread_rng();
@@ -43,6 +52,8 @@ where
             }
         }
 
+        // assert_eq!(max_gain, max_gain_);
+
         let mut p_value: u32 = 1;
 
         for _ in 0..n_permutations {
@@ -55,7 +66,7 @@ where
                 }
             }
         }
-        (p_value as f64 / (n_permutations + 1) as f64) < 0.05
+        (p_value as f64 / (n_permutations + 1) as f64) < control.model_selection_alpha
     }
 }
 

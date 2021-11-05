@@ -1,4 +1,5 @@
-use crate::Gain;
+use crate::control::Control;
+use crate::gain::{Gain, GainResult};
 use std::cell::{Ref, RefCell};
 
 pub struct ChangeInMean<'a, 'b> {
@@ -57,8 +58,8 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         result / (s * s_1 * s_2)
     }
 
-    fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
-        max_gain > 0.1 * (self.n() as f64)
+    fn is_significant(&self, max_gain: f64, _: &GainResult, control: &Control) -> bool {
+        max_gain > control.minimal_gain_to_split * (self.n() as f64)
     }
 }
 

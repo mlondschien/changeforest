@@ -1,4 +1,5 @@
-use crate::gain::{ApproxGainResult, FullGainResult};
+use crate::control::Control;
+use crate::gain::{ApproxGainResult, FullGainResult, GainResult};
 
 pub trait Gain {
     /// Total number of observations.
@@ -33,7 +34,7 @@ pub trait Gain {
     }
 
     /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
+    fn is_significant(&self, max_gain: f64, gain_result: &GainResult, control: &Control) -> bool;
 }
 
 pub trait ApproxGain {

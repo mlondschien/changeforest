@@ -104,8 +104,8 @@ impl<'a> Segmentation<'a> {
         }
     }
 
-    pub fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
-        self.optimizer.is_significant(start, stop, split, max_gain)
+    pub fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
+        self.optimizer.is_significant(optimizer_result)
     }
 }
 
