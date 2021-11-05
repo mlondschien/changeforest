@@ -1,6 +1,8 @@
+use crate::gain::gain_from_likelihoods;
+use crate::gain::{ApproxGain, ApproxGainResult};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
-use ndarray::{s, Array, Array1, Array2, ArrayView2, Axis};
+use ndarray::{s, stack, Array, Array1, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
 use rand::rngs::StdRng;
@@ -27,7 +29,6 @@ impl<'a> Gain for ChangeInMean<'a> {
             return 0.;
         };
 
-        let n_total = self.X.nrows() as f64;
         let n_slice = (stop - start) as f64;
 
         let slice = &self.X.slice(s![start..stop, ..]);
@@ -38,11 +39,63 @@ impl<'a> Gain for ChangeInMean<'a> {
         let loss = slice.mapv(|a| a.powi(2)).sum()
             - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice;
 
-        loss / n_total
+        loss
     }
 
     fn is_significant(&self, _: usize, _: usize, _: usize, max_gain: f64) -> bool {
-        max_gain > 0.1
+        max_gain > 0.1 * (self.n() as f64)
+    }
+}
+
+impl<'a> ApproxGain for ChangeInMean<'a> {
+    fn gain_approx(
+        &self,
+        start: usize,
+        stop: usize,
+        guess: usize,
+        _: &[usize],
+    ) -> ApproxGainResult {
+        let slice = self.X.slice(s![start..stop, ..]);
+        let mut left_fit = self.X.slice(s![start..guess, ..]).sum_axis(Axis(0));
+        let mut right_fit = self.X.slice(s![guess..stop, ..]).sum_axis(Axis(0));
+
+        let overall_fit = (&left_fit + &right_fit) / ((stop - start) as f64);
+        left_fit.mapv_inplace(|x| x / (guess - start) as f64);
+        right_fit.mapv_inplace(|x| x / (stop - guess) as f64);
+
+        // println!("{}", slice.dot(&(&left_fit - &overall_fit)).mapv(|x| x * 2.0));
+        // println!("{}", &overall_fit.map(|x| x.powi(2)) - &left_fit.map(|x| x.powi(2)));
+
+        let likelihoods = stack(
+            Axis(0),
+            &[
+                (slice.dot(&(&left_fit - &overall_fit)).mapv(|x| x * 2.0)
+                    + (&overall_fit.map(|x| x.powi(2)) - &left_fit.map(|x| x.powi(2)))
+                        .sum_axis(Axis(0)))
+                .view(),
+                (slice.dot(&(&right_fit - &overall_fit)).mapv(|x| x * 2.0)
+                    + (&overall_fit.map(|x| x.powi(2)) - &right_fit.map(|x| x.powi(2)))
+                        .sum_axis(Axis(0)))
+                .view(),
+            ],
+        )
+        .unwrap();
+        // TODO Change this to [n, 2];
+        assert!(likelihoods.shape() == [2, stop - start]);
+
+        let gain = gain_from_likelihoods(&likelihoods);
+        let predictions = likelihoods.map_axis(Axis(0), |x| {
+            x[1].exp() * (stop - guess) as f64 / (stop - start) as f64
+        });
+
+        ApproxGainResult {
+            start,
+            stop,
+            guess,
+            gain,
+            predictions,
+            likelihoods,
+        }
     }
 }
 
@@ -61,7 +114,7 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
             stop,
             best_split: (3 * start + stop) / 4,
             max_gain: ((stop - start) * (start + 10)) as f64,
-            gain: Array1::<f64>::zeros(stop - start),
+            gain_results: vec![],
         })
     }
 
@@ -87,4 +140,72 @@ pub fn array() -> Array2<f64> {
     X.slice_mut(s![40..100, 1]).fill(-3.);
 
     X + Array::random_using((100, 5), Uniform::new(0., 1.), &mut rng)
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use assert_approx_eq::*;
+    use ndarray::array;
+    use rstest::*;
+
+    #[rstest]
+    #[case(0, 6, 0.25 * 6.)]
+    #[case(0, 3, 0.)]
+    #[case(3, 6, 0.)]
+    #[case(2, 4, 0.25 * 2.)]
+    fn test_loss(#[case] start: usize, #[case] stop: usize, #[case] expected: f64) {
+        let X = ndarray::array![[0.], [0.], [0.], [1.], [1.], [1.]];
+        let X_view = X.view();
+
+        let change_in_mean = ChangeInMean::new(&X_view);
+        assert_eq!(change_in_mean.loss(start, stop), expected)
+    }
+
+    #[rstest]
+    #[case(0, 6, 3, array![-1.5, -0.5, 0.5, 1.5, 0.5, -0.5])]
+    #[case(1, 5, 3, array![-1., 0., 1., 0.])]
+    fn test_approx_gain(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] guess: usize,
+        #[case] expected_gain: Array1<f64>,
+    ) {
+        let X = ndarray::array![[0.], [0.], [0.], [1.], [1.], [1.]];
+        let X_view = X.view();
+
+        let change_in_mean = ChangeInMean::new(&X_view);
+        let split_points: Vec<usize> = (start..stop).collect();
+
+        let approx_gain_result = change_in_mean.gain_approx(start, stop, guess, &split_points);
+
+        println!("{:?}", approx_gain_result);
+        assert!(approx_gain_result.gain.abs_diff_eq(&expected_gain, 1e-8));
+        assert_eq!(
+            approx_gain_result.gain[guess - start],
+            change_in_mean.gain(start, stop, guess)
+        );
+    }
+
+    #[rstest]
+    #[case(0, 100)]
+    #[case(0, 99)]
+    #[case(12, 83)]
+    fn test_compare_approx_to_normal_gain(#[case] start: usize, #[case] stop: usize) {
+        let X = array();
+        let X_view = X.view();
+
+        let change_in_mean = ChangeInMean::new(&X_view);
+        let split_points: Vec<usize> = (start..stop).collect();
+
+        for guess in start..stop {
+            assert_approx_eq!(
+                change_in_mean
+                    .gain_approx(start, stop, guess, &split_points)
+                    .gain[guess - start],
+                change_in_mean.gain(start, stop, guess)
+            );
+        }
+    }
 }
