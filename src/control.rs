@@ -1,5 +1,5 @@
 /// Storage container for hyperparameters
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Control {
     /// Segments with length smaller than `2 * n * minimal_relative_segment_length` will
     /// not be split.

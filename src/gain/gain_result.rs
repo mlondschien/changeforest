@@ -22,13 +22,3 @@ pub enum GainResult {
     ApproxGainResult(ApproxGainResult),
     FullGainResult(FullGainResult),
 }
-
-impl GainResult {
-    /// Convenience function to retrieve the `gain` of a `GainResult`.
-    pub fn gain(&self) -> &Array1<f64> {
-        match self {
-            GainResult::ApproxGainResult(result) => &result.gain,
-            GainResult::FullGainResult(result) => &result.gain,
-        }
-    }
-}

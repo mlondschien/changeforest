@@ -7,7 +7,7 @@
 mod binary_segmentation;
 pub mod classifier;
 mod control;
-mod gain;
+pub mod gain;
 pub mod optimizer;
 mod segmentation;
 

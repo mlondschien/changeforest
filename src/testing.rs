@@ -41,7 +41,7 @@ impl<'a> Gain for ChangeInMean<'a> {
         loss
     }
 
-    fn is_significant(&self, max_gain: f64, gain_result: &GainResult, control: &Control) -> bool {
+    fn is_significant(&self, max_gain: f64, _: &GainResult, control: &Control) -> bool {
         max_gain > control.minimal_gain_to_split * (self.n() as f64)
     }
 }
@@ -61,9 +61,6 @@ impl<'a> ApproxGain for ChangeInMean<'a> {
         let overall_fit = (&left_fit + &right_fit) / ((stop - start) as f64);
         left_fit.mapv_inplace(|x| x / (guess - start) as f64);
         right_fit.mapv_inplace(|x| x / (stop - guess) as f64);
-
-        // println!("{}", slice.dot(&(&left_fit - &overall_fit)).mapv(|x| x * 2.0));
-        // println!("{}", &overall_fit.map(|x| x.powi(2)) - &left_fit.map(|x| x.powi(2)));
 
         let likelihoods = stack(
             Axis(0),
@@ -179,7 +176,6 @@ mod tests {
 
         let approx_gain_result = change_in_mean.gain_approx(start, stop, guess, &split_points);
 
-        println!("{:?}", approx_gain_result);
         assert!(approx_gain_result.gain.abs_diff_eq(&expected_gain, 1e-8));
         assert_eq!(
             approx_gain_result.gain[guess - start],
