@@ -95,7 +95,7 @@ where
         ApproxGainResult {
             start,
             stop,
-            guess: guess,
+            guess,
             gain,
             likelihoods,
             predictions,

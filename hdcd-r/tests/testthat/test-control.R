@@ -1,3 +1,4 @@
+# Check that all hyperparameters in control are correctly passed to rust.
 test_that("control", {
     X = get_X()
     X_iris = get_iris()
