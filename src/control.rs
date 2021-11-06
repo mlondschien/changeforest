@@ -1,5 +1,5 @@
 /// Storage container for hyperparameters
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Control {
     /// Segments with length smaller than `2 * n * minimal_relative_segment_length` will
     /// not be split.
@@ -29,7 +29,7 @@ impl Control {
     pub fn default() -> Control {
         Control {
             minimal_relative_segment_length: 0.1,
-            minimal_gain_to_split: 0.,
+            minimal_gain_to_split: 0.1,
             model_selection_alpha: 0.05,
             number_of_wild_segments: 100,
             seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)

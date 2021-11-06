@@ -1,6 +1,6 @@
+use crate::gain::GainResult;
 use crate::optimizer::OptimizerResult;
 use crate::Segmentation;
-use ndarray::Array1;
 
 #[allow(dead_code)]
 pub struct BinarySegmentationTree {
@@ -59,17 +59,18 @@ impl BinarySegmentationTree {
         })
     }
 
+    /// Grow a `BinarySegmentationTree`.assert_approx_eq
+    ///
+    /// Recursively split segments and add subsegments as children `left` and
+    /// `right` until segments are smaller then the minimal segment length
+    /// (`n * control.minimal_relative_segment_length`) or the `OptimizerResult` is no
+    /// longer significant.
     pub fn grow(&mut self, segmentation: &mut Segmentation) {
         if let Ok(optimizer_result) = segmentation.find_best_split(self.start, self.stop) {
             self.split = Some(optimizer_result.best_split);
             self.max_gain = Some(optimizer_result.max_gain);
 
-            self.is_significant = segmentation.is_significant(
-                self.start,
-                self.stop,
-                optimizer_result.best_split,
-                optimizer_result.max_gain,
-            );
+            self.is_significant = segmentation.is_significant(&optimizer_result);
 
             if self.is_significant {
                 let mut left = self.new_left(optimizer_result.best_split);
@@ -86,13 +87,14 @@ impl BinarySegmentationTree {
     }
 }
 
+/// Struct holding results from a BinarySegmentationTree after fitting.
 pub struct BinarySegmentationResult {
     pub start: usize,
     pub stop: usize,
     pub best_split: Option<usize>,
     pub max_gain: Option<f64>,
     pub is_significant: bool,
-    pub gain: Option<Array1<f64>>,
+    pub gain_results: Option<Vec<GainResult>>,
     pub left: Option<Box<BinarySegmentationResult>>,
     pub right: Option<Box<BinarySegmentationResult>>,
 }
@@ -107,13 +109,15 @@ impl BinarySegmentationResult {
             .right
             .map(|tree| Box::new(BinarySegmentationResult::from_tree(*tree)));
 
+        let gain_results = tree.optimizer_result.map(|result| result.gain_results);
+
         BinarySegmentationResult {
             start: tree.start,
             stop: tree.stop,
             best_split: tree.split,
             max_gain: tree.max_gain,
             is_significant: tree.is_significant,
-            gain: tree.optimizer_result.map(|result| result.gain),
+            gain_results,
             left,
             right,
         }
@@ -199,7 +203,7 @@ mod tests {
         assert_eq!(result.stop, 100);
         assert_eq!(result.best_split, Some(25));
         assert_eq!(result.is_significant, true);
-        assert!(result.gain.is_some());
+        assert!(result.gain_results.is_some());
 
         let right = result.right.unwrap();
         assert_eq!(right.split_points(), vec![40, 80]);
@@ -207,7 +211,7 @@ mod tests {
         assert_eq!(right.stop, 100);
         assert_eq!(right.best_split, Some(40));
         assert_eq!(right.is_significant, true);
-        assert!(right.gain.is_some());
+        assert!(right.gain_results.is_some());
 
         let left = result.left.unwrap();
         assert_eq!(left.split_points(), vec![]);
@@ -215,6 +219,6 @@ mod tests {
         assert_eq!(left.stop, 25);
         assert_eq!(left.best_split, Some(10));
         assert_eq!(left.is_significant, false);
-        assert!(left.gain.is_some()); // even though is_significant is false
+        assert!(left.gain_results.is_some()); // even though is_significant is false
     }
 }

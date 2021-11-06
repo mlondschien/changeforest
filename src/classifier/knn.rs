@@ -91,7 +91,7 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
 mod tests {
     use super::*;
     use crate::control;
-    use crate::gain::{ClassifierGain, Gain};
+    use crate::gain::{ApproxGain, ClassifierGain, Gain};
     use crate::optimizer::{Optimizer, TwoStepSearch};
     use crate::testing;
     use assert_approx_eq::*;
@@ -163,7 +163,9 @@ mod tests {
             );
             assert_approx_eq!(
                 expected[split_point - start],
-                knn_gain.gain_approx(start, stop, split_point, &split_points)[split_point - start]
+                knn_gain
+                    .gain_approx(start, stop, split_point, &split_points)
+                    .gain[split_point - start]
             )
         }
     }

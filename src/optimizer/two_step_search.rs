@@ -1,3 +1,4 @@
+use crate::gain::{ApproxGain, GainResult};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
 
@@ -8,7 +9,7 @@ pub struct TwoStepSearch<'a, T: Gain> {
 
 impl<'a, T> Optimizer for TwoStepSearch<'a, T>
 where
-    T: Gain,
+    T: ApproxGain + Gain,
 {
     fn n(&self) -> usize {
         self.gain.n()
@@ -24,28 +25,29 @@ where
         if split_candidates.is_empty() {
             return Err("Segment too small.");
         }
-        let gain = self
-            .gain
-            .gain_approx(start, stop, (start + stop) / 2, &split_candidates);
+        let first_gain_result =
+            self.gain
+                .gain_approx(start, stop, (start + stop) / 2, &split_candidates);
+
         let mut best_split = 0;
         let mut max_gain = -f64::INFINITY;
 
         for index in &split_candidates {
-            if gain[*index - start] > max_gain {
+            if first_gain_result.gain[*index - start] > max_gain {
                 best_split = *index;
-                max_gain = gain[*index - start];
+                max_gain = first_gain_result.gain[*index - start];
             }
         }
 
-        let gain = self
+        let second_gain_result = self
             .gain
             .gain_approx(start, stop, best_split, &split_candidates);
 
         max_gain = -f64::INFINITY;
         for index in &split_candidates {
-            if gain[*index - start] > max_gain {
+            if second_gain_result.gain[*index - start] > max_gain {
                 best_split = *index;
-                max_gain = gain[*index - start];
+                max_gain = second_gain_result.gain[*index - start];
             }
         }
 
@@ -54,12 +56,17 @@ where
             stop,
             best_split,
             max_gain,
-            gain,
+            gain_results: vec![
+                GainResult::ApproxGainResult(first_gain_result),
+                GainResult::ApproxGainResult(second_gain_result),
+            ],
         })
     }
 
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
-        self.gain.is_significant(start, stop, split, max_gain)
+    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
+        let gain_result = optimizer_result.gain_results.last().unwrap();
+        self.gain
+            .is_significant(optimizer_result.max_gain, gain_result, self.control())
     }
 }
 
@@ -71,7 +78,7 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(0, 7, 2)]
+    #[case(0, 7, 4)]
     #[case(1, 7, 4)]
     #[case(2, 7, 4)]
     #[case(3, 7, 4)]
@@ -100,13 +107,16 @@ mod tests {
 
         let gain = testing::ChangeInMean::new(&X_view);
         let control = Control::default().with_minimal_relative_segment_length(0.);
-        let grid_search = TwoStepSearch {
+        let two_step_search = TwoStepSearch {
             gain,
             control: &control,
         };
 
         assert_eq!(
-            grid_search.find_best_split(start, stop).unwrap().best_split,
+            two_step_search
+                .find_best_split(start, stop)
+                .unwrap()
+                .best_split,
             expected
         );
     }

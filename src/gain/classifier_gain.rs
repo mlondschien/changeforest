@@ -1,6 +1,7 @@
+use crate::control::Control;
+use crate::gain::{ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::Classifier;
-use crate::Gain;
-use ndarray::{s, Array1, Axis};
+use ndarray::{s, Array1, Array2, Axis};
 
 pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,
@@ -23,39 +24,20 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
-    /// Return an approximation of the classifier-likelihood based gain when splitting
-    /// segment `[start, stop)` for each split in `split_candidates`.
-    ///
-    /// A single fit is generated with a split at `guess`.
-    fn gain_approx(
-        &self,
-        start: usize,
-        stop: usize,
-        guess: usize,
-        _: &[usize],
-    ) -> ndarray::Array1<f64> {
-        let predictions = self.classifier.predict(start, stop, guess);
-        let likelihoods = self
-            .classifier
-            .full_likelihood(&predictions, start, stop, guess);
+    fn is_significant(&self, _: f64, gain_result: &GainResult, control: &Control) -> bool {
+        let likelihoods: &Array2<f64>;
+        let start: usize;
+        let stop: usize;
 
-        let mut gain = Array1::<f64>::zeros(stop - start);
-        // Move everything one to the right.
-        gain.slice_mut(s![1..]).assign(
-            &(&likelihoods.slice(s![0, ..(stop - start - 1)])
-                - &likelihoods.slice(s![1, ..(stop - start - 1)])),
-        );
-        gain.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
+        if let GainResult::ApproxGainResult(result) = gain_result {
+            likelihoods = &result.likelihoods;
+            start = result.start;
+            stop = result.stop;
+        } else {
+            panic!();
+        }
 
-        gain + likelihoods.slice(s![1, ..]).sum()
-    }
-
-    fn is_significant(&self, start: usize, stop: usize, split: usize, _: f64) -> bool {
-        let predictions = self.classifier.predict(start, stop, split);
-        let full_likelihood = self
-            .classifier
-            .full_likelihood(&predictions, start, stop, split);
-        let delta = &full_likelihood.slice(s![0, ..]) - &full_likelihood.slice(s![1, ..]);
+        let delta = &likelihoods.slice(s![0, ..]) - &likelihoods.slice(s![1, ..]);
         let n_permutations = 99;
 
         let mut rng = rand::thread_rng();
@@ -70,6 +52,8 @@ where
             }
         }
 
+        // assert_eq!(max_gain, max_gain_);
+
         let mut p_value: u32 = 1;
 
         for _ in 0..n_permutations {
@@ -82,6 +66,50 @@ where
                 }
             }
         }
-        (p_value as f64 / (n_permutations + 1) as f64) < 0.05
+        (p_value as f64 / (n_permutations + 1) as f64) < control.model_selection_alpha
     }
+}
+
+impl<T> ApproxGain for ClassifierGain<T>
+where
+    T: Classifier,
+{
+    /// Return an approximation of the classifier-likelihood based gain when splitting
+    /// segment `[start, stop)` for each split in `split_candidates`.
+    ///
+    /// A single fit is generated with a split at `guess`.
+    fn gain_approx(
+        &self,
+        start: usize,
+        stop: usize,
+        guess: usize,
+        _: &[usize],
+    ) -> ApproxGainResult {
+        let predictions = self.classifier.predict(start, stop, guess);
+        let likelihoods = self
+            .classifier
+            .full_likelihood(&predictions, start, stop, guess);
+
+        let gain = gain_from_likelihoods(&likelihoods);
+
+        ApproxGainResult {
+            start,
+            stop,
+            guess,
+            gain,
+            likelihoods,
+            predictions,
+        }
+    }
+}
+
+pub fn gain_from_likelihoods(likelihoods: &Array2<f64>) -> Array1<f64> {
+    let n = likelihoods.shape()[1];
+    let mut gain = Array1::<f64>::zeros(n);
+    // Move everything one to the right.
+    gain.slice_mut(s![1..])
+        .assign(&(&likelihoods.slice(s![0, ..(n - 1)]) - &likelihoods.slice(s![1, ..(n - 1)])));
+    gain.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
+
+    gain + likelihoods.slice(s![1, ..]).sum()
 }

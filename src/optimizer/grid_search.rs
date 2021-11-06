@@ -1,6 +1,6 @@
+use crate::gain::GainResult;
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
-use ndarray::Array1;
 
 pub struct GridSearch<'a, T: Gain> {
     pub gain: T,
@@ -26,16 +26,15 @@ where
             return Err("Segment too small.");
         }
 
-        let mut gain = Array1::from_elem(stop - start, f64::NAN);
+        let full_gain = self.gain.gain_full(start, stop, &split_candidates);
 
         let mut best_split = 0;
         let mut max_gain = -f64::INFINITY;
 
         for index in split_candidates {
-            gain[index - start] = self.gain.gain(start, stop, index);
-            if gain[index - start] > max_gain {
+            if full_gain.gain[index - start] > max_gain {
                 best_split = index;
-                max_gain = gain[index - start];
+                max_gain = full_gain.gain[index - start];
             }
         }
 
@@ -44,12 +43,14 @@ where
             stop,
             best_split,
             max_gain,
-            gain,
+            gain_results: vec![GainResult::FullGainResult(full_gain)],
         })
     }
 
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool {
-        self.gain.is_significant(start, stop, split, max_gain)
+    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
+        let gain_result = optimizer_result.gain_results.last().unwrap();
+        self.gain
+            .is_significant(optimizer_result.max_gain, gain_result, self.control())
     }
 }
 

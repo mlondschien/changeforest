@@ -6,7 +6,7 @@ BinarySegmentationResult = R6::R6Class(
         best_split = NULL,
         max_gain = NULL,
         is_significant = NULL,
-        gain = NULL,
+        gain_results = NULL,
         left = NULL,
         right = NULL,
 
@@ -16,7 +16,7 @@ BinarySegmentationResult = R6::R6Class(
             best_split = NULL,
             max_gain = NULL,
             is_significant = NULL,
-            gain = NULL,
+            gain_results = NULL,
             left = NULL,
             right = NULL
         ) {
@@ -25,7 +25,7 @@ BinarySegmentationResult = R6::R6Class(
             self$best_split = best_split
             self$max_gain = max_gain
             self$is_significant = is_significant
-            self$gain = gain
+            self$gain_results = gain_results
             self$left = left
             self$right = right
         },

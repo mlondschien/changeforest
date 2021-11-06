@@ -1,3 +1,6 @@
+use crate::control::Control;
+use crate::gain::{ApproxGainResult, FullGainResult, GainResult};
+
 pub trait Gain {
     /// Total number of observations.
     fn n(&self) -> usize;
@@ -20,21 +23,21 @@ pub trait Gain {
     ///
     /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
     /// corresponding entry in `split_candidates` are `f64::NAN`.
-    fn gain_full(
-        &self,
-        start: usize,
-        stop: usize,
-        split_candidates: &[usize],
-    ) -> ndarray::Array1<f64> {
+    fn gain_full(&self, start: usize, stop: usize, split_candidates: &[usize]) -> FullGainResult {
         let mut gain = ndarray::Array::from_elem(stop - start, f64::NAN);
 
         for split_point in split_candidates {
             gain[split_point - start] = self.gain(start, stop, *split_point);
         }
 
-        gain
+        FullGainResult { start, stop, gain }
     }
 
+    /// Does a certain split corresponds to a true change point?
+    fn is_significant(&self, max_gain: f64, gain_result: &GainResult, control: &Control) -> bool;
+}
+
+pub trait ApproxGain {
     #[allow(unused_variables)]
     /// An approximation of the gain when splitting segment `[start, stop)` at points in `split_candidates`.
     ///
@@ -49,12 +52,7 @@ pub trait Gain {
         stop: usize,
         guess: usize,
         split_points: &[usize],
-    ) -> ndarray::Array1<f64> {
-        self.gain_full(start, stop, split_points)
-    }
-
-    /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, start: usize, stop: usize, split: usize, max_gain: f64) -> bool;
+    ) -> ApproxGainResult;
 }
 
 #[cfg(test)]
@@ -66,11 +64,11 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(0, 4, 0.25)]
+    #[case(0, 4, 4. * 0.25)]
     #[case(0, 2, 0.)]
-    #[case(0, 3, 1. / 6.)]
-    #[case(1, 4, 1. / 6.)]
-    #[case(1, 3, 0.125)]
+    #[case(0, 3, 4. / 6.)]
+    #[case(1, 4, 4. / 6.)]
+    #[case(1, 3, 4. * 0.125)]
     #[case(3, 3, 0.)]
     fn test_change_in_mean_loss(#[case] start: usize, #[case] stop: usize, #[case] expected: f64) {
         let X = ndarray::array![[0., 0.], [0., 0.], [0., 1.], [0., 1.]];
@@ -83,18 +81,18 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 4, 2, 1. / 6.)]
+    #[case(0, 4, 2, 6. * 1. / 6.)]
     #[case(0, 4, 0, 0.)]
-    #[case(0, 4, 1, 1. / 18.)]
-    #[case(0, 4, 3, 1. / 18.)]
-    #[case(0, 3, 2, 1. / 9.)]
-    #[case(0, 3, 1, 1. / 36.)]
+    #[case(0, 4, 1, 6. / 18.)]
+    #[case(0, 4, 3, 6. / 18.)]
+    #[case(0, 3, 2, 6. / 9.)]
+    #[case(0, 3, 1, 6. / 36.)]
     #[case(0, 6, 0, 0.)]
-    #[case(0, 6, 1, 1. / 90.)]
-    #[case(0, 6, 2, 1. / 36.)]
-    #[case(0, 6, 3, 1. / 18.)]
-    #[case(0, 6, 4, 5. / 18.)]
-    #[case(0, 6, 5, 1. / 90.)]
+    #[case(0, 6, 1, 6. / 90.)]
+    #[case(0, 6, 2, 6. / 36.)]
+    #[case(0, 6, 3, 6. / 18.)]
+    #[case(0, 6, 4, 5. * 6. / 18.)]
+    #[case(0, 6, 5, 6. / 90.)]
     fn test_change_in_mean_gain(
         #[case] start: usize,
         #[case] stop: usize,
@@ -108,11 +106,7 @@ mod tests {
         let change_in_mean = testing::ChangeInMean::new(&X_view);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
-            change_in_mean.gain_full(start, stop, &vec![split])[split - start],
-            expected
-        );
-        assert_approx_eq!(
-            change_in_mean.gain_approx(start, stop, split, &vec![split])[split - start],
+            change_in_mean.gain_full(start, stop, &vec![split]).gain[split - start],
             expected
         );
     }

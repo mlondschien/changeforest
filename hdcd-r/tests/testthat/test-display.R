@@ -26,5 +26,5 @@ test_that("display", {
         "11          °--(8, 10]         NA        NA          FALSE"
     )
 
-    expect(all(output == expected))
+    expect_lists_equal(output, expected)
 })
