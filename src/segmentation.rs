@@ -13,7 +13,7 @@ pub enum SegmentationType {
 }
 
 pub struct Segmentation<'a> {
-    segments: Vec<OptimizerResult>,
+    pub segments: Vec<OptimizerResult>,
     optimizer: &'a dyn Optimizer,
 }
 

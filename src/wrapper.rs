@@ -32,7 +32,7 @@ pub fn hdcd(
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
-        BinarySegmentationResult::from_tree(tree)
+        BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else if method == "random_forest" {
         let classifier = RandomForest::new(X);
         let gain = ClassifierGain { classifier };
@@ -40,14 +40,14 @@ pub fn hdcd(
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
-        BinarySegmentationResult::from_tree(tree)
+        BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else if method == "change_in_mean" {
         let gain = ChangeInMean::new(X);
         let optimizer = GridSearch { gain, control };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
-        BinarySegmentationResult::from_tree(tree)
+        BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else {
         panic!(
             "method should be one of 'knn', 'random_forest' or 'change_in_mean'. Got {}",
