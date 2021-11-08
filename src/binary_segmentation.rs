@@ -97,6 +97,7 @@ pub struct BinarySegmentationResult {
     pub gain_results: Option<Vec<GainResult>>,
     pub left: Option<Box<BinarySegmentationResult>>,
     pub right: Option<Box<BinarySegmentationResult>>,
+    pub segments: Option<Vec<OptimizerResult>>,
 }
 
 impl BinarySegmentationResult {
@@ -120,6 +121,7 @@ impl BinarySegmentationResult {
             gain_results,
             left,
             right,
+            segments: None,
         }
     }
 
@@ -141,6 +143,11 @@ impl BinarySegmentationResult {
         }
 
         split_points
+    }
+
+    pub fn with_segments(mut self, segmentation: Segmentation) -> Self {
+        self.segments = Some(segmentation.segments);
+        self
     }
 }
 
@@ -191,7 +198,7 @@ mod tests {
             gain,
             control: &control,
         };
-        let mut segmentation = Segmentation::new(SegmentationType::BS, &optimizer);
+        let mut segmentation = Segmentation::new(SegmentationType::SBS, &optimizer);
         let mut tree = BinarySegmentationTree::new(&X_view);
 
         tree.grow(&mut segmentation);
@@ -205,7 +212,7 @@ mod tests {
         assert_eq!(result.is_significant, true);
         assert!(result.gain_results.is_some());
 
-        let right = result.right.unwrap();
+        let right = result.right.as_ref().unwrap();
         assert_eq!(right.split_points(), vec![40, 80]);
         assert_eq!(right.start, 25);
         assert_eq!(right.stop, 100);
@@ -213,12 +220,15 @@ mod tests {
         assert_eq!(right.is_significant, true);
         assert!(right.gain_results.is_some());
 
-        let left = result.left.unwrap();
+        let left = result.left.as_ref().unwrap();
         assert_eq!(left.split_points(), vec![]);
         assert_eq!(left.start, 0);
         assert_eq!(left.stop, 25);
         assert_eq!(left.best_split, Some(10));
         assert_eq!(left.is_significant, false);
         assert!(left.gain_results.is_some()); // even though is_significant is false
+
+        let result = result.with_segments(segmentation);
+        assert!(result.segments.as_ref().unwrap().len() > 0);
     }
 }

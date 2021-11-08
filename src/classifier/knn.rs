@@ -178,7 +178,7 @@ mod tests {
 
         let classifier = kNN::new(&X_view);
         let gain = ClassifierGain { classifier };
-        let control = control::Control::default().with_minimal_relative_segment_length(0.);
+        let control = control::Control::default().with_minimal_relative_segment_length(0.01);
         let optimizer = TwoStepSearch {
             gain,
             control: &control,

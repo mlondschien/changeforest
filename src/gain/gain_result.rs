@@ -11,6 +11,7 @@ pub struct ApproxGainResult {
     pub predictions: Array1<f64>,
 }
 
+#[derive(Debug)]
 /// Container to hold results of the `gain_full` method of the `Gain` trait.
 pub struct FullGainResult {
     pub start: usize,
@@ -18,6 +19,7 @@ pub struct FullGainResult {
     pub gain: Array1<f64>,
 }
 
+#[derive(Debug)]
 pub enum GainResult {
     ApproxGainResult(ApproxGainResult),
     FullGainResult(FullGainResult),

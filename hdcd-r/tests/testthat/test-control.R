@@ -15,5 +15,15 @@ test_that("control", {
     # model_selection_alpha
     expect_lists_equal(hdcd(X_iris, "random_forest", "bs", Control$new(model_selection_alpha=0.001))$split_points(),  c())
     expect_lists_equal(hdcd(X_iris, "random_forest", "bs", Control$new(model_selection_alpha=0.05))$split_points(), c(50, 100))
+
+    # seeded_segments_alpha
+    expect_lists_equal(hdcd(X, "change_in_mean", "bs")$segments, c())
+    expect_equal(length(hdcd(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/sqrt(2)))$segments), 50)
+    expect_equal(length(hdcd(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 25)
+    expect_equal(length(hdcd(X, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 10)
+
+    # number_of_wild_segments
+    expect_equal(length(hdcd(X_iris, "change_in_mean", "wbs", Control$new(number_of_wild_segments=10))$segments), 10)
+    expect_equal(length(hdcd(X_iris, "change_in_mean", "wbs", Control$new(number_of_wild_segments=5))$segments), 5)
 })
 
