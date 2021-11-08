@@ -1,5 +1,6 @@
 use crate::gain::GainResult;
 
+#[derive(Debug)]
 pub struct OptimizerResult {
     pub start: usize,
     pub stop: usize,
