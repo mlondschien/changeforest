@@ -7,6 +7,7 @@ BinarySegmentationResult = R6::R6Class(
         max_gain = NULL,
         is_significant = NULL,
         gain_results = NULL,
+        segments = NULL,
         left = NULL,
         right = NULL,
 
@@ -17,6 +18,7 @@ BinarySegmentationResult = R6::R6Class(
             max_gain = NULL,
             is_significant = NULL,
             gain_results = NULL,
+            segments = NULL,
             left = NULL,
             right = NULL
         ) {
@@ -26,6 +28,7 @@ BinarySegmentationResult = R6::R6Class(
             self$max_gain = max_gain
             self$is_significant = is_significant
             self$gain_results = gain_results
+            self$segments = segments
             self$left = left
             self$right = right
         },
@@ -76,6 +79,5 @@ to_binary_segmentation_result = function(result) {
 #' @export
 hdcd = function(X,  method, segmentation, control=Control$new()) {
     result = hdcd_api(X, method, segmentation, control)
-
     to_binary_segmentation_result(result)
 }
