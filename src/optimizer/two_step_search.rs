@@ -106,7 +106,7 @@ mod tests {
         assert_eq!(X_view.shape(), &[7, 2]);
 
         let gain = testing::ChangeInMean::new(&X_view);
-        let control = Control::default().with_minimal_relative_segment_length(0.);
+        let control = Control::default().with_minimal_relative_segment_length(0.01);
         let two_step_search = TwoStepSearch {
             gain,
             control: &control,
