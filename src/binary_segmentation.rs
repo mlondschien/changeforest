@@ -87,6 +87,7 @@ impl BinarySegmentationTree {
     }
 }
 
+#[derive(Clone, Debug)]
 /// Struct holding results from a BinarySegmentationTree after fitting.
 pub struct BinarySegmentationResult {
     pub start: usize,

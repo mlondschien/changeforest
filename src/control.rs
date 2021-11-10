@@ -74,6 +74,12 @@ impl Control {
     }
 
     pub fn with_seeded_segments_alpha(mut self, seeded_segments_alpha: f64) -> Self {
+        if (1. <= seeded_segments_alpha) | (seeded_segments_alpha <= 0.) {
+            panic!(
+                "seeded_segments_alpha needs to be strictly between 0 and 1. Got {}",
+                seeded_segments_alpha
+            );
+        }
         self.seeded_segments_alpha = seeded_segments_alpha;
         self
     }
