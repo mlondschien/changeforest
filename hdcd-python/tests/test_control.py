@@ -31,4 +31,4 @@ def test_control_model_selection_parameters(iris_dataset, method, segmentation_t
 ])
 def test_control_segmentation_parameters(iris_dataset, segmentation_type, kwargs, expected_number_of_segments):
     result = hdcd(iris_dataset, "change_in_mean", segmentation_type, Control(**kwargs))
-    # assert(len(result.segments) == expected_number_of_segments)
+    assert(len(result.segments) == expected_number_of_segments)

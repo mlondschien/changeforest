@@ -166,6 +166,18 @@ impl MyBinarySegmentationResult {
             })
     }
 
+    #[getter]
+    fn segments(&self) -> Option<Vec<MyOptimizerResult>> {
+        self.result.segments.as_ref().map(|segments| {
+            segments
+                .iter()
+                .map(|result| MyOptimizerResult {
+                    result: result.clone(),
+                })
+                .collect()
+        })
+    }
+
     fn split_points(&self) -> Vec<usize> {
         self.result.split_points()
     }
