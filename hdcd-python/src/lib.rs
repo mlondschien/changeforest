@@ -1,3 +1,6 @@
+mod result;
+
+use crate::result::MyBinarySegmentationResult;
 use hdcd::{wrapper, Control};
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
@@ -10,9 +13,11 @@ fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         X: PyReadonlyArray2<'py, f64>,
         method: String,
         segmentation_type: String,
-    ) -> PyResult<Vec<usize>> {
+    ) -> PyResult<MyBinarySegmentationResult> {
         let control = Control::default();
-        Ok(wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control).split_points())
+        Ok(MyBinarySegmentationResult {
+            result: wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control),
+        })
     }
     Ok(())
 }
