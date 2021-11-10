@@ -1,20 +1,26 @@
+mod control;
 mod result;
 
+use crate::control::control_from_pyobj;
 use crate::result::MyBinarySegmentationResult;
 use hdcd::{wrapper, Control};
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
+use pyo3::PyObject;
 
+// Note: This has to match the lib.name in Cargo.toml.
 #[allow(non_snake_case)] // Allow capital X for arrays.
 #[pymodule]
-fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn hdcd(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     #[pyfn(m)]
     fn hdcd(
+        py: Python<'_>,
         X: PyReadonlyArray2<f64>,
         method: String,
         segmentation_type: String,
+        control: Option<PyObject>,
     ) -> PyResult<MyBinarySegmentationResult> {
-        let control = Control::default();
+        let control = control_from_pyobj(py, control).unwrap();
         Ok(MyBinarySegmentationResult {
             result: wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control),
         })
