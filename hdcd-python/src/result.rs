@@ -5,9 +5,7 @@ use hdcd::gain::GainResult;
 use hdcd::optimizer::OptimizerResult;
 use hdcd::BinarySegmentationResult;
 use numpy::{PyArray1, PyArray2, ToPyArray};
-use pyo3;
-use pyo3::prelude::*; //{pymodule, getter, pymethods, pyclass, PyModule, PyResult, Python};
-use pyo3::{class, Python};
+use pyo3::prelude::*;
 
 #[pyclass]
 #[derive(Clone, Debug)]

@@ -9,8 +9,8 @@ use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 #[pymodule]
 fn hdcdpython(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     #[pyfn(m)]
-    fn hdcd<'py>(
-        X: PyReadonlyArray2<'py, f64>,
+    fn hdcd(
+        X: PyReadonlyArray2<f64>,
         method: String,
         segmentation_type: String,
     ) -> PyResult<MyBinarySegmentationResult> {
