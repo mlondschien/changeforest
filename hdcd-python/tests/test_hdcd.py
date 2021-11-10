@@ -16,4 +16,5 @@ def iris_dataset():
 @pytest.mark.parametrize("segmentation_type", ["sbs", "wbs", "bs"])
 def test_hdcd(iris_dataset, method, segmentation_type):
     result = hdcd(iris_dataset, method, segmentation_type)
-    np.testing.assert_array_equal(result, [50, 100])
+    np.testing.assert_array_equal(result.split_points(), [50, 100])
+    
