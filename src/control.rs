@@ -1,4 +1,4 @@
-/// Storage container for hyperparameters
+/// Storage container for hyperparameters.
 #[derive(Copy, Clone, Debug)]
 pub struct Control {
     /// Segments with length smaller than `2 * n * minimal_relative_segment_length` will
@@ -18,7 +18,7 @@ pub struct Control {
     /// https://arxiv.org/pdf/2002.06633.pdf.
     pub seeded_segments_alpha: f64,
     /// Seed used for segmentation.
-    pub seed: usize,
+    pub seed: u64,
     /// Hyperparameters for random forests. See https://docs.rs/smartcore/0.2.0/smartco\
     /// re/ensemble/random_forest_classifier/struct.RandomForestClassifierParameters.html
     /// for details
@@ -84,7 +84,7 @@ impl Control {
         self
     }
 
-    pub fn with_seed(mut self, seed: usize) -> Self {
+    pub fn with_seed(mut self, seed: u64) -> Self {
         self.seed = seed;
         self
     }

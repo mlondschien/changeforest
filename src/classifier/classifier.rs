@@ -1,4 +1,5 @@
 use crate::utils::log_eta;
+use crate::Control;
 use ndarray::{s, stack, Array1, Array2, Axis};
 
 pub trait Classifier {
@@ -57,4 +58,6 @@ pub trait Classifier {
 
         likelihoods
     }
+
+    fn control(&self) -> &Control;
 }
