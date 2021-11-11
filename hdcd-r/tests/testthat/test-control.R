@@ -25,5 +25,17 @@ test_that("control", {
     # number_of_wild_segments
     expect_equal(length(hdcd(X_iris, "change_in_mean", "wbs", Control$new(number_of_wild_segments=10))$segments), 10)
     expect_equal(length(hdcd(X_iris, "change_in_mean", "wbs", Control$new(number_of_wild_segments=5))$segments), 5)
+
+    # seed
+    result = hdcd(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=42))
+    expect_equal(result$segments[[1]]$start, 5)
+    expect_equal(result$segments[[1]]$max_gain, 17.44774, tolerance=1e-5)
+    result = hdcd(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=12))
+    expect_equal(result$segments[[1]]$start, 21)
+    expect_equal(result$segments[[1]]$max_gain, 45.43954, tolerance=1e-5)
+
+    # random_forest_ntree
+    expect_lists_equal(hdcd(X_iris, "random_forest", "bs", Control$new(random_forest_ntree=1))$split_points(), c(48, 98))
+    expect_lists_equal(hdcd(X_iris, "random_forest", "bs", Control$new(random_forest_ntree=100))$split_points(), c(50, 100))
 })
 
