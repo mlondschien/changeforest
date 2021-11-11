@@ -168,11 +168,8 @@ mod tests {
         assert_eq!(X_view.shape(), &[100, 5]);
 
         let control = Control::default();
-        let gain = testing::ChangeInMean::new(&X_view);
-        let optimizer = GridSearch {
-            gain,
-            control: &control,
-        };
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let optimizer = GridSearch { gain };
         let mut segmentation = Segmentation::new(SegmentationType::BS, &optimizer);
         let mut binary_segmentation = BinarySegmentationTree::new(&X_view);
 
@@ -192,13 +189,9 @@ mod tests {
         let X_view = X.view();
 
         assert_eq!(X_view.shape(), &[100, 5]);
-
         let control = Control::default();
-        let gain = testing::ChangeInMean::new(&X_view);
-        let optimizer = GridSearch {
-            gain,
-            control: &control,
-        };
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let optimizer = GridSearch { gain };
         let mut segmentation = Segmentation::new(SegmentationType::SBS, &optimizer);
         let mut tree = BinarySegmentationTree::new(&X_view);
 

@@ -120,15 +120,10 @@ mod tests {
     fn test_two_step_search(#[case] start: usize, #[case] stop: usize, #[case] expected: usize) {
         let X = testing::array();
         let X_view = X.view();
-        let control = Control::default();
-
+        let control = Control::default().with_minimal_relative_segment_length(0.01);
         let classifier = RandomForest::new(&X_view, &control);
         let gain = ClassifierGain { classifier };
-        let control = Control::default().with_minimal_relative_segment_length(0.01);
-        let optimizer = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+        let optimizer = TwoStepSearch { gain };
 
         assert_eq!(
             expected,

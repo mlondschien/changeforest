@@ -5,13 +5,15 @@ use std::cell::{Ref, RefCell};
 pub struct ChangeInMean<'a, 'b> {
     X: &'a ndarray::ArrayView2<'b, f64>,
     X_cumsum: RefCell<Option<ndarray::Array2<f64>>>,
+    control: &'a Control,
 }
 
 impl<'a, 'b> ChangeInMean<'a, 'b> {
-    pub fn new(X: &'a ndarray::ArrayView2<'b, f64>) -> ChangeInMean<'a, 'b> {
+    pub fn new(X: &'a ndarray::ArrayView2<'b, f64>, control: &'a Control) -> ChangeInMean<'a, 'b> {
         ChangeInMean {
             X,
             X_cumsum: RefCell::new(Option::None),
+            control,
         }
     }
 
@@ -58,8 +60,12 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         result / (s * s_1 * s_2)
     }
 
-    fn is_significant(&self, max_gain: f64, _: &GainResult, control: &Control) -> bool {
-        max_gain > control.minimal_gain_to_split * (self.n() as f64)
+    fn is_significant(&self, max_gain: f64, _: &GainResult) -> bool {
+        max_gain > self.control.minimal_gain_to_split * (self.n() as f64)
+    }
+
+    fn control(&self) -> &Control {
+        self.control
     }
 }
 
@@ -75,8 +81,9 @@ mod tests {
     fn test_X_cumsum() {
         let X = ndarray::array![[1., 0.], [1., 0.], [1., 1.], [1., 1.]];
         let X_view = X.view();
+        let control = Control::default();
 
-        let change_in_mean = ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view, &control);
         let X_cumsum = change_in_mean.calculate_cumsum();
 
         let expected = ndarray::array![[0., 0.], [1., 0.], [2., 0.], [3., 1.], [4., 2.]];
@@ -90,11 +97,12 @@ mod tests {
     fn test_smart_change_in_mean_gain(#[case] start: usize, #[case] stop: usize) {
         let X = testing::array();
         let X_view = X.view();
+        let control = Control::default();
 
         assert_eq!(X_view.shape(), &[100, 5]);
 
-        let change_in_mean = ChangeInMean::new(&X_view);
-        let simple_change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view, &control);
+        let simple_change_in_mean = testing::ChangeInMean::new(&X_view, &control);
 
         for split in start..stop {
             assert_approx_eq!(
