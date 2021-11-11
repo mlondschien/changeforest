@@ -2,12 +2,11 @@ use crate::gain::{ApproxGain, GainResult};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
 
-pub struct TwoStepSearch<'a, T: Gain> {
+pub struct TwoStepSearch<T: Gain> {
     pub gain: T,
-    pub control: &'a Control,
 }
 
-impl<'a, T> Optimizer for TwoStepSearch<'a, T>
+impl<T> Optimizer for TwoStepSearch<T>
 where
     T: ApproxGain + Gain,
 {
@@ -16,7 +15,7 @@ where
     }
 
     fn control(&self) -> &Control {
-        self.control
+        self.gain.control()
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
@@ -66,7 +65,7 @@ where
     fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
         let gain_result = optimizer_result.gain_results.last().unwrap();
         self.gain
-            .is_significant(optimizer_result.max_gain, gain_result, self.control())
+            .is_significant(optimizer_result.max_gain, gain_result)
     }
 }
 
@@ -104,13 +103,10 @@ mod tests {
         ];
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[7, 2]);
-
-        let gain = testing::ChangeInMean::new(&X_view);
         let control = Control::default().with_minimal_relative_segment_length(0.01);
-        let two_step_search = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let two_step_search = TwoStepSearch { gain };
 
         assert_eq!(
             two_step_search

@@ -26,24 +26,24 @@ pub fn hdcd(
     }
 
     if method == "knn" {
-        let classifier = kNN::new(X);
+        let classifier = kNN::new(X, control);
         let gain = ClassifierGain { classifier };
-        let optimizer = TwoStepSearch { gain, control };
+        let optimizer = TwoStepSearch { gain };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else if method == "random_forest" {
-        let classifier = RandomForest::new(X);
+        let classifier = RandomForest::new(X, control);
         let gain = ClassifierGain { classifier };
-        let optimizer = TwoStepSearch { gain, control };
+        let optimizer = TwoStepSearch { gain };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else if method == "change_in_mean" {
-        let gain = ChangeInMean::new(X);
-        let optimizer = GridSearch { gain, control };
+        let gain = ChangeInMean::new(X, control);
+        let optimizer = GridSearch { gain };
         let mut segmentation = Segmentation::new(segmentation_type_enum, &optimizer);
         tree = BinarySegmentationTree::new(X);
         tree.grow(&mut segmentation);

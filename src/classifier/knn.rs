@@ -1,4 +1,4 @@
-use crate::Classifier;
+use crate::{Classifier, Control};
 use ndarray::{s, Array1, Array2, ArrayView2, Axis};
 use std::cell::{Ref, RefCell};
 
@@ -6,13 +6,15 @@ use std::cell::{Ref, RefCell};
 pub struct kNN<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
     ordering: RefCell<Option<Array2<usize>>>,
+    control: &'a Control,
 }
 
 impl<'a, 'b> kNN<'a, 'b> {
-    pub fn new(X: &'a ArrayView2<'b, f64>) -> kNN<'a, 'b> {
+    pub fn new(X: &'a ArrayView2<'b, f64>, control: &'a Control) -> kNN<'a, 'b> {
         kNN {
             X,
             ordering: RefCell::new(Option::None),
+            control,
         }
     }
 
@@ -85,12 +87,15 @@ impl<'a, 'b> Classifier for kNN<'a, 'b> {
 
         predictions
     }
+
+    fn control(&self) -> &Control {
+        self.control
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::control;
     use crate::gain::{ApproxGain, ClassifierGain, Gain};
     use crate::optimizer::{Optimizer, TwoStepSearch};
     use crate::testing;
@@ -102,8 +107,9 @@ mod tests {
     fn test_X_ordering() {
         let X = ndarray::array![[1.], [1.5], [3.], [-0.5]];
         let X_view = X.view();
+        let control = Control::default();
 
-        let knn = kNN::new(&X_view);
+        let knn = kNN::new(&X_view, &control);
         let ordering = knn.calculate_ordering();
         let expected = ndarray::array![[0, 1, 3, 2], [1, 0, 2, 3], [2, 1, 0, 3], [3, 0, 1, 2]];
         assert_eq!(ordering, expected)
@@ -131,8 +137,9 @@ mod tests {
             [2.5, 2.5]
         ];
         let X_view = X.view();
+        let control = Control::default();
 
-        let knn = kNN::new(&X_view);
+        let knn = kNN::new(&X_view, &control);
         let predictions = knn.predict(start, stop, split);
 
         assert_eq!(predictions, expected);
@@ -151,8 +158,9 @@ mod tests {
             [2.5, 2.5]
         ];
         let X_view = X.view();
+        let control = Control::default();
 
-        let knn = kNN::new(&X_view);
+        let knn = kNN::new(&X_view, &control);
         let knn_gain = ClassifierGain { classifier: knn };
 
         let split_points: Vec<usize> = (start..stop).collect();
@@ -175,14 +183,11 @@ mod tests {
     fn test_two_step_search(#[case] start: usize, #[case] stop: usize, #[case] expected: usize) {
         let X = testing::array();
         let X_view = X.view();
+        let control = Control::default().with_minimal_relative_segment_length(0.01);
 
-        let classifier = kNN::new(&X_view);
+        let classifier = kNN::new(&X_view, &control);
         let gain = ClassifierGain { classifier };
-        let control = control::Control::default().with_minimal_relative_segment_length(0.01);
-        let optimizer = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+        let optimizer = TwoStepSearch { gain };
 
         assert_eq!(
             expected,

@@ -1,4 +1,4 @@
-use crate::Classifier;
+use crate::{Classifier, Control};
 use ndarray::{s, Array1, ArrayView2};
 use smartcore::ensemble::random_forest_regressor::{
     RandomForestRegressor, RandomForestRegressorParameters,
@@ -7,12 +7,13 @@ use smartcore::ensemble::random_forest_regressor::{
 #[allow(non_camel_case_types)]
 pub struct RandomForest<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
+    control: &'a Control,
 }
 
 impl<'a, 'b> RandomForest<'a, 'b> {
     #[allow(dead_code)]
-    pub fn new(X: &'a ArrayView2<'b, f64>) -> RandomForest<'a, 'b> {
-        RandomForest { X }
+    pub fn new(X: &'a ArrayView2<'b, f64>, control: &'a Control) -> RandomForest<'a, 'b> {
+        RandomForest { X, control }
     }
 }
 
@@ -41,6 +42,10 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
         )
         .and_then(|rf| rf.predict_oob(&X_slice))
         .unwrap()
+    }
+
+    fn control(&self) -> &Control {
+        self.control
     }
 }
 
@@ -86,14 +91,10 @@ mod tests {
     fn test_two_step_search(#[case] start: usize, #[case] stop: usize, #[case] expected: usize) {
         let X = testing::array();
         let X_view = X.view();
-
-        let classifier = RandomForest::new(&X_view);
-        let gain = ClassifierGain { classifier };
         let control = Control::default().with_minimal_relative_segment_length(0.01);
-        let optimizer = TwoStepSearch {
-            gain,
-            control: &control,
-        };
+        let classifier = RandomForest::new(&X_view, &control);
+        let gain = ClassifierGain { classifier };
+        let optimizer = TwoStepSearch { gain };
 
         assert_eq!(
             expected,

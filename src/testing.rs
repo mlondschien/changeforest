@@ -9,12 +9,13 @@ use rand::SeedableRng;
 
 pub struct ChangeInMean<'a> {
     X: &'a ndarray::ArrayView2<'a, f64>,
+    control: &'a Control,
 }
 
 impl<'a> ChangeInMean<'a> {
     #[allow(dead_code)]
-    pub fn new(X: &'a ArrayView2<'a, f64>) -> ChangeInMean<'a> {
-        ChangeInMean { X }
+    pub fn new(X: &'a ArrayView2<'a, f64>, control: &'a Control) -> ChangeInMean<'a> {
+        ChangeInMean { X, control }
     }
 }
 
@@ -41,8 +42,12 @@ impl<'a> Gain for ChangeInMean<'a> {
         loss
     }
 
-    fn is_significant(&self, max_gain: f64, _: &GainResult, control: &Control) -> bool {
-        max_gain > control.minimal_gain_to_split * (self.n() as f64)
+    fn is_significant(&self, max_gain: f64, _: &GainResult) -> bool {
+        max_gain > self.control.minimal_gain_to_split * (self.n() as f64)
+    }
+
+    fn control(&self) -> &Control {
+        self.control
     }
 }
 
@@ -154,8 +159,9 @@ mod tests {
     fn test_loss(#[case] start: usize, #[case] stop: usize, #[case] expected: f64) {
         let X = ndarray::array![[0.], [0.], [0.], [1.], [1.], [1.]];
         let X_view = X.view();
+        let control = Control::default();
 
-        let change_in_mean = ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view, &control);
         assert_eq!(change_in_mean.loss(start, stop), expected)
     }
 
@@ -170,8 +176,9 @@ mod tests {
     ) {
         let X = ndarray::array![[0.], [0.], [0.], [1.], [1.], [1.]];
         let X_view = X.view();
+        let control = Control::default();
 
-        let change_in_mean = ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view, &control);
         let split_points: Vec<usize> = (start..stop).collect();
 
         let approx_gain_result = change_in_mean.gain_approx(start, stop, guess, &split_points);
@@ -190,8 +197,9 @@ mod tests {
     fn test_compare_approx_to_normal_gain(#[case] start: usize, #[case] stop: usize) {
         let X = array();
         let X_view = X.view();
+        let control = Control::default();
 
-        let change_in_mean = ChangeInMean::new(&X_view);
+        let change_in_mean = ChangeInMean::new(&X_view, &control);
         let split_points: Vec<usize> = (start..stop).collect();
 
         for guess in start..stop {

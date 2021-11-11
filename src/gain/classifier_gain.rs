@@ -24,7 +24,7 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
-    fn is_significant(&self, _: f64, gain_result: &GainResult, control: &Control) -> bool {
+    fn is_significant(&self, _: f64, gain_result: &GainResult) -> bool {
         let likelihoods: &Array2<f64>;
         let start: usize;
         let stop: usize;
@@ -66,7 +66,11 @@ where
                 }
             }
         }
-        (p_value as f64 / (n_permutations + 1) as f64) < control.model_selection_alpha
+        (p_value as f64 / (n_permutations + 1) as f64) < self.control().model_selection_alpha
+    }
+
+    fn control(&self) -> &Control {
+        self.classifier.control()
     }
 }
 

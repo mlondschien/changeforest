@@ -34,7 +34,10 @@ pub trait Gain {
     }
 
     /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, max_gain: f64, gain_result: &GainResult, control: &Control) -> bool;
+    fn is_significant(&self, max_gain: f64, gain_result: &GainResult) -> bool;
+
+    /// Hyperparameters.
+    fn control(&self) -> &Control;
 }
 
 pub trait ApproxGain {
@@ -74,9 +77,10 @@ mod tests {
         let X = ndarray::array![[0., 0.], [0., 0.], [0., 1.], [0., 1.]];
         let X_view = X.view();
 
+        let control = Control::default();
         assert_eq!(X.shape(), &[4, 2]);
 
-        let change_in_mean = testing::ChangeInMean::new(&X_view);
+        let change_in_mean = testing::ChangeInMean::new(&X_view, &control);
         assert_approx_eq!(change_in_mean.loss(start, stop), expected);
     }
 
@@ -103,7 +107,8 @@ mod tests {
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[6, 2]);
 
-        let change_in_mean = testing::ChangeInMean::new(&X_view);
+        let control = Control::default();
+        let change_in_mean = testing::ChangeInMean::new(&X_view, &control);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
             change_in_mean.gain_full(start, stop, &vec![split]).gain[split - start],

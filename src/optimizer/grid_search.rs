@@ -2,12 +2,11 @@ use crate::gain::GainResult;
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, Optimizer};
 
-pub struct GridSearch<'a, T: Gain> {
+pub struct GridSearch<T: Gain> {
     pub gain: T,
-    pub control: &'a Control,
 }
 
-impl<'a, T> Optimizer for GridSearch<'a, T>
+impl<T> Optimizer for GridSearch<T>
 where
     T: Gain,
 {
@@ -16,7 +15,7 @@ where
     }
 
     fn control(&self) -> &Control {
-        self.control
+        self.gain.control()
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
@@ -50,7 +49,7 @@ where
     fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
         let gain_result = optimizer_result.gain_results.last().unwrap();
         self.gain
-            .is_significant(optimizer_result.max_gain, gain_result, self.control())
+            .is_significant(optimizer_result.max_gain, gain_result)
     }
 }
 
@@ -88,13 +87,10 @@ mod tests {
         ];
         let X_view = X.view();
         assert_eq!(X_view.shape(), &[7, 2]);
-
-        let gain = testing::ChangeInMean::new(&X_view);
         let control = Control::default().with_minimal_relative_segment_length(0.1);
-        let grid_search = GridSearch {
-            gain,
-            control: &control,
-        };
+
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let grid_search = GridSearch { gain };
         assert_eq!(
             grid_search.find_best_split(start, stop).unwrap().best_split,
             expected
