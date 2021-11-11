@@ -43,8 +43,9 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
         };
 
         if let Ok(pyvalue) = obj.getattr(py, "random_forest_ntrees") {
-            if let Ok(value) = pyvalue.extract::<(usize,)>(py) {
-                control = control.with_random_forest_ntrees(value.0);
+            // This is weird. Here we don't extract a tuple but a value.
+            if let Ok(value) = pyvalue.extract::<usize>(py) {
+                control = control.with_random_forest_ntrees(value);
             }
         };
 

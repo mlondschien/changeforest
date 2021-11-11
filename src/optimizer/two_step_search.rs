@@ -29,7 +29,7 @@ where
             self.gain
                 .gain_approx(start, stop, (start + stop) / 2, &split_candidates);
 
-        let mut best_split = 0;
+        let mut best_split = (start + stop) / 2;
         let mut max_gain = -f64::INFINITY;
 
         for index in &split_candidates {

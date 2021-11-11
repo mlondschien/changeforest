@@ -28,7 +28,7 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
 
         let X_slice = self.X.slice(s![start..stop, ..]).to_owned();
 
-        RandomForestRegressor::fit(
+        let mut predictions = RandomForestRegressor::fit(
             &X_slice,
             &y,
             RandomForestRegressorParameters {
@@ -42,7 +42,25 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
             },
         )
         .and_then(|rf| rf.predict_oob(&X_slice))
-        .unwrap()
+        .unwrap();
+
+        // For a very small n_trees, the predictions may be NaN. In this case use the
+        // prior. Note that we need to adjust by -1 because the predictions are oob.
+        predictions
+            .slice_mut(s![0..(split - start)])
+            .map_inplace(|x| {
+                if x.is_nan() {
+                    *x = (stop - split) as f64 / (stop - start - 1) as f64
+                }
+            });
+        predictions
+            .slice_mut(s![(split - start)..])
+            .map_inplace(|x| {
+                if x.is_nan() {
+                    *x = (stop - split - 1) as f64 / (stop - start - 1) as f64
+                }
+            });
+        predictions
     }
 
     fn control(&self) -> &Control {
@@ -66,7 +84,7 @@ mod tests {
     // What a difference a seed can make.
     #[case(0, 6, 2, 87, 100, arr1(&[0.70, 0.44, 0.0, 1.0, 1.0, 0.95]))]
     #[case(0, 6, 4, 0, 100, arr1(&[0.09, 0.071, 0.08, 0.97, 0.29, 0.18]))]
-    #[case(0, 6, 2, 0, 10, arr1(&[f64::NAN, 0.125, 0., 1., 1., 1.]))]
+    #[case(0, 6, 2, 0, 10, arr1(&[0.2, 0.125, 0., 1., 1., 1.]))]
     fn test_predictions(
         #[case] start: usize,
         #[case] stop: usize,
@@ -88,14 +106,10 @@ mod tests {
             .with_seed(seed)
             .with_random_forest_ntrees(random_forest_ntrees);
 
-        let knn = RandomForest::new(&X_view, &control);
-        let predictions = knn.predict(start, stop, split);
+        let rf = RandomForest::new(&X_view, &control);
+        let predictions = rf.predict(start, stop, split);
 
-        for (p, e) in predictions
-            .iter()
-            .zip(expected)
-            .filter(|(x, y)| !x.is_nan() && !y.is_nan())
-        {
+        for (p, e) in predictions.iter().zip(expected) {
             assert_approx_eq!(p, e, 1e-2);
         }
     }
