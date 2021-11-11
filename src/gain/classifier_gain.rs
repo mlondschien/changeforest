@@ -2,6 +2,7 @@ use crate::control::Control;
 use crate::gain::{ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::Classifier;
 use ndarray::{s, Array1, Array2, Axis};
+use rand::{rngs::StdRng, SeedableRng};
 
 pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,
@@ -40,7 +41,7 @@ where
         let delta = &likelihoods.slice(s![0, ..]) - &likelihoods.slice(s![1, ..]);
         let n_permutations = 99;
 
-        let mut rng = rand::thread_rng();
+        let mut rng = StdRng::seed_from_u64(self.classifier.control().seed);
 
         let mut max_gain = 0.;
         let mut value = 0.;

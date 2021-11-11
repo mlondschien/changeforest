@@ -62,7 +62,7 @@ impl<'a> Segmentation<'a> {
                 }
             }
             SegmentationType::WBS => {
-                let mut rng = StdRng::seed_from_u64(optimizer.control().seed as u64);
+                let mut rng = StdRng::seed_from_u64(optimizer.control().seed);
                 let dist = Uniform::from(0..(optimizer.n() + 1));
 
                 let mut start: usize;

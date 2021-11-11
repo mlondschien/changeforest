@@ -35,7 +35,7 @@ impl<'a> FromRobj<'a> for MyControl {
         }
 
         if let Some(value) = robj.dollar("seed").unwrap().as_real() {
-            control = control.with_seed(value as usize);
+            control = control.with_seed(value as u64);
         }
 
         if let Some(value) = robj.dollar("random_forest_ntrees").unwrap().as_real() {

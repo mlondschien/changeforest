@@ -28,20 +28,39 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
 
         let X_slice = self.X.slice(s![start..stop, ..]).to_owned();
 
-        RandomForestRegressor::fit(
+        let mut predictions = RandomForestRegressor::fit(
             &X_slice,
             &y,
             RandomForestRegressorParameters {
                 max_depth: Some(4),
                 min_samples_leaf: 1,
                 min_samples_split: 2,
-                n_trees: 100,
+                n_trees: self.control.random_forest_ntrees,
                 m: Option::None,
                 keep_samples: true,
+                seed: self.control.seed,
             },
         )
         .and_then(|rf| rf.predict_oob(&X_slice))
-        .unwrap()
+        .unwrap();
+
+        // For a very small n_trees, the predictions may be NaN. In this case use the
+        // prior. Note that we need to adjust by -1 because the predictions are oob.
+        predictions
+            .slice_mut(s![0..(split - start)])
+            .map_inplace(|x| {
+                if x.is_nan() {
+                    *x = (stop - split) as f64 / (stop - start - 1) as f64
+                }
+            });
+        predictions
+            .slice_mut(s![(split - start)..])
+            .map_inplace(|x| {
+                if x.is_nan() {
+                    *x = (stop - split - 1) as f64 / (stop - start - 1) as f64
+                }
+            });
+        predictions
     }
 
     fn control(&self) -> &Control {
@@ -56,34 +75,44 @@ mod tests {
     use crate::optimizer::{Optimizer, TwoStepSearch};
     use crate::testing;
     use crate::Control;
+    use assert_approx_eq::*;
+    use ndarray::arr1;
     use rstest::*;
 
-    // TODO: Impossible without seed in RandomForestRegressorParameters
-    // #[rstest]
-    // #[case(0, 6, 2, arr1(&[0.66, 0.37, 0.04, 0.89, 0.94, 0.88]))]
-    // fn test_predictions(
-    //     #[case] start: usize,
-    //     #[case] stop: usize,
-    //     #[case] split: usize,
-    //     #[case] expected: Array1<f64>,
-    // ) {
-    //     let X = ndarray::array![
-    //         [1., 1.],
-    //         [1.5, 1.],
-    //         [0.5, 1.],
-    //         [3., 3.],
-    //         [4.5, 3.],
-    //         [2.5, 2.5]
-    //     ];
-    //     let X_view = X.view();
+    #[rstest]
+    #[case(0, 6, 2, 0, 100, arr1(&[0.72, 0.32, 0.057, 0.89, 0.95, 0.91]))]
+    // What a difference a seed can make.
+    #[case(0, 6, 2, 87, 100, arr1(&[0.70, 0.44, 0.0, 1.0, 1.0, 0.95]))]
+    #[case(0, 6, 4, 0, 100, arr1(&[0.09, 0.071, 0.08, 0.97, 0.29, 0.18]))]
+    #[case(0, 6, 2, 0, 10, arr1(&[0.8, 0.125, 0., 1., 1., 1.]))]
+    fn test_predictions(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] split: usize,
+        #[case] seed: u64,
+        #[case] random_forest_ntrees: usize,
+        #[case] expected: Array1<f64>,
+    ) {
+        let X = ndarray::array![
+            [1., 1.],
+            [1.5, 1.],
+            [0.5, 1.],
+            [3., 3.],
+            [4.5, 3.],
+            [2.5, 2.5]
+        ];
+        let X_view = X.view();
+        let control = Control::default()
+            .with_seed(seed)
+            .with_random_forest_ntrees(random_forest_ntrees);
 
-    //     let knn = RandomForest::new(&X_view);
-    //     let predictions = knn.predict(start, stop, split);
+        let rf = RandomForest::new(&X_view, &control);
+        let predictions = rf.predict(start, stop, split);
 
-    //     for (p, e) in predictions.iter().zip(expected) {
-    //         assert_approx_eq!(p, e, 1e-2);
-    //     }
-    // }
+        for (p, e) in predictions.iter().zip(expected) {
+            assert_approx_eq!(p, e, 1e-2);
+        }
+    }
 
     #[rstest]
     #[case(0, 100, 40)]
