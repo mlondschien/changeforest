@@ -14,6 +14,10 @@ import numpy as np
     # model_selection_alpha
     ("bs", "knn", {"model_selection_alpha": 0.001}, []),
     ("bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
+    # random_forest_ntree
+    # This is impressive and unexpected.
+    ("bs", "random_forest", {"random_forest_ntrees": 1}, [48, 98]),
+    ("bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
 ])
 def test_control_model_selection_parameters(iris_dataset, method, segmentation_type, kwargs, expected):
     result = hdcd(iris_dataset, method, segmentation_type, Control(**kwargs))
@@ -32,3 +36,13 @@ def test_control_model_selection_parameters(iris_dataset, method, segmentation_t
 def test_control_segmentation_parameters(iris_dataset, segmentation_type, kwargs, expected_number_of_segments):
     result = hdcd(iris_dataset, "change_in_mean", segmentation_type, Control(**kwargs))
     assert(len(result.segments) == expected_number_of_segments)
+
+
+def test_control_seed(iris_dataset):
+    result = hdcd(iris_dataset, "random_forest", "wbs", Control(seed=42, number_of_wild_segments=10))
+    assert result.segments[0].start == 5
+    assert abs(result.segments[0].max_gain - 17.44774) < 1e-5
+    
+    result = hdcd(iris_dataset, "random_forest", "wbs", Control(seed=12, number_of_wild_segments=10))
+    assert result.segments[0].start == 21
+    assert abs(result.segments[0].max_gain - 45.43954) < 1e-5
