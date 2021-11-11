@@ -62,15 +62,17 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(0, 6, 2, 0, arr1(&[0.72, 0.32, 0.057, 0.89, 0.95, 0.91]))]
+    #[case(0, 6, 2, 0, 100, arr1(&[0.72, 0.32, 0.057, 0.89, 0.95, 0.91]))]
     // What a difference a seed can make.
-    #[case(0, 6, 2, 87, arr1(&[0.70, 0.44, 0.0, 1.0, 1.0, 0.95]))]
-    #[case(0, 6, 4, 0, arr1(&[0.09, 0.071, 0.08, 0.97, 0.29, 0.18]))]
+    #[case(0, 6, 2, 87, 100, arr1(&[0.70, 0.44, 0.0, 1.0, 1.0, 0.95]))]
+    #[case(0, 6, 4, 0, 100, arr1(&[0.09, 0.071, 0.08, 0.97, 0.29, 0.18]))]
+    #[case(0, 6, 2, 0, 10, arr1(&[f64::NAN, 0.125, 0., 1., 1., 1.]))]
     fn test_predictions(
         #[case] start: usize,
         #[case] stop: usize,
         #[case] split: usize,
         #[case] seed: u64,
+        #[case] random_forest_ntrees: usize,
         #[case] expected: Array1<f64>,
     ) {
         let X = ndarray::array![
@@ -82,12 +84,18 @@ mod tests {
             [2.5, 2.5]
         ];
         let X_view = X.view();
-        let control = Control::default().with_seed(seed);
+        let control = Control::default()
+            .with_seed(seed)
+            .with_random_forest_ntrees(random_forest_ntrees);
 
         let knn = RandomForest::new(&X_view, &control);
         let predictions = knn.predict(start, stop, split);
 
-        for (p, e) in predictions.iter().zip(expected) {
+        for (p, e) in predictions
+            .iter()
+            .zip(expected)
+            .filter(|(x, y)| !x.is_nan() && !y.is_nan())
+        {
             assert_approx_eq!(p, e, 1e-2);
         }
     }
