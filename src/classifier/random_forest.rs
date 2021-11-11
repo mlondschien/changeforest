@@ -84,7 +84,7 @@ mod tests {
     // What a difference a seed can make.
     #[case(0, 6, 2, 87, 100, arr1(&[0.70, 0.44, 0.0, 1.0, 1.0, 0.95]))]
     #[case(0, 6, 4, 0, 100, arr1(&[0.09, 0.071, 0.08, 0.97, 0.29, 0.18]))]
-    #[case(0, 6, 2, 0, 10, arr1(&[0.2, 0.125, 0., 1., 1., 1.]))]
+    #[case(0, 6, 2, 0, 10, arr1(&[0.8, 0.125, 0., 1., 1., 1.]))]
     fn test_predictions(
         #[case] start: usize,
         #[case] stop: usize,
