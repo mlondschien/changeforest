@@ -1,0 +1,11 @@
+name: hdcd-benchmarks
+channels:
+  - conda-forge/label/asv_dev  # asv
+  - conda-forge
+  - nodefaults
+dependencies:
+  - asv
+  - python >=3.7
+  - scikit-learn
+  - pandas
+  - numpy >=1.19.0

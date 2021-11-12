@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "project": "hdcd",
+    "project_url": "https://github.com/mlondschien/hdcd-rs",
+    "repo": ".",
+    "environment_type": "conda",
+    "show_commit_url": "https://github.com/mlondschien/hdcd-rs/commit/",
+    "pythons": ["3.8"],
+    "conda_channels": ["conda-forge"],
+    "conda_environment_file": "hdcd-python/benchmarks/environment.yml",
+    "benchmark_dir": "hdcd-python/benchmarks",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html"
+}
