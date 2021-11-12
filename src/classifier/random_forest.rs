@@ -4,14 +4,12 @@ use smartcore::ensemble::random_forest_regressor::{
     RandomForestRegressor, RandomForestRegressorParameters,
 };
 
-#[allow(non_camel_case_types)]
 pub struct RandomForest<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
     control: &'a Control,
 }
 
 impl<'a, 'b> RandomForest<'a, 'b> {
-    #[allow(dead_code)]
     pub fn new(X: &'a ArrayView2<'b, f64>, control: &'a Control) -> RandomForest<'a, 'b> {
         RandomForest { X, control }
     }

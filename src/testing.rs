@@ -13,7 +13,6 @@ pub struct ChangeInMean<'a> {
 }
 
 impl<'a> ChangeInMean<'a> {
-    #[allow(dead_code)]
     pub fn new(X: &'a ArrayView2<'a, f64>, control: &'a Control) -> ChangeInMean<'a> {
         ChangeInMean { X, control }
     }
