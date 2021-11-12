@@ -56,7 +56,9 @@ impl<'a> Segmentation<'a> {
                     segment_step = (optimizer.n() as f64 - segment_length) / (n_segments - 1.); // s_k
                     for segment_id in 0..(n_segments as usize) {
                         start = (segment_id as f64 * segment_step) as usize;
-                        stop = start + segment_length.ceil() as usize;
+                        // start + segment_length > n through floating point errors in
+                        // n_segments, e.g. for n = 20'000, alpha_k = 1/sqrt(2), k=6
+                        stop = (start + segment_length.ceil() as usize).min(optimizer.n());
                         segments.push(optimizer.find_best_split(start, stop).unwrap());
                     }
                 }

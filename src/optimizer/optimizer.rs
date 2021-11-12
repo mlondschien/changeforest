@@ -19,8 +19,8 @@ pub trait Optimizer {
     /// Vector with indices of allowed split points.
     fn split_candidates(&self, start: usize, stop: usize) -> Vec<usize> {
         let minimal_segment_length =
-            (self.control().minimal_relative_segment_length * (self.n() as f64)).round() as usize;
-        if 2 * minimal_segment_length > (stop - start) {
+            (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
+        if 2 * minimal_segment_length >= (stop - start) {
             vec![]
         } else {
             ((start + minimal_segment_length)..(stop - minimal_segment_length)).collect()
