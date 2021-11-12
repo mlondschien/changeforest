@@ -1,6 +1,7 @@
+import numpy as np
 import pytest
 from hdcd import hdcd
-import numpy as np
+
 
 @pytest.mark.parametrize("method", ["knn", "change_in_mean", "random_forest"])
 @pytest.mark.parametrize("segmentation_type", ["sbs", "wbs", "bs"])

@@ -3,3 +3,22 @@
     hooks:
     -   id: fmt
     -   id: cargo-check
+    -   id: clippy
+-   repo: https://github.com/Quantco/pre-commit-mirrors-black
+    rev: 19.10b0
+    hooks:
+    -   id: black-conda
+        args:
+        -   --safe
+        -   --target-version=py38
+-   repo: https://github.com/Quantco/pre-commit-mirrors-isort
+    rev: 4.3.21
+    hooks:
+    -   id: isort-conda
+        additional_dependencies: [toml]
+-   repo: https://github.com/Quantco/pre-commit-mirrors-flake8
+    rev: v3.8.4
+    hooks:
+    -   id: flake8-conda
+        args:
+        -   --max-line-length=88
