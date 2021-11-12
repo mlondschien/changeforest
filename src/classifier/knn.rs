@@ -18,7 +18,6 @@ impl<'a, 'b> kNN<'a, 'b> {
         }
     }
 
-    #[allow(dead_code)]
     fn calculate_ordering(&self) -> Array2<usize> {
         let n = self.X.nrows();
         let mut distances = Array2::<f64>::zeros((n, n));
