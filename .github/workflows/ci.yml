@@ -32,7 +32,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test --lib  # Don't run integration tests
+          command: test
+          args: --lib  # Don't run integration tests
 
   integration-tests:
     name:  Integration Tests
@@ -46,7 +47,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test --release --test test_integration  # Only run integration tests
+          command: test
+          args: --release --test test_integration  # Only run integration tests
 
   fmt:
     name: Rustfmt
