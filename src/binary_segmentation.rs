@@ -2,7 +2,6 @@ use crate::gain::GainResult;
 use crate::optimizer::OptimizerResult;
 use crate::Segmentation;
 
-#[allow(dead_code)]
 pub struct BinarySegmentationTree {
     pub start: usize,
     pub stop: usize,
@@ -15,7 +14,6 @@ pub struct BinarySegmentationTree {
     pub optimizer_result: Option<OptimizerResult>,
 }
 
-#[allow(dead_code)]
 impl BinarySegmentationTree {
     pub fn new(X: &ndarray::ArrayView2<'_, f64>) -> BinarySegmentationTree {
         BinarySegmentationTree {
