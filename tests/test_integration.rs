@@ -39,8 +39,7 @@ fn test_integration_iris(#[case] method: &str, #[case] segmentation_type: &str) 
 #[case("random_forest", "bs")]
 #[case("random_forest", "sbs")]
 #[case("random_forest", "wbs")]
-// These are slow. Only run them with --release, i.e. cargo test --release -- --ignored
-#[ignore]
+// These are slow. Only run them with --release, i.e. cargo test --release
 fn test_integration_letters(#[case] method: &str, #[case] segmentation_type: &str) {
     let file = File::open("testdata/letters.csv").unwrap();
     let mut reader = ReaderBuilder::new().has_headers(true).from_reader(file);
