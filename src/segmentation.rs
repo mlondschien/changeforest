@@ -42,7 +42,7 @@ impl<'a> Segmentation<'a> {
                 // See Definition 1 of https://arxiv.org/pdf/2002.06633.pdf
                 let n_layers = ((minimal_segment_length / optimizer.n() as f64).ln()
                     / optimizer.control().seeded_segments_alpha.ln())
-                .ceil();
+                    as i32;
                 let mut segment_length: f64;
                 let mut alpha_k: f64;
                 let mut n_segments: f64;
