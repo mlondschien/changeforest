@@ -21,9 +21,7 @@ fn hdcd(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         control: Option<PyObject>,
     ) -> PyResult<MyBinarySegmentationResult> {
         let control = control_from_pyobj(py, control).unwrap();
-        Ok(MyBinarySegmentationResult {
-            result: wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control),
-        })
+        Ok(MyBinarySegmentationResult {        result: wrapper::hdcd(&X.as_array(), &method, &segmentation_type, &control)      })
     }
     Ok(())
 }
