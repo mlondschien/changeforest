@@ -201,7 +201,7 @@ mod tests {
         assert_eq!(result.start, 0);
         assert_eq!(result.stop, 100);
         assert_eq!(result.best_split, Some(25));
-        assert_eq!(result.is_significant, true);
+        assert!(result.is_significant);
         assert!(result.gain_results.is_some());
 
         let right = result.right.as_ref().unwrap();
@@ -209,7 +209,7 @@ mod tests {
         assert_eq!(right.start, 25);
         assert_eq!(right.stop, 100);
         assert_eq!(right.best_split, Some(40));
-        assert_eq!(right.is_significant, true);
+        assert!(right.is_significant);
         assert!(right.gain_results.is_some());
 
         let left = result.left.as_ref().unwrap();
@@ -217,10 +217,10 @@ mod tests {
         assert_eq!(left.start, 0);
         assert_eq!(left.stop, 25);
         assert_eq!(left.best_split, Some(10));
-        assert_eq!(left.is_significant, false);
+        assert!(!left.is_significant);
         assert!(left.gain_results.is_some()); // even though is_significant is false
 
         let result = result.with_segments(segmentation);
-        assert!(result.segments.as_ref().unwrap().len() > 0);
+        assert!(!result.segments.as_ref().unwrap().is_empty());
     }
 }

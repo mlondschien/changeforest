@@ -3,7 +3,7 @@ on:
     branches: [ main ]
   pull_request:
 
-name: Continuous integration
+name: CI
 
 jobs:
   check:
@@ -64,7 +64,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
+          args: --all -- --check  # Also fmt subdirectories
 
   clippy:
     name: Clippy
@@ -80,7 +80,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: --all -- -D warnings
   
   R-CMD-check:
     runs-on: ubuntu-latest

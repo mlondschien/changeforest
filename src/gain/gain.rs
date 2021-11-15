@@ -85,7 +85,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 4, 2, 6. * 1. / 6.)]
+    #[case(0, 4, 2, 1.)]
     #[case(0, 4, 0, 0.)]
     #[case(0, 4, 1, 6. / 18.)]
     #[case(0, 4, 3, 6. / 18.)]
@@ -111,7 +111,7 @@ mod tests {
         let change_in_mean = testing::ChangeInMean::new(&X_view, &control);
         assert_approx_eq!(change_in_mean.gain(start, stop, split), expected);
         assert_approx_eq!(
-            change_in_mean.gain_full(start, stop, &vec![split]).gain[split - start],
+            change_in_mean.gain_full(start, stop, &[split]).gain[split - start],
             expected
         );
     }
