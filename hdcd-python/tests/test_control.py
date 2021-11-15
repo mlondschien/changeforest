@@ -56,6 +56,10 @@ def test_control_segmentation_parameters(
     iris_dataset, segmentation_type, kwargs, expected_number_of_segments
 ):
     result = hdcd(iris_dataset, "change_in_mean", segmentation_type, Control(**kwargs))
+    # For each split, add evaluation on left / right segment to segments.
+    expected_number_of_segments = (
+        expected_number_of_segments + 2 * len(result.split_points()) + 1
+    )
     assert len(result.segments) == expected_number_of_segments
 
 
