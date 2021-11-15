@@ -63,7 +63,7 @@ where
     }
 
     fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
-        let gain_result = optimizer_result.gain_results.last().unwrap();
+        let gain_result = optimizer_result.gain_results.first().unwrap();
         self.gain
             .is_significant(optimizer_result.max_gain, gain_result)
     }
