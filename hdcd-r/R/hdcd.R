@@ -5,7 +5,7 @@ BinarySegmentationResult = R6::R6Class(
         stop = NULL,
         best_split = NULL,
         max_gain = NULL,
-        is_significant = NULL,
+        model_selection_result = NULL,
         gain_results = NULL,
         segments = NULL,
         left = NULL,
@@ -16,7 +16,7 @@ BinarySegmentationResult = R6::R6Class(
             stop = NULL,
             best_split = NULL,
             max_gain = NULL,
-            is_significant = NULL,
+            model_selection_result = NULL,
             gain_results = NULL,
             segments = NULL,
             left = NULL,
@@ -26,7 +26,7 @@ BinarySegmentationResult = R6::R6Class(
             self$stop = stop
             self$best_split = best_split
             self$max_gain = max_gain
-            self$is_significant = is_significant
+            self$model_selection_result = model_selection_result
             self$gain_results = gain_results
             self$segments = segments
             self$left = left
@@ -47,7 +47,7 @@ BinarySegmentationResult = R6::R6Class(
                 split_points = append(split_points, self$left$split_points())
             }
 
-            if (!is.null(self$best_split) & self$is_significant) {
+            if (!is.null(self$best_split) & self$model_selection_result$is_significant) {
                 split_points = append(split_points, c(self$best_split))
             }
 
