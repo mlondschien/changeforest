@@ -2,7 +2,25 @@ use extendr_api::prelude::*;
 //use extendr_api::robj_ndarray::TryFrom;
 use hdcd::gain::GainResult;
 use hdcd::optimizer::OptimizerResult;
-use hdcd::BinarySegmentationResult;
+use hdcd::{BinarySegmentationResult, ModelSelectionResult};
+
+pub struct MyModelSelectionResult {
+    model_selection_result: ModelSelectionResult,
+}
+
+impl From<MyModelSelectionResult> for Robj {
+    fn from(my_model_selection_result: MyModelSelectionResult) -> Self {
+        List::from_values(&[
+            r!(my_model_selection_result
+                .model_selection_result
+                .is_significant),
+            r!(my_model_selection_result.model_selection_result.p_value),
+        ])
+        .into_robj()
+        .set_names(&["is_significant", "p_value"])
+        .expect("From<ModelSelectionResult> failed")
+    }
+}
 
 pub struct MyGainResult {
     gain_result: GainResult,
@@ -116,12 +134,17 @@ impl From<MyBinarySegmentationResult> for Robj {
             None => ().into(),
         };
 
+        let model_selection_result: Robj = MyModelSelectionResult {
+            model_selection_result: my_result.result.model_selection_result,
+        }
+        .into();
+
         List::from_values(&[
             r!(my_result.result.start as i32),
             r!(my_result.result.stop as i32),
             r!(my_result.result.best_split.map(|u| u as i32)),
             r!(my_result.result.max_gain),
-            r!(my_result.result.is_significant),
+            r!(model_selection_result),
             r!(gain_results),
             r!(segments),
             r!(left),
@@ -133,7 +156,7 @@ impl From<MyBinarySegmentationResult> for Robj {
             "stop",
             "best_split",
             "max_gain",
-            "is_significant",
+            "model_selection_result",
             "gain_results",
             "segments",
             "left",

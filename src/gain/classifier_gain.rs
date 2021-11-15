@@ -1,6 +1,7 @@
 use crate::control::Control;
 use crate::gain::{ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::Classifier;
+use crate::ModelSelectionResult;
 use ndarray::{s, Array1, Array2, Axis};
 use rand::{rngs::StdRng, SeedableRng};
 
@@ -25,7 +26,7 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
-    fn is_significant(&self, _: f64, gain_result: &GainResult) -> bool {
+    fn model_selection(&self, _: f64, gain_result: &GainResult) -> ModelSelectionResult {
         let likelihoods: &Array2<f64>;
         let start: usize;
         let stop: usize;
@@ -53,8 +54,6 @@ where
             }
         }
 
-        // assert_eq!(max_gain, max_gain_);
-
         let mut p_value: u32 = 1;
 
         for _ in 0..n_permutations {
@@ -67,7 +66,13 @@ where
                 }
             }
         }
-        (p_value as f64 / (n_permutations + 1) as f64) < self.control().model_selection_alpha
+
+        let p_value = p_value as f64 / (n_permutations + 1) as f64;
+        let is_significant = p_value < self.control().model_selection_alpha;
+        ModelSelectionResult {
+            is_significant,
+            p_value: Some(p_value),
+        }
     }
 
     fn control(&self) -> &Control {

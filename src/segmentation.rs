@@ -1,11 +1,11 @@
 use crate::optimizer::OptimizerResult;
+use crate::ModelSelectionResult;
 use crate::Optimizer;
 use rand::{
     distributions::{Distribution, Uniform},
     rngs::StdRng,
     SeedableRng,
 };
-
 pub enum SegmentationType {
     BS,
     WBS,
@@ -112,8 +112,8 @@ impl<'a> Segmentation<'a> {
         }
     }
 
-    pub fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
-        self.optimizer.is_significant(optimizer_result)
+    pub fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
+        self.optimizer.model_selection(optimizer_result)
     }
 }
 

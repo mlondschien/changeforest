@@ -1,5 +1,6 @@
 use crate::control::Control;
 use crate::gain::{ApproxGainResult, FullGainResult, GainResult};
+use crate::ModelSelectionResult;
 
 pub trait Gain {
     /// Total number of observations.
@@ -34,7 +35,7 @@ pub trait Gain {
     }
 
     /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, max_gain: f64, gain_result: &GainResult) -> bool;
+    fn model_selection(&self, max_gain: f64, gain_result: &GainResult) -> ModelSelectionResult;
 
     /// Hyperparameters.
     fn control(&self) -> &Control;
