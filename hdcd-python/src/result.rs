@@ -170,13 +170,10 @@ impl MyBinarySegmentationResult {
     }
 
     #[getter]
-    fn model_selection_result(&self) -> Option<MyModelSelectionResult> {
-        self.result
-            .model_selection_result
-            .as_ref()
-            .map(|result| MyModelSelectionResult {
-                result: result.clone(),
-            })
+    fn model_selection_result(&self) -> MyModelSelectionResult {
+        MyModelSelectionResult {
+            result: self.result.model_selection_result.clone(),
+        }
     }
 
     #[getter]

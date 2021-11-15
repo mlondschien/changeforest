@@ -17,3 +17,12 @@ impl fmt::Display for ModelSelectionResult {
         )
     }
 }
+
+impl Default for ModelSelectionResult {
+    fn default() -> Self {
+        ModelSelectionResult {
+            is_significant: false,
+            p_value: None,
+        }
+    }
+}
