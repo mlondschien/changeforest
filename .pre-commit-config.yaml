@@ -3,7 +3,7 @@
     hooks:
     -   id: fmt
     -   id: cargo-check
-    -   id: clippy
+    -   id: clippy  # This will not check python / r package...
 -   repo: https://github.com/Quantco/pre-commit-mirrors-black
     rev: 19.10b0
     hooks:

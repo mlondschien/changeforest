@@ -35,10 +35,9 @@ impl<'a> Gain for ChangeInMean<'a> {
         // For 1D, the change in mean loss is equal to
         // 1 / n_total * [sum_i x_i**2 - 1/n_slice (sum_i x_i)**2]
         // For 2D, the change in mean loss is just the sum of losses for each dimension.
-        let loss = slice.mapv(|a| a.powi(2)).sum()
-            - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice;
 
-        loss
+        slice.mapv(|a| a.powi(2)).sum()
+            - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice
     }
 
     fn is_significant(&self, max_gain: f64, _: &GainResult) -> bool {
