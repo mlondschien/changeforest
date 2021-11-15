@@ -3,9 +3,35 @@
 
 use hdcd::gain::GainResult;
 use hdcd::optimizer::OptimizerResult;
-use hdcd::BinarySegmentationResult;
+use hdcd::{BinarySegmentationResult, ModelSelectionResult};
 use numpy::{PyArray1, PyArray2, ToPyArray};
 use pyo3::prelude::*;
+
+#[pyclass]
+#[derive(Clone, Debug)]
+pub struct MyModelSelectionResult {
+    pub result: ModelSelectionResult,
+}
+
+#[pymethods]
+impl MyModelSelectionResult {
+    #[getter]
+    pub fn is_significant(&self) -> bool {
+        self.result.is_significant
+    }
+
+    #[getter]
+    pub fn p_value(&self) -> Option<f64> {
+        self.result.p_value
+    }
+}
+
+#[pyproto]
+impl pyo3::class::basic::PyObjectProtocol for MyModelSelectionResult {
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("{}", self.result))
+    }
+}
 
 #[pyclass]
 #[derive(Clone, Debug)]
@@ -141,6 +167,16 @@ impl MyBinarySegmentationResult {
                 })
                 .collect()
         })
+    }
+
+    #[getter]
+    fn model_selection_result(&self) -> Option<MyModelSelectionResult> {
+        self.result
+            .model_selection_result
+            .as_ref()
+            .map(|result| MyModelSelectionResult {
+                result: result.clone(),
+            })
     }
 
     #[getter]
