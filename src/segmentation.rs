@@ -106,8 +106,8 @@ impl<'a> Segmentation<'a> {
                 }
 
                 self.segments.push(optimizer_result);
-                // swap_remove does not maintain order of items but is O(1)
-                Ok(self.segments.swap_remove(idx_opt))
+
+                Ok(self.segments[idx_opt].clone())
             }
         }
     }
