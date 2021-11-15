@@ -3,7 +3,7 @@ mod result;
 
 use crate::control::control_from_pyobj;
 use crate::result::MyBinarySegmentationResult;
-use hdcd::{wrapper, Control};
+use hdcd::wrapper;
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 use pyo3::PyObject;
