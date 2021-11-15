@@ -1,5 +1,5 @@
 use crate::optimizer::OptimizerResult;
-use crate::Control;
+use crate::{Control, ModelSelectionResult};
 
 pub trait Optimizer {
     /// Find the element of `split_candidates` to split segment `[start, stop)`.
@@ -8,7 +8,7 @@ pub trait Optimizer {
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str>;
 
     /// Does a certain split corresponds to a true change point?
-    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool;
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult;
 
     /// Total number of observations.
     fn n(&self) -> usize;

@@ -1,5 +1,6 @@
 use crate::control::Control;
 use crate::gain::{Gain, GainResult};
+use crate::ModelSelectionResult;
 use std::cell::{Ref, RefCell};
 
 pub struct ChangeInMean<'a, 'b> {
@@ -60,8 +61,11 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         result / (s * s_1 * s_2)
     }
 
-    fn is_significant(&self, max_gain: f64, _: &GainResult) -> bool {
-        max_gain > self.control.minimal_gain_to_split * (self.n() as f64)
+    fn model_selection(&self, max_gain: f64, _: &GainResult) -> ModelSelectionResult {
+        ModelSelectionResult {
+            is_significant: max_gain > self.control.minimal_gain_to_split * (self.n() as f64),
+            p_value: None,
+        }
     }
 
     fn control(&self) -> &Control {

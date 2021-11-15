@@ -1,6 +1,6 @@
 use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain, GainResult};
 use crate::optimizer::OptimizerResult;
-use crate::{Control, Optimizer};
+use crate::{Control, ModelSelectionResult, Optimizer};
 use ndarray::{s, stack, Array, Array1, Array2, ArrayView2, Axis};
 use ndarray_rand::rand_distr::Uniform;
 use ndarray_rand::RandomExt;
@@ -40,8 +40,11 @@ impl<'a> Gain for ChangeInMean<'a> {
             - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice
     }
 
-    fn is_significant(&self, max_gain: f64, _: &GainResult) -> bool {
-        max_gain > self.control.minimal_gain_to_split * (self.n() as f64)
+    fn model_selection(&self, max_gain: f64, _: &GainResult) -> ModelSelectionResult {
+        ModelSelectionResult {
+            is_significant: max_gain > self.control.minimal_gain_to_split * (self.n() as f64),
+            p_value: None,
+        }
     }
 
     fn control(&self) -> &Control {
@@ -117,9 +120,11 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
         })
     }
 
-    #[allow(unused_variables)]
-    fn is_significant(&self, optimizer_result: &OptimizerResult) -> bool {
-        optimizer_result.stop <= 50
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
+        ModelSelectionResult {
+            is_significant: optimizer_result.stop <= 50,
+            p_value: None,
+        }
     }
 
     fn control(&self) -> &Control {
