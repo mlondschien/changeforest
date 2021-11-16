@@ -112,14 +112,11 @@ impl From<MyBinarySegmentationResult> for Robj {
             None => ().into(),
         };
 
-        let gain_results: Robj = match my_result.result.gain_results {
-            Some(results) => {
-                let robjs: Vec<Robj> = results
-                    .into_iter()
-                    .map(|gain_result| MyGainResult { gain_result }.into())
-                    .collect();
-                robjs.into()
+        let optimizer_result: Robj = match my_result.result.optimizer_result.as_ref() {
+            Some(optimizer_result) => MyOptimizerResult {
+                optimizer_result: optimizer_result.clone(),
             }
+            .into(),
             None => ().into(),
         };
 
@@ -135,17 +132,27 @@ impl From<MyBinarySegmentationResult> for Robj {
         };
 
         let model_selection_result: Robj = MyModelSelectionResult {
-            model_selection_result: my_result.result.model_selection_result,
+            model_selection_result: my_result.result.model_selection_result.clone(),
         }
         .into();
 
         List::from_values(&[
             r!(my_result.result.start as i32),
             r!(my_result.result.stop as i32),
-            r!(my_result.result.best_split.map(|u| u as i32)),
-            r!(my_result.result.max_gain),
+            r!(my_result
+                .result
+                .optimizer_result
+                .as_ref()
+                .map(|result| result.best_split as i32)),
+            r!(my_result
+                .result
+                .optimizer_result
+                .as_ref()
+                .map(|result| result.max_gain)),
+            r!(my_result.result.model_selection_result.p_value),
+            r!(my_result.result.model_selection_result.is_significant),
+            r!(optimizer_result),
             r!(model_selection_result),
-            r!(gain_results),
             r!(segments),
             r!(left),
             r!(right),
@@ -156,8 +163,10 @@ impl From<MyBinarySegmentationResult> for Robj {
             "stop",
             "best_split",
             "max_gain",
+            "p_value",
+            "is_significant",
+            "optimizer_result",
             "model_selection_result",
-            "gain_results",
             "segments",
             "left",
             "right",
