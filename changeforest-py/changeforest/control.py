@@ -2,7 +2,7 @@ class Control:
     """
     Storage container for hyperparameters.
 
-    See rust documentation of hdcd::control::Control for more details.
+    See rust documentation of changeforest::control::Control for more details.
     """
 
     def __init__(

@@ -6,7 +6,7 @@ use crate::segmentation::{Segmentation, SegmentationType};
 use crate::{BinarySegmentationResult, BinarySegmentationTree};
 use ndarray;
 
-pub fn hdcd(
+pub fn changeforest(
     X: &ndarray::ArrayView2<'_, f64>,
     method: &str,
     segmentation_type: &str,
@@ -78,7 +78,7 @@ mod tests {
 
         assert_eq!(X.shape(), &[100, 5]);
         assert_eq!(
-            hdcd(&X.view(), method, segmentation_type, &control).split_points(),
+            changeforest(&X.view(), method, segmentation_type, &control).split_points(),
             vec![25, 40, 80]
         );
     }

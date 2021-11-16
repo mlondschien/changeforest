@@ -1,4 +1,4 @@
-name: hdcd
+name: changeforest
 channels:
   - conda-forge
   - nodefaults

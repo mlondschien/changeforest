@@ -1,4 +1,4 @@
-use hdcd::Control;
+use changeforest::Control;
 use pyo3::prelude::{PyObject, PyResult, Python};
 
 pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control> {
@@ -42,7 +42,6 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
         };
 
         if let Ok(pyvalue) = obj.getattr(py, "random_forest_ntrees") {
-            // This is weird. Here we don't extract a tuple but a value.
             if let Ok(value) = pyvalue.extract::<usize>(py) {
                 control = control.with_random_forest_ntrees(value);
             }

@@ -1,9 +1,9 @@
 // Wrap GainResult, OptimizerResult and BinarySegmentationResult.
 // See https://github.com/PyO3/pyo3/issues/287.
 
-use hdcd::gain::GainResult;
-use hdcd::optimizer::OptimizerResult;
-use hdcd::{BinarySegmentationResult, ModelSelectionResult};
+use changeforest::gain::GainResult;
+use changeforest::optimizer::OptimizerResult;
+use changeforest::{BinarySegmentationResult, ModelSelectionResult};
 use numpy::{PyArray1, PyArray2, ToPyArray};
 use pyo3::prelude::*;
 

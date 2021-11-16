@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
-from hdcd import Control, hdcd
+
+from changeforest import Control, changeforest
 
 
 @pytest.mark.parametrize(
@@ -25,7 +26,7 @@ from hdcd import Control, hdcd
 def test_control_model_selection_parameters(
     iris_dataset, method, segmentation_type, kwargs, expected
 ):
-    result = hdcd(iris_dataset, method, segmentation_type, Control(**kwargs))
+    result = changeforest(iris_dataset, method, segmentation_type, Control(**kwargs))
     np.testing.assert_array_equal(result.split_points(), expected)
 
 
@@ -55,7 +56,9 @@ def test_control_model_selection_parameters(
 def test_control_segmentation_parameters(
     iris_dataset, segmentation_type, kwargs, expected_number_of_segments
 ):
-    result = hdcd(iris_dataset, "change_in_mean", segmentation_type, Control(**kwargs))
+    result = changeforest(
+        iris_dataset, "change_in_mean", segmentation_type, Control(**kwargs)
+    )
     # For each split, add evaluation on left / right segment to segments.
     expected_number_of_segments = (
         expected_number_of_segments + 2 * len(result.split_points()) + 1
@@ -64,7 +67,7 @@ def test_control_segmentation_parameters(
 
 
 def test_control_seed(iris_dataset):
-    result = hdcd(
+    result = changeforest(
         iris_dataset,
         "random_forest",
         "wbs",
@@ -73,7 +76,7 @@ def test_control_seed(iris_dataset):
     assert result.segments[0].start == 5
     assert abs(result.segments[0].max_gain - 17.44774) < 1e-5
 
-    result = hdcd(
+    result = changeforest(
         iris_dataset,
         "random_forest",
         "wbs",
