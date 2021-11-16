@@ -27,8 +27,8 @@ to_data_frame = function(node, parent_indent="", prefix="") {
             name=name,
             best_split=node$best_split,
             max_gain=node$max_gain,
-            p_value=node$model_selection_result$p_value,
-            is_significant=node$model_selection_result$is_significant
+            p_value=node$p_value,
+            is_significant=node$is_significant
         ),
         left,
         right

@@ -169,6 +169,11 @@ impl MyBinarySegmentationResult {
     }
 
     #[getter]
+    fn is_significant(&self) -> bool {
+        self.result.model_selection_result.is_significant
+    }
+
+    #[getter]
     fn optimizer_result(&self) -> Option<MyOptimizerResult> {
         self.result
             .optimizer_result
