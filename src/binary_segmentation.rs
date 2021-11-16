@@ -1,4 +1,3 @@
-use crate::gain::GainResult;
 use crate::optimizer::OptimizerResult;
 use crate::{ModelSelectionResult, Segmentation};
 
@@ -6,8 +5,6 @@ pub struct BinarySegmentationTree {
     pub start: usize,
     pub stop: usize,
     pub n: usize,
-    pub split: Option<usize>,
-    pub max_gain: Option<f64>,
     pub model_selection_result: ModelSelectionResult,
     pub left: Option<Box<BinarySegmentationTree>>,
     pub right: Option<Box<BinarySegmentationTree>>,
@@ -20,8 +17,6 @@ impl BinarySegmentationTree {
             start: 0,
             stop: X.nrows(),
             n: X.nrows(),
-            split: None,
-            max_gain: None,
             model_selection_result: ModelSelectionResult::default(),
             left: None,
             right: None,
@@ -34,8 +29,6 @@ impl BinarySegmentationTree {
             start: self.start,
             stop: split,
             n: self.n,
-            split: None,
-            max_gain: None,
             model_selection_result: ModelSelectionResult::default(),
             left: None,
             right: None,
@@ -48,8 +41,6 @@ impl BinarySegmentationTree {
             start: split,
             stop: self.stop,
             n: self.n,
-            split: None,
-            max_gain: None,
             model_selection_result: ModelSelectionResult::default(),
             left: None,
             right: None,
@@ -57,7 +48,7 @@ impl BinarySegmentationTree {
         })
     }
 
-    /// Grow a `BinarySegmentationTree`.assert_approx_eq
+    /// Grow a `BinarySegmentationTree`.
     ///
     /// Recursively split segments and add subsegments as children `left` and
     /// `right` until segments are smaller then the minimal segment length
@@ -65,9 +56,6 @@ impl BinarySegmentationTree {
     /// longer significant.
     pub fn grow(&mut self, segmentation: &mut Segmentation) {
         if let Ok(optimizer_result) = segmentation.find_best_split(self.start, self.stop) {
-            self.split = Some(optimizer_result.best_split);
-            self.max_gain = Some(optimizer_result.max_gain);
-
             self.model_selection_result = segmentation.model_selection(&optimizer_result);
 
             if self.model_selection_result.is_significant {
@@ -90,10 +78,8 @@ impl BinarySegmentationTree {
 pub struct BinarySegmentationResult {
     pub start: usize,
     pub stop: usize,
-    pub best_split: Option<usize>,
-    pub max_gain: Option<f64>,
     pub model_selection_result: ModelSelectionResult,
-    pub gain_results: Option<Vec<GainResult>>,
+    pub optimizer_result: Option<OptimizerResult>,
     pub left: Option<Box<BinarySegmentationResult>>,
     pub right: Option<Box<BinarySegmentationResult>>,
     pub segments: Option<Vec<OptimizerResult>>,
@@ -109,15 +95,11 @@ impl BinarySegmentationResult {
             .right
             .map(|tree| Box::new(BinarySegmentationResult::from_tree(*tree)));
 
-        let gain_results = tree.optimizer_result.map(|result| result.gain_results);
-
         BinarySegmentationResult {
             start: tree.start,
             stop: tree.stop,
-            best_split: tree.split,
-            max_gain: tree.max_gain,
             model_selection_result: tree.model_selection_result,
-            gain_results,
+            optimizer_result: tree.optimizer_result,
             left,
             right,
             segments: None,
@@ -131,9 +113,9 @@ impl BinarySegmentationResult {
             split_points.append(&mut left_boxed.split_points());
         }
 
-        if let Some(best_split) = self.best_split {
+        if let Some(result) = self.optimizer_result.as_ref() {
             if self.model_selection_result.is_significant {
-                split_points.push(best_split);
+                split_points.push(result.best_split);
             }
         }
 
@@ -173,9 +155,7 @@ mod tests {
 
         binary_segmentation.grow(&mut segmentation);
 
-        assert_eq!(binary_segmentation.split, Some(25));
-
-        let optimizer_result = binary_segmentation.optimizer_result.unwrap();
+        let optimizer_result = binary_segmentation.optimizer_result.as_ref().unwrap();
         assert_eq!(optimizer_result.best_split, 25);
         assert_eq!(optimizer_result.start, 0);
         assert_eq!(optimizer_result.stop, 100);
@@ -200,25 +180,25 @@ mod tests {
         assert_eq!(result.split_points(), vec![25, 40, 80]);
         assert_eq!(result.start, 0);
         assert_eq!(result.stop, 100);
-        assert_eq!(result.best_split, Some(25));
+        assert_eq!(result.optimizer_result.as_ref().unwrap().best_split, 25);
         assert!(result.model_selection_result.is_significant);
-        assert!(result.gain_results.is_some());
+        assert!(result.optimizer_result.is_some());
 
         let right = result.right.as_ref().unwrap();
         assert_eq!(right.split_points(), vec![40, 80]);
         assert_eq!(right.start, 25);
         assert_eq!(right.stop, 100);
-        assert_eq!(right.best_split, Some(40));
+        assert_eq!(right.optimizer_result.as_ref().unwrap().best_split, 40);
         assert!(right.model_selection_result.is_significant);
-        assert!(right.gain_results.is_some());
+        assert!(right.optimizer_result.is_some());
 
         let left = result.left.as_ref().unwrap();
         assert_eq!(left.split_points(), vec![]);
         assert_eq!(left.start, 0);
         assert_eq!(left.stop, 25);
-        assert_eq!(left.best_split, Some(10));
+        assert_eq!(left.optimizer_result.as_ref().unwrap().best_split, 10);
         assert!(!left.model_selection_result.is_significant);
-        assert!(left.gain_results.is_some()); // even though is_significant is false
+        assert!(left.optimizer_result.is_some()); // even though is_significant is false
 
         let result = result.with_segments(segmentation);
         assert!(!result.segments.as_ref().unwrap().is_empty());
