@@ -149,24 +149,33 @@ impl MyBinarySegmentationResult {
 
     #[getter]
     fn best_split(&self) -> Option<usize> {
-        self.result.best_split
+        self.result
+            .optimizer_result
+            .as_ref()
+            .map(|result| result.best_split)
     }
 
     #[getter]
     fn max_gain(&self) -> Option<f64> {
-        self.result.max_gain
+        self.result
+            .optimizer_result
+            .as_ref()
+            .map(|result| result.max_gain)
     }
 
     #[getter]
-    fn gain_results(&self) -> Option<Vec<MyGainResult>> {
-        self.result.gain_results.as_ref().map(|results| {
-            results
-                .iter()
-                .map(|result| MyGainResult {
-                    result: result.clone(),
-                })
-                .collect()
-        })
+    fn p_value(&self) -> Option<f64> {
+        self.result.model_selection_result.p_value
+    }
+
+    #[getter]
+    fn optimizer_result(&self) -> Option<MyOptimizerResult> {
+        self.result
+            .optimizer_result
+            .as_ref()
+            .map(|result| MyOptimizerResult {
+                result: result.clone(),
+            })
     }
 
     #[getter]
