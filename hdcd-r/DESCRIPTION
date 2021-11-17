@@ -1,4 +1,4 @@
-Package: hdcdr
+Package: hdcd
 Type: Package
 Title: High-dimensional change point detection
 Version: 0.1.0
