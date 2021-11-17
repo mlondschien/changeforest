@@ -1,8 +1,8 @@
 use extendr_api::prelude::*;
 //use extendr_api::robj_ndarray::TryFrom;
-use hdcd::gain::GainResult;
-use hdcd::optimizer::OptimizerResult;
-use hdcd::{BinarySegmentationResult, ModelSelectionResult};
+use changeforest::gain::GainResult;
+use changeforest::optimizer::OptimizerResult;
+use changeforest::{BinarySegmentationResult, ModelSelectionResult};
 
 pub struct MyModelSelectionResult {
     model_selection_result: ModelSelectionResult,

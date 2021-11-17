@@ -1,5 +1,5 @@
+use changeforest::Control;
 use extendr_api::{FromRobj, Robj};
-use hdcd::Control;
 
 pub struct MyControl {
     pub control: Control,

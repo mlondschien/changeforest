@@ -9,5 +9,5 @@ crate-type = [ 'staticlib' ]
 [dependencies]
 extendr-api = { git = 'https://github.com/extendr/extendr', rev = '6935c7dee0edc7e02c6355379376d8001167cd13', features = ["ndarray"] }
 # extendr-api = { version="0.2.0", features = ["ndarray"] }
-hdcd = { path = "../../../" }
+changeforest = { path = "../../../" }
 ndarray = "0.15.3"

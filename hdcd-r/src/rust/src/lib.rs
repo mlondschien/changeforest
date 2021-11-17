@@ -6,8 +6,8 @@ mod result;
 
 use crate::control::MyControl;
 use crate::result::MyBinarySegmentationResult;
+use changeforest::wrapper;
 use extendr_api::prelude::*;
-use hdcd::wrapper;
 use ndarray;
 
 #[extendr]
@@ -18,7 +18,7 @@ fn hdcd_api(
     control: MyControl,
 ) -> MyBinarySegmentationResult {
     MyBinarySegmentationResult {
-        result: wrapper::hdcd(&X, method, segmentation, &control.control),
+        result: wrapper::changeforest(&X, method, segmentation, &control.control),
     }
 }
 
