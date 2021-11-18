@@ -2,5 +2,4 @@
 
 S3method(print,binary_segmentation_result)
 export(changeforest)
-export(changeforest_api)
 useDynLib(changeforest, .registration = TRUE)

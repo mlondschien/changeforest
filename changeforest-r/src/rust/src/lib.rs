@@ -11,8 +11,6 @@ use extendr_api::prelude::*;
 use ndarray;
 
 #[extendr]
-/// Test.
-/// @export
 fn changeforest_api(
     X: ndarray::ArrayView2<f64>,
     method: &str,

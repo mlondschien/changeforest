@@ -8,7 +8,7 @@ test_that("display", {
         ncol=3
     )
 
-    result = hdcd(X, "knn", "bs")
+    result = changeforest(X, "knn", "bs")
     output = capture.output(print(result))
 
     expected = c(

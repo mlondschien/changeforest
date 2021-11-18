@@ -8,7 +8,4 @@
 #' @useDynLib changeforest, .registration = TRUE
 NULL
 
-#' Test.
-#' @export
-changeforest_api <- function(X, method, segmentation, control) .Call(wrap__changeforest_api, X, method, segmentation, control)
-
+changeforest_api <- function(X, method, segmentation, control) .Call("wrap__changeforest_api", X, method, segmentation, control, PACKAGE="changeforest")
