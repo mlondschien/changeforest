@@ -93,7 +93,6 @@ jobs:
     name: R CMD check (${{ matrix.R }})
     steps:
       - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-pandoc@v1
       - uses: r-lib/actions/setup-r@v1
         with:
           r-version: ${{ matrix.R }}
@@ -101,6 +100,11 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
+      - name: Install dependencies
+        run: |
+          install.packages("R6", repos="http://cran.us.r-project.org")
+          install.packages("testthat", repos="http://cran.us.r-project.org")
+        shell: Rscript {0}
       - name: Run R CMD check
         run: |
           cargo build --lib --release --manifest-path=./changeforest-r/src/rust/Cargo.toml --target-dir ./changeforest-r/src/rust/target
