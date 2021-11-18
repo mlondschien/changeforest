@@ -101,14 +101,11 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
-      - name: Install rextendr
-        run: |
-          install.packages("rextendr", repos="http://cran.us.r-project.org")
-          install.packages("testthat", repos="http://cran.us.r-project.org")
-        shell: Rscript {0}
       - name: Run R CMD check
         run: |
-          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          cargo build --lib --release --manifest-path=./changeforest-r/src/rust/Cargo.toml --target-dir ./changeforest-r/src/rust/target
+          R CMD build ./changeforest-r
+          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual changeforest_*.tar.gz
           CHECK_LOG_FILE=changeforest.Rcheck/00check.log
           CHECK_INSTALL_FILE=changeforest.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then

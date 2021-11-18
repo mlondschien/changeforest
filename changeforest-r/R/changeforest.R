@@ -83,7 +83,7 @@ to_binary_segmentation_result = function(result) {
 #' @param segmentation Either 'bs', 'sbs' or 'wbs'.
 #' @param control Object of class Control containing hyperparameters.
 #' @export
-hdcd = function(X,  method, segmentation, control=Control$new()) {
-    result = hdcd_api(X, method, segmentation, control)
+changeforest = function(X,  method, segmentation, control=Control$new()) {
+    result = changeforest_api(X, method, segmentation, control)
     to_binary_segmentation_result(result)
 }

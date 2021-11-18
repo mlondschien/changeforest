@@ -11,7 +11,9 @@ use extendr_api::prelude::*;
 use ndarray;
 
 #[extendr]
-fn hdcd_api(
+/// Test.
+/// @export
+fn changeforest_api(
     X: ndarray::ArrayView2<f64>,
     method: &str,
     segmentation: &str,
@@ -26,6 +28,6 @@ fn hdcd_api(
 // This ensures exported functions are registered with R.
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
-    mod hdcdr;
-    fn hdcd_api;
+    mod changeforestr;
+    fn changeforest_api;
 }
