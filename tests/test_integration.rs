@@ -1,8 +1,8 @@
 // Allow capital X for arrays.
 #![allow(non_snake_case)]
 
+use changeforest::{wrapper::changeforest, Control};
 use csv::ReaderBuilder;
-use hdcd::{wrapper::hdcd, Control};
 use ndarray::Array2;
 use ndarray_csv::Array2Reader;
 use rstest::*;
@@ -25,7 +25,7 @@ fn test_integration_iris(#[case] method: &str, #[case] segmentation_type: &str) 
 
     let control = Control::default();
 
-    let _ = hdcd(&X.view(), method, segmentation_type, &control);
+    let _ = changeforest(&X.view(), method, segmentation_type, &control);
 }
 
 #[rstest]
@@ -47,5 +47,5 @@ fn test_integration_letters(#[case] method: &str, #[case] segmentation_type: &st
 
     let control = Control::default().with_minimal_relative_segment_length(0.02);
 
-    let _ = hdcd(&X.view(), method, segmentation_type, &control);
+    let _ = changeforest(&X.view(), method, segmentation_type, &control);
 }

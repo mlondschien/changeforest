@@ -1,0 +1,19 @@
+Package: changeforest
+Type: Package
+Title: High-dimensional change point detection
+Version: 0.1.0
+Author: Malte Londschien
+Maintainer: Malte Londschien <malte@londschien.ch>
+Description: High-dimensional change point detection
+License: GNU GPL3
+URL: https://github.com/mlondschien/changeforest
+BugReports: https://github.com/mlondschien/changeforest
+SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+Imports:
+    R6
+Suggests:
+    testthat (>= 3.0.0)
+Language: en-US
+Config/testthat/edition: 3

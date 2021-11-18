@@ -93,7 +93,6 @@ jobs:
     name: R CMD check (${{ matrix.R }})
     steps:
       - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-pandoc@v1
       - uses: r-lib/actions/setup-r@v1
         with:
           r-version: ${{ matrix.R }}
@@ -101,16 +100,16 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
-      - name: Install rextendr
+      - name: Install dependencies
         run: |
-          install.packages("rextendr", repos="http://cran.us.r-project.org")
+          install.packages("R6", repos="http://cran.us.r-project.org")
           install.packages("testthat", repos="http://cran.us.r-project.org")
         shell: Rscript {0}
       - name: Run R CMD check
         run: |
-          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./hdcd-r
-          CHECK_LOG_FILE=hdcd-r.Rcheck/00check.log
-          CHECK_INSTALL_FILE=hdcd-r.Rcheck/00install.out
+          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
+          CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then
             echo "Log-file not found."
             exit 1
@@ -146,9 +145,9 @@ jobs:
         run: |
           apt-get update -y
           apt-get install -y build-essential
-          cd hdcd-python
+          cd changeforest-py
           mamba env create -f environment.yml
-          source activate hdcd
+          source activate changeforest
           maturin develop
           pytest tests
         shell: bash -lxeu {0}

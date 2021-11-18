@@ -1,10 +1,10 @@
 [package]
-name = "hdcd"
+name = "changeforest"
 version = "0.1.0"
 edition = "2018"
 
 [lib]
-name = "hdcd"
+name = "changeforest"
 
 [dependencies]
 ndarray = "0.15.3"
