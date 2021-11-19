@@ -83,14 +83,15 @@ jobs:
           args: --all -- -D warnings
   
   R-CMD-check:
-    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-         R: ['4.1.1', 'release']
-    
-    name: R CMD check (${{ matrix.R }})
+         R: ['release']
+         os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+
+    runs-on: ${{ matrix.os }}
+    name: R CMD check (${{ matrix.R }}, ${{ matrix.os }})
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
