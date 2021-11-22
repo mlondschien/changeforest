@@ -7,22 +7,8 @@ name: CI
 
 jobs:
 
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-
   test:
-    name: Test Suite (${{ matrix.os }})
+    name: Cargo test (${{ matrix.os }})
     runs-on: ${{ matrix. os }}
 
     strategy:
@@ -36,6 +22,20 @@ jobs:
       run: cargo build --release --verbose --examples
     - name: Test
       run: cargo test --release
+  
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
 
   fmt:
     name: Rustfmt

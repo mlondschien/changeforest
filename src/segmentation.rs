@@ -45,20 +45,21 @@ impl<'a> Segmentation<'a> {
                 .ceil();
                 let mut segment_length: f64;
                 let mut alpha_k: f64;
-                let mut n_segments: f64;
+                let mut n_segments: usize;
                 let mut segment_step: f64;
                 let mut start: usize;
                 let mut stop: usize;
                 for k in 1..(n_layers as i32) {
                     alpha_k = optimizer.control().seeded_segments_alpha.powi(k); // (1/alpha)^(k-1)
                     segment_length = (optimizer.n() as f64) * alpha_k; // l_k
-                    n_segments = 2. * (1. / alpha_k).ceil() - 1.; // n_k
-                    segment_step = (optimizer.n() as f64 - segment_length) / (n_segments - 1.); // s_k
+                    n_segments = 2 * ((1. / alpha_k) as f32).ceil() as usize - 1; // n_k
+                    segment_step =
+                        (optimizer.n() as f64 - segment_length) / (n_segments - 1) as f64; // s_k
                     for segment_id in 0..(n_segments as usize) {
-                        start = (segment_id as f64 * segment_step) as usize;
+                        start = ((segment_id as f64 * segment_step) as f32) as usize;
                         // start + segment_length > n through floating point errors in
                         // n_segments, e.g. for n = 20'000, alpha_k = 1/sqrt(2), k=6
-                        stop = (start + segment_length.ceil() as usize).min(optimizer.n());
+                        stop = (start + (segment_length as f32).ceil() as usize).min(optimizer.n());
                         segments.push(optimizer.find_best_split(start, stop).unwrap());
                     }
                 }
@@ -126,21 +127,21 @@ mod tests {
 
     #[rstest]
     #[case(0.05, std::f64::consts::FRAC_1_SQRT_2, vec![
-        (0, 71), (14, 85), (29, 100), (0, 51), (24, 75),
-        (49, 100), (0, 36), (16, 52), (32, 68), (48, 84),
-        (64, 100), (0, 26), (12, 38), (24, 50), (37, 63),
-        (49, 75), (62, 88), (74, 100), (0, 18), (8, 26),
+        (0, 71), (14, 85), (29, 100), (0, 50), (25, 75),
+        (50, 100), (0, 36), (16, 52), (32, 68), (48, 84),
+        (64, 100), (0, 25), (12, 37), (25, 50), (37, 62),
+        (50, 75), (62, 87), (75, 100), (0, 18), (8, 26),
         (16, 34), (24, 42), (32, 50), (41, 59), (49, 67),
         (57, 75), (65, 83), (74, 92), (82, 100), (0, 13),
-        (6, 19), (12, 25), (18, 31), (24, 37), (31, 44),
-        (37, 50), (43, 56), (49, 62), (56, 69), (62, 75),
-        (68, 81), (74, 87), (81, 94), (87, 100)
+        (6, 19), (12, 25), (18, 31), (25, 38), (31, 44),
+        (37, 50), (43, 56), (50, 63), (56, 69), (62, 75),
+        (68, 81), (75, 88), (81, 94), (87, 100)
     ])]
     #[case(0.12, std::f64::consts::FRAC_1_SQRT_2, vec![
-        (0, 71), (14, 85), (29, 100), (0, 51), (24, 75),
-        (49, 100), (0, 36), (16, 52), (32, 68), (48, 84),
-        (64, 100), (0, 26), (12, 38), (24, 50), (37, 63),
-        (49, 75), (62, 88), (74, 100)
+        (0, 71), (14, 85), (29, 100), (0, 50), (25, 75),
+        (50, 100), (0, 36), (16, 52), (32, 68), (48, 84),
+        (64, 100), (0, 25), (12, 37), (25, 50), (37, 62),
+        (50, 75), (62, 87), (75, 100)
     ])]
     #[case(0.12, 0.5, vec![
         (0, 50), (25, 75), (50, 100),
@@ -173,9 +174,9 @@ mod tests {
         (0, 71, 17, 710.0),
         (14, 85, 31, 1704.0),
         (29, 100, 46, 2769.0),
-        (0, 51, 12, 510.0),
-        (24, 75, 36, 1734.0),
-        (49, 100, 61, 3009.0)
+        (0, 50, 12, 500.0),
+        (25, 75, 37, 1750.0),
+        (50, 100, 62, 3000.0)
     ])]
     #[case(SegmentationType::WBS, vec![
         (73, 78, 74, 415.0),
@@ -208,7 +209,7 @@ mod tests {
 
     #[rstest]
     #[case(SegmentationType::BS, (25, 1000.))]
-    #[case(SegmentationType::SBS, (61, 3009.))]
+    #[case(SegmentationType::SBS, (62, 3000.))]
     #[case(SegmentationType::WBS, (60, 2900.))]
     fn test_optimizer(#[case] segmentation_type: SegmentationType, #[case] expected: (usize, f64)) {
         let control = Control::default();
