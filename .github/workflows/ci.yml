@@ -91,11 +91,15 @@ jobs:
           toolchain: 'stable'
       - name: Install dependencies
         run: |
-          install.packages(c("R6", "testthat"), repos="http://cran.us.r-project.org")
+          install.packages(c("R6", "testthat", "rcmdcheck"), repos="http://cran.us.r-project.org")
         shell: Rscript {0}
       - name: Run R CMD check
+        # run: |
+        #   R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+
         run: |
-          R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          rcmdcheck::rcmdcheck("changeforest-r", args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
         env:
           _R_CHECK_CRAN_INCOMING_: false
       - name: Check for warnings
