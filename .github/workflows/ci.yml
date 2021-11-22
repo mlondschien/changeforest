@@ -70,14 +70,16 @@ jobs:
           args: --all -- -D warnings
   
   R-CMD-check:
+
+    name: R CMD check (${{ matrix.R }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
       matrix:
          R: ['release']
          os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
-    runs-on: ${{ matrix.os }}
-    name: R CMD check (${{ matrix.R }}, ${{ matrix.os }})
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
@@ -93,8 +95,11 @@ jobs:
         shell: Rscript {0}
       - name: Run R CMD check
         run: |
-          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
       - name: Check for warnings
+        run: |
           CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
           CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then
@@ -120,13 +125,13 @@ jobs:
 
 
   python-tests:
-    strategy:
-    fail-fast: false
-    matrix:
-      os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-
     name: Python tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
     steps:
       - uses: actions/checkout@v2
@@ -144,5 +149,5 @@ jobs:
         run: pip install --force-reinstall --no-index --find-links changeforest-py/target/wheels/ changeforest
       - name: Run tests
         run: |
-          pip install pytest
+          pip install pytest numpy
           pytest changeforest-py/tests
