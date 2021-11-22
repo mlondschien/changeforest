@@ -124,8 +124,8 @@ jobs:
         if: matrix.os != 'windows-latest'
 
 
-  python-tests:
-    name: Python tests (${{ matrix.os }})
+  python-build:
+    name: Python build wheels (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -144,10 +144,34 @@ jobs:
       - name: Build wheel
         run: |
           pip install --upgrade maturin
-          maturin build --release -m changeforest-py/Cargo.toml
+          maturin build --release -m changeforest-py/Cargo.toml -o dist
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
+        if: runner.os != 'Linux'
+
+  python-test:
+    name: Python test Wheels (${{ matrix.os }})
+    needs: [python-build]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Install wheel
-        run: pip install --force-reinstall --no-index --find-links changeforest-py/target/wheels/ changeforest
-      - name: Run tests
         run: |
-          pip install pytest numpy
-          pytest changeforest-py/tests
+          pip install --force-reinstall --no-index --find-links . changeforest
+          pip install numpy pytest
+      - name: Run tests
+        run: pytest changeforest-py/tests
