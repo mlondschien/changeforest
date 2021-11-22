@@ -71,20 +71,19 @@ jobs:
   
   R-CMD-check:
 
-    name: R CMD check (${{ matrix.R }}, ${{ matrix.os }})
+    name: R CMD check (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-         R: ['release']
          os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: ${{ matrix.R }}
+          r-version: 'release'
           use-public-rspm: true
       - uses: actions-rs/toolchain@v1
         with:
