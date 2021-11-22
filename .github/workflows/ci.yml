@@ -94,6 +94,7 @@ jobs:
       - name: Run R CMD check
         run: |
           _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+      - name: Check for warnings
           CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
           CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then
@@ -114,7 +115,8 @@ jobs:
         # x: print commands
         # u: unset variables are errors
         # l: as login script
-        # shell: bash -lxu {0}
+        shell: bash -lxu {0}
+        if: matrix.os != 'windows-latest'
 
 
   python-tests:
