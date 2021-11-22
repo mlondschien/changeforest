@@ -114,7 +114,7 @@ jobs:
         # x: print commands
         # u: unset variables are errors
         # l: as login script
-        shell: bash -lxu {0}
+        # shell: bash -lxu {0}
 
 
   python-tests:
