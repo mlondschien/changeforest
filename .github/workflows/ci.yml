@@ -120,22 +120,29 @@ jobs:
 
 
   python-tests:
-    name: Python tests
-    runs-on: ubuntu-latest
-    container: condaforge/mambaforge
+    strategy:
+    fail-fast: false
+    matrix:
+      os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+
+    name: Python tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
-      - name: Install dependencies
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Build wheel
         run: |
-          apt-get update -y
-          apt-get install -y build-essential
-          cd changeforest-py
-          mamba env create -f environment.yml
-          source activate changeforest
-          maturin develop
-          pytest tests
-        shell: bash -lxeu {0}
+          pip install --upgrade maturin
+          maturin build --release -m changeforest-py/Cargo.toml
+      - name: Install wheel
+        run: pip install --force-reinstall --no-index --find-links changeforest-py/target/wheels/ changeforest
+      - name: Run tests
+        run: |
+          pip install pytest
+          pytest changeforest-py/tests
