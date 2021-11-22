@@ -1,11 +1,11 @@
 Package: changeforest
 Type: Package
-Title: High-dimensional change point detection
+Title: Classifier based non-parametric change point detection
 Version: 0.1.0
 Author: Malte Londschien
 Maintainer: Malte Londschien <malte@londschien.ch>
-Description: High-dimensional change point detection
-License: GNU GPL3
+Description: Perform classifier based multivariate, non-parametric change point detection.
+License: GPL (>=3)
 URL: https://github.com/mlondschien/changeforest
 BugReports: https://github.com/mlondschien/changeforest
 SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config

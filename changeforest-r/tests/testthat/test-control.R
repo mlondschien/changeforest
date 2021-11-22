@@ -18,7 +18,7 @@ test_that("control", {
 
     # seeded_segments_alpha
     expect_equal(length(changeforest(X, "change_in_mean", "bs")$segments), 5)
-    expect_equal(length(changeforest(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/sqrt(2)))$segments), 50 + 5)
+    expect_equal(length(changeforest(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/sqrt(2)))$segments), 44 + 5)
     expect_equal(length(changeforest(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 25 + 5)
     expect_equal(length(changeforest(X, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 10 + 5)
 

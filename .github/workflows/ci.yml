@@ -6,6 +6,23 @@ on:
 name: CI
 
 jobs:
+
+  test:
+    name: Cargo test (${{ matrix.os }})
+    runs-on: ${{ matrix. os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --release --verbose --examples
+    - name: Test
+      run: cargo test --release
+  
   check:
     name: Check
     runs-on: ubuntu-latest
@@ -19,36 +36,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
-
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --lib  # Don't run integration tests
-
-  integration-tests:
-    name:  Integration Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --release --test test_integration  # Only run integration tests
 
   fmt:
     name: Rustfmt
@@ -83,31 +70,36 @@ jobs:
           args: --all -- -D warnings
   
   R-CMD-check:
-    runs-on: ubuntu-latest
+
+    name: R CMD check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
-         R: ['4.1.1', 'release']
-    
-    name: R CMD check (${{ matrix.R }})
+         os: ['ubuntu-latest', 'macos-latest'] # TODO: Add windows here
+
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: ${{ matrix.R }}
+          r-version: 'release'
           use-public-rspm: true
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
       - name: Install dependencies
         run: |
-          install.packages("R6", repos="http://cran.us.r-project.org")
-          install.packages("testthat", repos="http://cran.us.r-project.org")
+          install.packages(c("R6", "testthat", "rcmdcheck"), repos="http://cran.us.r-project.org")
         shell: Rscript {0}
       - name: Run R CMD check
         run: |
-          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+        if: matrix.os != 'windows-latest'
+      - name: Check for warnings
+        run: |
           CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
           CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then
@@ -129,25 +121,33 @@ jobs:
         # u: unset variables are errors
         # l: as login script
         shell: bash -lxu {0}
+        if: matrix.os != 'windows-latest'
 
 
   python-tests:
-    name: Python tests
-    runs-on: ubuntu-latest
-    container: condaforge/mambaforge
+    name: Python tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
-      - name: Install dependencies
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Build wheel
         run: |
-          apt-get update -y
-          apt-get install -y build-essential
-          cd changeforest-py
-          mamba env create -f environment.yml
-          source activate changeforest
-          maturin develop
-          pytest tests
-        shell: bash -lxeu {0}
+          pip install --upgrade maturin
+          maturin build --release -m changeforest-py/Cargo.toml
+      - name: Install wheel
+        run: pip install --force-reinstall --no-index --find-links changeforest-py/target/wheels/ changeforest
+      - name: Run tests
+        run: |
+          pip install pytest numpy
+          pytest changeforest-py/tests
