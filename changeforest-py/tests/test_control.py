@@ -40,7 +40,7 @@ def test_control_model_selection_parameters(
                 "minimal_relative_segment_length": 0.05,
                 "seeded_segments_alpha": 1 / np.sqrt(2),
             },
-            50,
+            44,
         ),
         (
             "sbs",
