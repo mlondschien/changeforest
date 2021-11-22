@@ -152,9 +152,33 @@ jobs:
           path: dist
         if: runner.os != 'Linux'
 
+  python-build-linux-cross:
+    name: Python build wheels (ubuntu, ${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [i686-musl, armv7-musleabihf, aarch64-musl, x86_64-musl]
+    container:
+      image: docker://messense/rust-musl-cross:${{ matrix.target }}
+      env:
+        RUSTUP_HOME: /root/.rustup
+        CARGO_HOME: /root/.cargo
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: |
+        python3 -m pip install --upgrade maturin
+        maturin build --release -m changeforest-py/Cargo.toml -o dist --no-sdist --target $RUST_MUSL_CROSS_TARGET
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: dist
+
   python-test:
     name: Python test Wheels (${{ matrix.os }})
-    needs: [python-build]
+    needs: [python-build, python-build-linux-cross]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
