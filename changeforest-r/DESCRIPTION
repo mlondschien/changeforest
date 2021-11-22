@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Malte Londschien
 Maintainer: Malte Londschien <malte@londschien.ch>
 Description: Perform classifier based multivariate, non-parametric change point detection.
-License: GNU GPL3
+License: GPL (>=3)
 URL: https://github.com/mlondschien/changeforest
 BugReports: https://github.com/mlondschien/changeforest
 SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
