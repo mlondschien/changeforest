@@ -123,115 +123,37 @@ jobs:
         shell: bash -lxu {0}
         if: matrix.os != 'windows-latest'
 
-  # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d\
-  # 1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml#L33
-  python-build-wheels:
-    name: Python build wheels (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
-      
-    env:
-      # Install rust in container before building wheels.
-      CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
-      # See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
-      # This enables relative paths, e.g. in the Cargo.toml.
-      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin" PIP_USE_FEATURE="in-tree-build"'
-      # Python 3.6 build are slooow
-      # win32 raise error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
-      # pypi builds on macos require compilation of numpy (why?) and are thus super slow
-      # fail due to https://github.com/numpy/numpy/issues/15947.   
-      # Tests fail for 32bit linux. Possibly something to do with RNG?
-      CIBW_SKIP: "cp36-* *-win32 pp*-macosx* *linux_i686*"
-      CIBW_TEST_REQUIRES: "pytest numpy"
-      CIBW_TEST_COMMAND: "pytest {project}/changeforest-py/tests"
-
-    steps:
-      - uses: actions/checkout@v2
-
-      # - name: Set env variables for windows
-      #   if: runner.os == 'Windows'
-      #   run: |
-      #       echo 'PATH=/c/Python38:/c/Python38/Scripts:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH' >> $GITHUB_ENV
-      #       echo 'RUSTFLAGS=-Ctarget-feature=+crt-static' >> $GITHUB_ENV
-      #       echo 'RUSTFLAGS=-Ctarget-feature=+crt-static' >> $GITHUB_ENV
-      #       echo 'CIBW_BEFORE_BUILD=python -m pip install --upgrade pip' >> $GITHUB_ENV
-
-      - if: runner.os == 'Linux'
-        name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: arm64
-
-      - if: runner.os != 'Linux'
-        name: Setup env when not using docker
-        run: |
-          python -m pip install --upgrade wheel setuptools setuptools-rust
-
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: '3.8'
- 
-      - name: Install cibuildwheel
-        run: |
-          pip install cibuildwheel
-
-      - name: Build wheels
-        run: |
-          python -m cibuildwheel changeforest-py --output-dir wheelhouse
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: ./wheelhouse/*.whl
-
-  python-build-sdist:
-    name: Build source distribution
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: '3.8'
-
-      - name: Install build dependencies
-        run: python -m pip install numpy maturin
-      - name: Build sdist
-        run: maturin sdist -m changeforest-py/Cargo.toml
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
 
   python-tests:
-    name: Python test Wheels (${{ matrix.os }})
-    needs: [python-build-wheels]
+    name: Python tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         python-version: [3.9]
         os: [ubuntu-latest, macos-latest, windows-latest]
-  
+
     steps:
+
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+
+      - uses: actions-rs/toolchain@v1
         with:
-          name: wheels
+          toolchain: 'stable'
+
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Build wheel
+        run: |
+          pip install --upgrade maturin
+          maturin build --release -m changeforest-py/Cargo.toml
+
       - name: Install wheel
         run: |
           pip install numpy pytest
-          pip install --force-reinstall --no-index --find-links . changeforest
+          pip install --force-reinstall --no-index --find-links changeforest-py/target/wheels/ changeforest
+
       - name: Run tests
         run: pytest changeforest-py/tests
