@@ -123,7 +123,8 @@ jobs:
         shell: bash -lxu {0}
         if: matrix.os != 'windows-latest'
 
-
+  # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d\
+  # 1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml#L33
   python-build-wheels:
     name: Python build wheels (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -139,14 +140,18 @@ jobs:
       # See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
       # This enables relative paths, e.g. in the Cargo.toml.
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin" PIP_USE_FEATURE="in-tree-build"'
-      CIBW_SKIP: "cp36-* *-win32"  # Python 3.6 build are slooow
+      # Python 3.6 build are slooow
+      # win32 raise error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
+      # pypi builds on macos require compilation of numpy (why?) and are thus super slow
+      # fail due to https://github.com/numpy/numpy/issues/15947.   
+      # Tests fail for 32bit linux. Possibly something to do with RNG?
+      CIBW_SKIP: "cp36-* *-win32 pp*-macosx* *linux_i686*"
       CIBW_TEST_REQUIRES: "pytest numpy"
       CIBW_TEST_COMMAND: "pytest {project}/changeforest-py/tests"
 
     steps:
       - uses: actions/checkout@v2
 
-      # # From https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml#L33
       # - name: Set env variables for windows
       #   if: runner.os == 'Windows'
       #   run: |
@@ -155,10 +160,31 @@ jobs:
       #       echo 'RUSTFLAGS=-Ctarget-feature=+crt-static' >> $GITHUB_ENV
       #       echo 'CIBW_BEFORE_BUILD=python -m pip install --upgrade pip' >> $GITHUB_ENV
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.2.2
+      - if: runner.os == 'Linux'
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
         with:
-          package-dir: changeforest-py
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+
+      - if: runner.os != 'Linux'
+        name: Setup env when not using docker
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.8'
+ 
+      - name: Install cibuildwheel
+        run: |
+          pip install cibuildwheel
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel changeforest-py --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
@@ -179,7 +205,7 @@ jobs:
       - name: Install build dependencies
         run: python -m pip install numpy maturin
       - name: Build sdist
-        run: python changeforest-py/setup.py sdist
+        run: maturin sdist -m changeforest-py/Cargo.toml
 
       - uses: actions/upload-artifact@v2
         with:
