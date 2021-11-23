@@ -77,29 +77,38 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-         os: ['ubuntu-latest', 'macos-latest'] # TODO: Add windows here
+         os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
 
     steps:
+
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
         with:
           r-version: 'release'
           use-public-rspm: true
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: 'stable'
+
       - name: Install dependencies
         run: |
           install.packages(c("R6", "testthat", "rcmdcheck"), repos="http://cran.us.r-project.org")
         shell: Rscript {0}
-      - name: Run R CMD check
+
+      - name: Run R CMD build
         run: |
-          R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
+          R CMD build ./changeforest-r
+      
+      - name: Run R CMD check
+        run: R CMD check --as-cran --no-vignettes --no-manual changeforest_*.tar.gz
         env:
           _R_CHECK_CRAN_INCOMING_: false
-        if: matrix.os != 'windows-latest'
+      
+
       - name: Check for warnings
         run: |
+
           CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
           CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
           if ! [[ -f "$CHECK_LOG_FILE" ]]; then
@@ -122,6 +131,11 @@ jobs:
         # l: as login script
         shell: bash -lxu {0}
         if: matrix.os != 'windows-latest'
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: r-builds
+          path: "changeforest_*.tar.gz"
 
 
   python-tests:
