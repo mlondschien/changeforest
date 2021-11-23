@@ -10,7 +10,7 @@ jobs:
   # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml
   # and https://github.com/Daggy1234/polaroid/blob/ace9a6eee74ee9c30edd0d350d65e2f3b4d8430c/.github/workflows/publish.yml
   python-build-wheels:
-    name: Python wheels (${{ matrix.os }})
+    name: Python wheels (${{ matrix.os }}, ${{ matrix.vers }})
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -18,24 +18,26 @@ jobs:
       matrix:
         include:  # https://cibuildwheel.readthedocs.io/en/stable/options/#archs
 
-          - vers: i686
-            os: ubuntu-20.04
+          # Tests fail for 32bit linux, possibly due to RNG?
+          # - vers: i686
+          #   os: ubuntu-20.04
           - vers: aarch64
             os: ubuntu-20.04
-          - vers: x86
+          - vers: x86_64
             os: ubuntu-20.04
 
           - vers: arm64
             os: macos-10.15
           - vers: x86_64
             os: macos-10.15
-          - vers: universal2
+          - vers: universal2  # What is this?
             os: macos-10.15
 
           - vers: AMD64
             os: windows-2019
-          - vers: x86
-            os: windows-2019
+          # win32: Build fails with error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
+          # - vers: x86
+          #   os: windows-2019
       
     env:
       # Install rust in container before building wheels.
@@ -44,13 +46,14 @@ jobs:
       # This enables relative paths, e.g. in the Cargo.toml.
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin" PIP_USE_FEATURE="in-tree-build"'
       # Python 3.6 build are slooow
-      # win32 raise error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
       # pypi builds on macos require compilation of numpy (why?) and are thus super slow
-      # fail due to https://github.com/numpy/numpy/issues/15947.   
-      # Tests fail for 32bit linux. Possibly something to do with RNG?
-      CIBW_SKIP: "cp36-* pp*-macosx* *pp"
+      # fail due to https://github.com/numpy/numpy/issues/15947.
+      # What is the difference between cpython and pypi builds?
+      CIBW_SKIP: "cp36-* pp*-macosx* pp*"
       CIBW_TEST_REQUIRES: "pytest numpy"
       CIBW_TEST_COMMAND: "pytest {project}/changeforest-py/tests"
+      # macos arm64 wheels can be built on X86_64, but cannot be tested.
+      CIBW_TEST_SKIP: "*-macosx_arm64"
 
     steps:
       - uses: actions/checkout@v2
@@ -66,29 +69,22 @@ jobs:
         with:
           platforms: all
 
-      - name: wheels Linux ${{ matrix.vers }}
-        if: runner.os == 'Linux'
-        uses: joerick/cibuildwheel@v1.10.0
-        env:
-          CIBW_ARCHS_LINUX: ${{ matrix.vers }}
-        with:
-          package-dir: changeforest-py
+      - name: Install darwin target for apple silicon
+        if: matrix.vers == 'universal2'
+        run: rustup target add aarch64-apple-darwin
 
-      - name: wheels Macos ${{ matrix.vers }}
-        if: runner.os == 'Macos'
-        uses: joerick/cibuildwheel@v1.10.0
-        env:
-          CIBW_ARCHS_MACOS: ${{ matrix.vers }}
-        with:
-          package-dir: changeforest-py
+      - name: Setup env when not using docker
+        if: runner.os != 'Linux'
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+      
+      - name: Install cibuildwheel
+        run: |
+          pip install cibuildwheel
 
-      - name: wheels Windows ${{ matrix.vers }}
-        if: runner.os == 'Windows'
-        uses: joerick/cibuildwheel@v1.10.0
-        env:
-          CIBW_ARCHS_WINDOWS: ${{ matrix.vers }}
-        with:
-          package-dir: changeforest-py
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
