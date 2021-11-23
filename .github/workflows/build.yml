@@ -7,7 +7,8 @@ on:
 name: Build
 
 jobs:
-  # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml#L33
+  # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml
+  # and https://github.com/Daggy1234/polaroid/blob/ace9a6eee74ee9c30edd0d350d65e2f3b4d8430c/.github/workflows/publish.yml
   python-build-wheels:
     name: Python wheels (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -15,7 +16,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
+        include:  # https://cibuildwheel.readthedocs.io/en/stable/options/#archs
+
+          - vers: i686
+            os: ubuntu-20.04
+          - vers: aarch64
+            os: ubuntu-20.04
+          - vers: x86
+            os: ubuntu-20.04
+
+          - vers: arm64
+            os: macos-10.15
+          - vers: x86_64
+            os: macos-10.15
+          - vers: universal2
+            os: macos-10.15
+
+          - vers: AMD64
+            os: windows-2019
+          - vers: x86
+            os: windows-2019
       
     env:
       # Install rust in container before building wheels.
@@ -28,46 +48,47 @@ jobs:
       # pypi builds on macos require compilation of numpy (why?) and are thus super slow
       # fail due to https://github.com/numpy/numpy/issues/15947.   
       # Tests fail for 32bit linux. Possibly something to do with RNG?
-      CIBW_SKIP: "cp36-* *-win32 pp*-macosx* *linux_i686* *pp"
+      CIBW_SKIP: "cp36-* pp*-macosx* *pp"
       CIBW_TEST_REQUIRES: "pytest numpy"
       CIBW_TEST_COMMAND: "pytest {project}/changeforest-py/tests"
 
     steps:
       - uses: actions/checkout@v2
 
-      # - name: Set env variables for windows
-      #   if: runner.os == 'Windows'
-      #   run: |
-      #       echo 'PATH=/c/Python38:/c/Python38/Scripts:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH' >> $GITHUB_ENV
-      #       echo 'RUSTFLAGS=-Ctarget-feature=+crt-static' >> $GITHUB_ENV
-      #       echo 'RUSTFLAGS=-Ctarget-feature=+crt-static' >> $GITHUB_ENV
-      #       echo 'CIBW_BEFORE_BUILD=python -m pip install --upgrade pip' >> $GITHUB_ENV
-
-      - if: runner.os == 'Linux'
-        name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: arm64
-
-      - if: runner.os != 'Linux'
-        name: Setup env when not using docker
-        run: |
-          python -m pip install --upgrade wheel setuptools setuptools-rust
-
       - uses: actions/setup-python@v2
         name: Install Python
         with:
           python-version: '3.8'
- 
-      - name: Install cibuildwheel
-        run: |
-          pip install cibuildwheel
 
-      - name: Build wheels
-        run: |
-          python -m cibuildwheel changeforest-py --output-dir wheelhouse
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+
+      - name: wheels Linux ${{ matrix.vers }}
+        if: runner.os == 'Linux'
+        uses: joerick/cibuildwheel@v1.10.0
+        env:
+          CIBW_ARCHS_LINUX: ${{ matrix.vers }}
+        with:
+          package-dir: changeforest-py
+
+      - name: wheels Macos ${{ matrix.vers }}
+        if: runner.os == 'Macos'
+        uses: joerick/cibuildwheel@v1.10.0
+        env:
+          CIBW_ARCHS_MACOS: ${{ matrix.vers }}
+        with:
+          package-dir: changeforest-py
+
+      - name: wheels Windows ${{ matrix.vers }}
+        if: runner.os == 'Windows'
+        uses: joerick/cibuildwheel@v1.10.0
+        env:
+          CIBW_ARCHS_WINDOWS: ${{ matrix.vers }}
+        with:
+          package-dir: changeforest-py
 
       - uses: actions/upload-artifact@v2
         with:
