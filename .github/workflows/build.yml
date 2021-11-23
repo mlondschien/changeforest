@@ -9,6 +9,7 @@ name: Build
 jobs:
   # Mostly taken from https://github.com/etesync/etebase-py/blob/ee7bf21e9f57f0ce37f08d1f5cefd8ef0d3bb2f7/.github/workflows/manual.yml
   # and https://github.com/Daggy1234/polaroid/blob/ace9a6eee74ee9c30edd0d350d65e2f3b4d8430c/.github/workflows/publish.yml
+  # See pyproject.toml for configuration.
   python-build-wheels:
     name: Python wheels (${{ matrix.os }}, ${{ matrix.vers }})
     runs-on: ${{ matrix.os }}
@@ -39,22 +40,6 @@ jobs:
           # - vers: x86
           #   os: windows-2019
       
-    env:
-      # Install rust in container before building wheels.
-      CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
-      # See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
-      # This enables relative paths, e.g. in the Cargo.toml.
-      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin" PIP_USE_FEATURE="in-tree-build"'
-      # Python 3.6 build are slooow
-      # pypi builds on macos require compilation of numpy (why?) and are thus super slow
-      # fail due to https://github.com/numpy/numpy/issues/15947.
-      # What is the difference between cpython and pypi builds?
-      CIBW_SKIP: "cp36-* pp*-macosx* pp*"
-      CIBW_TEST_REQUIRES: "pytest numpy"
-      CIBW_TEST_COMMAND: "pytest {project}/changeforest-py/tests"
-      # macos arm64 wheels can be built on X86_64, but cannot be tested.
-      CIBW_TEST_SKIP: "*-macosx_arm64"
-
     steps:
       - uses: actions/checkout@v2
 

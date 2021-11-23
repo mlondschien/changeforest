@@ -13,3 +13,31 @@ line_length = 88
 known_first_party = "changeforest"
 skip_glob = '\.eggs/*,\.git/*,\.venv/*,build/*,dist/*'
 default_section = 'THIRDPARTY'
+
+[tool.cibuildwheel]
+test-requires = "numpy pytest"
+test-command = "pytest {project}/changeforest-py/tests"
+
+# macos arm64 wheels can be built on X86_64, but cannot be tested.
+test-skip = "*-maxosx_arm64"
+
+# Python 3.6 build are slooow. Possibly because we also compile numpy?
+# pypi builds on macos require compilation of numpy (why?) and are thus super slow
+# fail due to https://github.com/numpy/numpy/issues/15947.
+# What is the difference between cpython and pypi builds?
+skip = "cp36-* pp*-macosx* pp*"
+
+# Add cargobin to PATH. This is otherwise achieved by restarting the shellThis 
+# See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
+# This enables relative paths, e.g. in the Cargo.toml.
+environment = { PATH="$PATH:$HOME/.cargo/bin", PIP_USE_FEATURE="in-tree-build"}
+
+[tool.cibuildwheel.linux]
+# Install rust in container before building wheels.
+before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+
+[[tool.cibuildwheel.overrides]]
+# No yum on musllinux container.
+# What is musllinux?
+select = "*-musllinux*"
+before-all = "apk add openssl-dev && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
