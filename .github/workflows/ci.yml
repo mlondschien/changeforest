@@ -96,41 +96,15 @@ jobs:
           install.packages(c("R6", "testthat", "rcmdcheck"), repos="http://cran.us.r-project.org")
         shell: Rscript {0}
 
-      - name: Run R CMD build
-        run: |
-          R CMD build ./changeforest-r
-      
-      - name: Run R CMD check
-        run: R CMD check --as-cran --no-vignettes --no-manual changeforest_*.tar.gz
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-      
-
-      - name: Check for warnings
-        run: |
-
-          CHECK_LOG_FILE=changeforest-r.Rcheck/00check.log
-          CHECK_INSTALL_FILE=changeforest-r.Rcheck/00install.out
-          if ! [[ -f "$CHECK_LOG_FILE" ]]; then
-            echo "Log-file not found."
-            exit 1
-          fi
-          if cat $CHECK_LOG_FILE | grep -q "ERROR"; then
-            cat $CHECK_INSTALL_FILE
-            cat $CHECK_LOG_FILE
-            exit 1
-          fi
-          if cat $CHECK_LOG_FILE | grep -q "WARNING"; then
-            echo "Found warnings, treated as errors."
-            cat $CHECK_LOG_FILE
-            exit 1
-          fi
-        # e: pipefail
-        # x: print commands
-        # u: unset variables are errors
-        # l: as login script
-        shell: bash -lxu {0}
+      - name: Run R CMD build (non-windows)
         if: matrix.os != 'windows-latest'
+        run: |
+          _R_CHECK_CRAN_INCOMING=false R CMD build ./changeforest-r --no-manual
+
+      - name: Run R CMD build (windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          R.exe CMD build ./changeforest-r --no-manual     
       
       - uses: actions/upload-artifact@v2
         with:
