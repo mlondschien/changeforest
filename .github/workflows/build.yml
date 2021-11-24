@@ -98,7 +98,7 @@ jobs:
           path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
-    needs: [python-build_wheels, python-build_sdist]
+    needs: [python-build-wheels, python-build-sdist]
     runs-on: ubuntu-latest
     # if: github.event_name == 'release' && github.event.action == 'published'
     steps:
