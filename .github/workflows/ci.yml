@@ -131,6 +131,11 @@ jobs:
         run: |
           R.exe CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
 
+      - name: Check log files for warnings (windows)
+        if: matrix.os == 'windows-latest' && failure()
+        run: |
+          type changeforest-r.Rcheck/00install.out
+          type changeforest-r.Rcheck/00check.log
 
   python-tests:
     name: Python tests (${{ matrix.os }})
