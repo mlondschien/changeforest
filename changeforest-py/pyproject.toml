@@ -4,10 +4,12 @@ description = "Classifier based non-parametric change point detection"
 readme = "README.md"
 version = "0.1.0"
 requires-python = ">=3.7"
-license = "GPL (>=3)"
 author = "Malte Londschien <malte@londschien.ch>"
-urls = "https://github.com/mlondschien/changeforest/"
-
+urls = {homepage = "https://github.com/mlondschien/changeforest/"}
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python"
+]
 
 [build-system]
 requires = ["maturin>=0.11,<0.12"]
