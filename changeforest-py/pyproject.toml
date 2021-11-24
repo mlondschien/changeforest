@@ -25,7 +25,8 @@ test-skip = "*-maxosx_arm64"
 # pypi builds on macos require compilation of numpy (why?) and are thus super slow
 # fail due to https://github.com/numpy/numpy/issues/15947.
 # What is the difference between cpython and pypi builds?
-skip = "cp36-* pp*-macosx* pp*"
+# musllinux is sloooow, >1h per build. Why?
+skip = "cp36-* pp*-macosx* pp* *-musllinux*"
 
 # Add cargobin to PATH. This is otherwise achieved by restarting the shellThis 
 # See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
