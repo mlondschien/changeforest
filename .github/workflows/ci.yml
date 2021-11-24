@@ -129,6 +129,7 @@ jobs:
       - name: Run R CMD check (windows)
         if: matrix.os == 'windows-latest'
         run: |
+          rustup target add i686-pc-windows-gnu
           R.exe CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
 
       - name: Check log files for warnings (windows)
