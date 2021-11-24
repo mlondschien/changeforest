@@ -100,7 +100,7 @@ jobs:
   upload-testpypi:
     needs: [python-build-wheels, python-build-sdist]
     runs-on: ubuntu-latest
-    # if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -112,3 +112,18 @@ jobs:
           user: __token__
           password: ${{ secrets.TESTPYPI_GH_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
+  
+  upload-pypi:
+    needs: [python-build-wheels, python-build-sdist, upload-testpypi]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_GH_TOKEN }}
