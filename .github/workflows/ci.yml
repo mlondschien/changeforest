@@ -96,15 +96,10 @@ jobs:
           install.packages(c("R6", "testthat", "rcmdcheck"), repos="http://cran.us.r-project.org")
         shell: Rscript {0}
 
-      - name: Run R CMD build (non-windows)
-        if: matrix.os != 'windows-latest'
-        run: |
-          R CMD build ./changeforest-r --no-manual
-
       - name: Run R CMD check (non-windows)
         if: matrix.os != 'windows-latest'
         run: |
-          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual changeforest_*.tar.gz
+          _R_CHECK_CRAN_INCOMING_=false R CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
 
       - name: Check log files for warnings (non-windows)
         if: matrix.os != 'windows-latest'
@@ -131,22 +126,10 @@ jobs:
         # l: as login script
         shell: bash -lxu {0}
 
-      - name: Run R CMD build (windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          R.exe CMD build ./changeforest-r --no-manual    
-
       - name: Run R CMD check (windows)
         if: matrix.os == 'windows-latest'
         run: |
-          R.exe CMD check --as-cran --no-vignettes --no-manual changeforest_*.tar.gz
-
-      - name: Rename tarball
-        run: for x in changeforest_*.tar.gz; do mv $x ${x%.tar.gz}-${{ matrix.os }}.tar.gz; done
-      - uses: actions/upload-artifact@v2
-        with:
-          name: r-builds
-          path: "changeforest_*.tar.gz"
+          R.exe CMD check --as-cran --no-vignettes --no-manual ./changeforest-r
 
 
   python-tests:
