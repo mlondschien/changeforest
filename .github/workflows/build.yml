@@ -48,6 +48,10 @@ jobs:
         with:
           python-version: '3.8'
 
+      # QEMU emulates an arm64 system on X86. This is needed to build the aarch64 wheels
+      # on GH actions. It's slow. See
+      # https://github.com/docker/setup-qemu-action/issues/22 and
+      # https://github.com/pypa/cibuildwheel/issues/598
       - name: Set up QEMU
         if: runner.os == 'Linux'
         uses: docker/setup-qemu-action@v1
