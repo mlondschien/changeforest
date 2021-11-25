@@ -1,14 +1,14 @@
 Package: changeforest
 Type: Package
-Title: Classifier based non-parametric change point detection
-Version: 0.1.0
+Title: Classifier Based Non-Parametric Change Point Detection
+Version: 0.1.1
 Author: Malte Londschien
 Maintainer: Malte Londschien <malte@londschien.ch>
 Description: Perform classifier based multivariate, non-parametric change point detection.
-License: GPL (>=3)
+License: BSD_3_clause + file LICENSE
 URL: https://github.com/mlondschien/changeforest
 BugReports: https://github.com/mlondschien/changeforest
-SystemRequirements: Rust tool chain w/ cargo, libclang/llvm-config
+SystemRequirements: Cargo (>= 1.42.0) for installation from source.
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 Imports:
