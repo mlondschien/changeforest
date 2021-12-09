@@ -1,5 +1,6 @@
 use crate::control::Control;
-use crate::gain::{Gain, GainResult};
+use crate::gain::Gain;
+use crate::optimizer::OptimizerResult;
 use crate::ModelSelectionResult;
 use std::cell::{Ref, RefCell};
 
@@ -61,9 +62,10 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         result / (s * s_1 * s_2)
     }
 
-    fn model_selection(&self, max_gain: f64, _: &GainResult) -> ModelSelectionResult {
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
         ModelSelectionResult {
-            is_significant: max_gain > self.control.minimal_gain_to_split * (self.n() as f64),
+            is_significant: optimizer_result.max_gain
+                > self.control.minimal_gain_to_split * (self.n() as f64),
             p_value: None,
         }
     }

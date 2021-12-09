@@ -1,5 +1,6 @@
 use crate::control::Control;
 use crate::gain::{ApproxGain, ApproxGainResult, Gain, GainResult};
+use crate::optimizer::OptimizerResult;
 use crate::Classifier;
 use crate::ModelSelectionResult;
 use ndarray::{s, Array1, Array2, Axis};
@@ -8,6 +9,29 @@ use rand::{rngs::StdRng, SeedableRng};
 pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,
 }
+
+// impl<T> ClassifierGain<T>
+// where
+//     T: Classifier,
+// {
+//     fn _single_permutation_test(&self, gain_result: &GainResult, rng: &mut StdRng) -> Self {
+//         let likelihoods: &Array2<f64>;
+//         let start: usize;
+//         let stop: usize;
+
+//         if let GainResult::ApproxGainResult(result) = gain_result {
+//             likelihoods = &result.likelihoods;
+//             start = result.start;
+//             stop = result.stop;
+//         } else {
+//             panic!();
+//         }
+
+//         Self {
+//             classifier,
+//         }
+//     }
+// }
 
 impl<T> Gain for ClassifierGain<T>
 where
@@ -26,18 +50,16 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
-    fn model_selection(&self, _: f64, gain_result: &GainResult) -> ModelSelectionResult {
-        let likelihoods: &Array2<f64>;
-        let start: usize;
-        let stop: usize;
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
+        let gain_result = optimizer_result.gain_results.last().unwrap();
 
-        if let GainResult::ApproxGainResult(result) = gain_result {
-            likelihoods = &result.likelihoods;
-            start = result.start;
-            stop = result.stop;
-        } else {
-            panic!();
-        }
+        let gain_result = match gain_result {
+            GainResult::ApproxGainResult(result) => result,
+            _ => panic!("Not an ApproxGainResult"),
+        };
+        let likelihoods = &gain_result.likelihoods;
+        let start = gain_result.start;
+        let stop = gain_result.stop;
 
         let delta = &likelihoods.slice(s![0, ..]) - &likelihoods.slice(s![1, ..]);
         let n_permutations = 99;

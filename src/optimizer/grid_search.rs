@@ -47,9 +47,7 @@ where
     }
 
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
-        let gain_result = optimizer_result.gain_results.last().unwrap();
-        self.gain
-            .model_selection(optimizer_result.max_gain, gain_result)
+        self.gain.model_selection(optimizer_result)
     }
 }
 

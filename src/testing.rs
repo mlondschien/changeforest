@@ -40,9 +40,10 @@ impl<'a> Gain for ChangeInMean<'a> {
             - slice.sum_axis(Axis(0)).mapv(|a| a.powi(2)).sum() / n_slice
     }
 
-    fn model_selection(&self, max_gain: f64, _: &GainResult) -> ModelSelectionResult {
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
         ModelSelectionResult {
-            is_significant: max_gain > self.control.minimal_gain_to_split * (self.n() as f64),
+            is_significant: optimizer_result.max_gain
+                > self.control.minimal_gain_to_split * (self.n() as f64),
             p_value: None,
         }
     }

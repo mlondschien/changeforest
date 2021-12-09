@@ -1,5 +1,6 @@
 use crate::control::Control;
-use crate::gain::{ApproxGainResult, FullGainResult, GainResult};
+use crate::gain::{ApproxGainResult, FullGainResult};
+use crate::optimizer::OptimizerResult;
 use crate::ModelSelectionResult;
 
 pub trait Gain {
@@ -35,7 +36,7 @@ pub trait Gain {
     }
 
     /// Does a certain split corresponds to a true change point?
-    fn model_selection(&self, max_gain: f64, gain_result: &GainResult) -> ModelSelectionResult;
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult;
 
     /// Hyperparameters.
     fn control(&self) -> &Control;
