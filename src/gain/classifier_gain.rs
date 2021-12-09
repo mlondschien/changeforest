@@ -14,7 +14,7 @@ pub struct ClassifierGain<T: Classifier> {
 // where
 //     T: Classifier,
 // {
-//     fn _single_permutation_test(&self, gain_result: &GainResult, rng: &mut StdRng) -> Self {
+//     fn single_(&self, gain_result: &GainResult, rng: &mut StdRng) -> Self {
 //         let likelihoods: &Array2<f64>;
 //         let start: usize;
 //         let stop: usize;
@@ -51,46 +51,54 @@ where
     }
 
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
-        let gain_result = optimizer_result.gain_results.last().unwrap();
-
-        let gain_result = match gain_result {
-            GainResult::ApproxGainResult(result) => result,
-            _ => panic!("Not an ApproxGainResult"),
-        };
-        let likelihoods = &gain_result.likelihoods;
-        let start = gain_result.start;
-        let stop = gain_result.stop;
-
-        let delta = &likelihoods.slice(s![0, ..]) - &likelihoods.slice(s![1, ..]);
+        let mut rng = StdRng::seed_from_u64(self.control().seed);
         let n_permutations = 99;
 
-        let mut rng = StdRng::seed_from_u64(self.classifier.control().seed);
+        let mut max_gain = -f64::INFINITY;
+        let mut deltas: Vec<Array1<f64>> = Vec::with_capacity(3);
+        let mut likelihood_0: Vec<f64> = Vec::with_capacity(3);
 
-        let mut max_gain = 0.;
-        let mut value = 0.;
+        for jdx in 0..3 {
+            let result = match &optimizer_result.gain_results[jdx] {
+                GainResult::ApproxGainResult(result) => result,
+                _ => panic!("Not an ApproxGainResult"),
+            };
 
-        for idx in 0..(stop - start) {
-            value += delta[idx];
-            if value > max_gain {
-                max_gain = value;
+            deltas
+                .push(&result.likelihoods.slice(s![0, ..]) - &result.likelihoods.slice(s![1, ..]));
+            likelihood_0.push(result.likelihoods.slice(s![1, ..]).sum());
+            if result.max_gain.unwrap() > max_gain {
+                max_gain = result.max_gain.unwrap();
             }
         }
 
         let mut p_value: u32 = 1;
+        let segment_length = optimizer_result.stop - optimizer_result.start;
 
         for _ in 0..n_permutations {
-            value = 0.;
-            for idx in rand::seq::index::sample(&mut rng, stop - start, stop - start) {
-                value += delta[idx];
-                if value > max_gain {
-                    p_value += 1;
-                    break;
+            let mut values = likelihood_0.clone();
+
+            // Test if for any jdx=1,2,3 the gain (likelihood_0[jdx] + cumsum(deltas[jdx]))
+            // is greater than max_gain. This is the statistic we are comparing against.
+            'outer: for idx in rand::seq::index::sample(&mut rng, segment_length, segment_length) {
+                for jdx in 0..3 {
+                    values[jdx] += deltas[jdx][idx];
+                    if values[jdx] >= optimizer_result.max_gain {
+                        p_value += 1;
+                        // break both loops. We only need to check if the maximum of the
+                        // maximal gain after permutation is ever greater than the
+                        // original max_gain (without permutation).
+                        break 'outer;
+                    }
                 }
             }
         }
 
+        // Up to here p_value is # of permutations for which the max_gain is higher than
+        // the non-permuted max_gain. From this create a true p_value.
         let p_value = p_value as f64 / (n_permutations + 1) as f64;
         let is_significant = p_value < self.control().model_selection_alpha;
+
         ModelSelectionResult {
             is_significant,
             p_value: Some(p_value),
@@ -129,6 +137,8 @@ where
             stop,
             guess,
             gain,
+            best_split: None,
+            max_gain: None,
             likelihoods,
             predictions,
         }

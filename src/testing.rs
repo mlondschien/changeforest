@@ -1,4 +1,4 @@
-use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain, GainResult};
+use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, ModelSelectionResult, Optimizer};
 use ndarray::{s, stack, Array, Array1, Array2, ArrayView2, Axis};
@@ -96,6 +96,8 @@ impl<'a> ApproxGain for ChangeInMean<'a> {
             stop,
             guess,
             gain,
+            best_split: None,
+            max_gain: None,
             predictions,
             likelihoods,
         }

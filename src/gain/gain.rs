@@ -32,7 +32,13 @@ pub trait Gain {
             gain[split_point - start] = self.gain(start, stop, *split_point);
         }
 
-        FullGainResult { start, stop, gain }
+        FullGainResult {
+            start,
+            stop,
+            gain,
+            max_gain: None,
+            best_split: None,
+        }
     }
 
     /// Does a certain split corresponds to a true change point?

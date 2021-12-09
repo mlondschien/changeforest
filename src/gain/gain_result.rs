@@ -9,6 +9,8 @@ pub struct ApproxGainResult {
     pub stop: usize,
     pub guess: usize,
     pub gain: Array1<f64>,
+    pub max_gain: Option<f64>,
+    pub best_split: Option<usize>,
     pub likelihoods: Array2<f64>,
     pub predictions: Array1<f64>,
 }
@@ -18,6 +20,8 @@ pub struct ApproxGainResult {
 pub struct FullGainResult {
     pub start: usize,
     pub stop: usize,
+    pub max_gain: Option<f64>,
+    pub best_split: Option<usize>,
     pub gain: Array1<f64>,
 }
 

@@ -1,4 +1,4 @@
-use crate::gain::{ApproxGain, GainResult};
+use crate::gain::{ApproxGain, ApproxGainResult, GainResult};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, ModelSelectionResult, Optimizer};
 
@@ -16,8 +16,8 @@ where
         stop: usize,
         guess: usize,
         split_candidates: &[usize],
-    ) -> (GainResult, usize, f64) {
-        let approx_gain_result = self.gain.gain_approx(start, stop, guess, split_candidates);
+    ) -> ApproxGainResult {
+        let mut approx_gain_result = self.gain.gain_approx(start, stop, guess, split_candidates);
 
         let mut best_split = guess;
         let mut max_gain = -f64::INFINITY;
@@ -29,11 +29,10 @@ where
             }
         }
 
-        (
-            GainResult::ApproxGainResult(approx_gain_result),
-            best_split,
-            max_gain,
-        )
+        approx_gain_result.best_split = Some(best_split);
+        approx_gain_result.max_gain = Some(max_gain);
+
+        approx_gain_result
     }
 }
 
@@ -56,35 +55,39 @@ where
             return Err("Segment too small.");
         }
 
-        let (left_gain_result, left_best_split, left_max_gain) =
+        let left_result =
             self._single_find_best_split(start, stop, (3 * start + stop) / 4, &split_candidates);
-        let (mid_gain_result, mid_best_split, mid_max_gain) =
+        let mid_result =
             self._single_find_best_split(start, stop, (start + stop) / 2, &split_candidates);
-        let (right_gain_result, right_best_split, right_max_gain) =
+        let right_result =
             self._single_find_best_split(start, stop, (start + 3 * stop) / 4, &split_candidates);
 
         let best_split: usize;
+        let mid_max_gain = mid_result.max_gain.unwrap();
+        let left_max_gain = left_result.max_gain.unwrap();
+        let right_max_gain = right_result.max_gain.unwrap();
+
         if mid_max_gain >= left_max_gain && mid_max_gain >= right_max_gain {
-            best_split = mid_best_split;
+            best_split = mid_result.best_split.unwrap();
         } else if left_max_gain >= mid_max_gain && left_max_gain >= right_max_gain {
-            best_split = left_best_split;
+            best_split = left_result.best_split.unwrap();
         } else {
-            best_split = right_best_split;
+            best_split = right_result.best_split.unwrap();
         }
 
-        let (second_gain_result, second_best_split, second_max_gain) =
+        let second_gain_result =
             self._single_find_best_split(start, stop, best_split, &split_candidates);
 
         Ok(OptimizerResult {
             start,
             stop,
-            best_split: second_best_split,
-            max_gain: second_max_gain,
+            best_split: second_gain_result.best_split.unwrap(),
+            max_gain: second_gain_result.max_gain.unwrap(),
             gain_results: vec![
-                left_gain_result,
-                mid_gain_result,
-                right_gain_result,
-                second_gain_result,
+                GainResult::ApproxGainResult(left_result),
+                GainResult::ApproxGainResult(mid_result),
+                GainResult::ApproxGainResult(right_result),
+                GainResult::ApproxGainResult(second_gain_result),
             ],
         })
     }
@@ -102,7 +105,7 @@ mod tests {
     use rstest::*;
 
     #[rstest]
-    #[case(0, 7, 4)]
+    #[case(0, 7, 2)]
     #[case(1, 7, 4)]
     #[case(2, 7, 4)]
     #[case(3, 7, 4)]
