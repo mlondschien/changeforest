@@ -27,6 +27,23 @@ where
             .single_likelihood(&predictions, start, stop, split)
     }
 
+    /// Perform a permutation test.
+    ///
+    /// We test whether the maximum observed gain from the first step in the
+    /// `TwoStepSearch` optimizer is significant. Using the maximum gain from the first
+    /// step instead allows us to do a proper permutation test with control of type I
+    /// error without fitting additional classifiers.
+    ///
+    /// In the first step of the `TwoStepSearch` optimizer, three gain curves and
+    /// corresponding maximal gains are computed. The maximum gain of the first step
+    /// of `TwoStepSearch` is the maximum of these three gains, which are available as
+    /// the first three elements of `optimizer_result.gain_results`.
+    ///
+    /// For each permutation, we shuffle the predictions (and thus the likelihoods) of
+    /// each of the three initial classifier fits (using the same permutation), and
+    /// compute the maximum of the three resulting maximal gains. We count the number
+    /// of permutations where the resulting maximal gain was larger than the observed
+    /// maximal gain to compute a p-value.
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
         let mut rng = StdRng::seed_from_u64(self.control().seed);
         let n_permutations = 99;
