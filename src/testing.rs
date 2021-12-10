@@ -1,3 +1,4 @@
+use crate::classifier::Classifier;
 use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, ModelSelectionResult, Optimizer};
@@ -128,6 +129,31 @@ impl<'a> Optimizer for TrivialOptimizer<'a> {
             is_significant: optimizer_result.stop <= 50,
             p_value: None,
         }
+    }
+
+    fn control(&self) -> &Control {
+        self.control
+    }
+}
+
+pub struct TrivialClassifier<'a> {
+    pub n: usize,
+    pub control: &'a Control,
+}
+
+impl<'a> Classifier for TrivialClassifier<'a> {
+    fn n(&self) -> usize {
+        self.n
+    }
+
+    fn predict(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
+        let mut X = Array::zeros(stop - start);
+        X.slice_mut(s![0..(split - start)])
+            .fill((stop - split) as f64 / (stop - start - 1) as f64);
+        X.slice_mut(s![(split - start)..])
+            .fill((stop - split - 1) as f64 / (stop - start - 1) as f64);
+        X[[0]] = 0.;
+        X
     }
 
     fn control(&self) -> &Control {

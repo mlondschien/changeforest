@@ -149,3 +149,24 @@ pub fn gain_from_likelihoods(likelihoods: &Array2<f64>) -> Array1<f64> {
 
     gain + likelihoods.slice(s![1, ..]).sum()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_gain_from_likelihoods() {
+        let likelihoods = ndarray::array![
+            [1., -1.],
+            [1., -1.],
+            [0.5, -1.5],
+            [-2., 0.],
+            [-1., 1.],
+            [-1., 1.]
+        ]
+        .reversed_axes();
+        let gain = gain_from_likelihoods(&likelihoods);
+        let expected = ndarray::array![-1.5, 0.5, 2.5, 4.5, 2.5, 0.5];
+        assert_eq!(gain, expected);
+    }
+}
