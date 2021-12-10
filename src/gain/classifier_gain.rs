@@ -10,29 +10,6 @@ pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,
 }
 
-// impl<T> ClassifierGain<T>
-// where
-//     T: Classifier,
-// {
-//     fn single_(&self, gain_result: &GainResult, rng: &mut StdRng) -> Self {
-//         let likelihoods: &Array2<f64>;
-//         let start: usize;
-//         let stop: usize;
-
-//         if let GainResult::ApproxGainResult(result) = gain_result {
-//             likelihoods = &result.likelihoods;
-//             start = result.start;
-//             stop = result.stop;
-//         } else {
-//             panic!();
-//         }
-
-//         Self {
-//             classifier,
-//         }
-//     }
-// }
-
 impl<T> Gain for ClassifierGain<T>
 where
     T: Classifier,
