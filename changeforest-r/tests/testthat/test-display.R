@@ -10,7 +10,7 @@ test_that("display", {
         "2  ¦--(0, 5]               3 3.459535    0.01           TRUE",
         "3  ¦    ¦--(0, 3]          1 0.000000    1.00          FALSE",
         "4  ¦    °--(3, 5]         NA       NA      NA          FALSE",
-        "5  °--(5, 10]              6 0.000000    1.00          FALSE"
+        "5  °--(5, 10]              7 1.383814    1.00          FALSE"
     )
 
     expect_lists_equal(output, expected)

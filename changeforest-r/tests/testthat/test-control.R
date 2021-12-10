@@ -38,6 +38,7 @@ test_that("control", {
     expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_ntree=1))$split_points(), c(50, 100))
     expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_ntree=100))$split_points(), c(50, 100))
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_ntree=1))$split_points(), c())
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_ntree=1))$split_points(), c())
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_ntree=10))$split_points(), c(5))
 })
 
