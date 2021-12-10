@@ -84,7 +84,7 @@ mod tests {
         let predictions = classifier.predict(0, 10, 5);
         assert_approx_eq!(
             classifier.single_likelihood(&predictions, 0, 10, 5),
-            0.80955
+            0.809552182
         );
     }
 
