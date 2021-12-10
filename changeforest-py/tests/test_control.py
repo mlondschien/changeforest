@@ -14,6 +14,7 @@ from changeforest import Control, changeforest
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 0.1}, [50, 100]),
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10.0}, []),
         # model_selection_alpha
         ("iris", "bs", "knn", {"model_selection_alpha": 0.001}, []),
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
@@ -23,6 +24,7 @@ from changeforest import Control, changeforest
         ("iris", "bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
         # Use X_test instead
         ("X_test", "bs", "random_forest", {"random_forest_ntrees": 1}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 1.0}, []),
         ("X_test", "bs", "random_forest", {"random_forest_ntrees": 100}, [5]),
     ],
 )

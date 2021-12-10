@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 - (2021-12-xx)
+
+**Bug fix:**
+
+- (Python) Parameters will not be correctly passed to `changeforest` via `Control` even
+  if they have the incorrect data type.
+
+
 ## 0.2.0 - (2021-12-10)
 
 **New feature**:
