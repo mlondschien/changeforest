@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct ModelSelectionResult {
     pub is_significant: bool,
     pub p_value: Option<f64>,
@@ -18,11 +18,15 @@ impl fmt::Display for ModelSelectionResult {
     }
 }
 
-impl Default for ModelSelectionResult {
-    fn default() -> Self {
-        ModelSelectionResult {
-            is_significant: false,
-            p_value: None,
-        }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_model_selection_result_default() {
+        // Clippy complains if I implement default myself. It is very essential for
+        // this crate / the algorithm that `is_significant` is initialized as `false`.
+        let result = ModelSelectionResult::default();
+        assert!(!result.is_significant);
     }
 }

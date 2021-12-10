@@ -25,7 +25,7 @@ where
             return Err("Segment too small.");
         }
 
-        let full_gain = self.gain.gain_full(start, stop, &split_candidates);
+        let mut full_gain = self.gain.gain_full(start, stop, &split_candidates);
 
         let mut best_split = 0;
         let mut max_gain = -f64::INFINITY;
@@ -37,6 +37,9 @@ where
             }
         }
 
+        full_gain.max_gain = Some(max_gain);
+        full_gain.best_split = Some(best_split);
+
         Ok(OptimizerResult {
             start,
             stop,
@@ -47,9 +50,7 @@ where
     }
 
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
-        let gain_result = optimizer_result.gain_results.last().unwrap();
-        self.gain
-            .model_selection(optimizer_result.max_gain, gain_result)
+        self.gain.model_selection(optimizer_result)
     }
 }
 

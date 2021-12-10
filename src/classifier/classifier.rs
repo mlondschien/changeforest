@@ -21,6 +21,11 @@ pub trait Classifier {
         let (left, right) = predictions.slice(s![..]).split_at(Axis(0), split - start);
         let left_correction = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
         let right_correction = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
+        println!(
+            "left={:?}, right={:?}",
+            left.mapv(|x| log_eta((1. - x) * left_correction)),
+            right.mapv(|x| log_eta(x * right_correction))
+        );
         left.mapv(|x| log_eta((1. - x) * left_correction)).sum()
             + right.mapv(|x| log_eta(x * right_correction)).sum()
     }
@@ -60,4 +65,41 @@ pub trait Classifier {
     }
 
     fn control(&self) -> &Control;
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use crate::testing::TrivialClassifier;
+    use assert_approx_eq::*;
+
+    #[test]
+    fn test_single_likelihood() {
+        let control = Control::default();
+        let classifier = TrivialClassifier {
+            n: 10,
+            control: &control,
+        };
+        let predictions = classifier.predict(0, 10, 5);
+        assert_approx_eq!(
+            classifier.single_likelihood(&predictions, 0, 10, 5),
+            0.809552182
+        );
+    }
+
+    #[test]
+    fn test_full_likelihood() {
+        let control = Control::default();
+        let classifier = TrivialClassifier {
+            n: 10,
+            control: &control,
+        };
+        let predictions = classifier.predict(0, 10, 5);
+        let mut expected = Array2::<f64>::zeros((2, 10));
+        expected[[0, 0]] = 0.8095521826214339; // TODO: Why not 6.0
+        expected[[1, 0]] = -6.0;
+
+        assert_eq!(classifier.full_likelihood(&predictions, 0, 10, 5), expected);
+    }
 }

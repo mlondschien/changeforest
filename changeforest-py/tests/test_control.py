@@ -5,28 +5,36 @@ from changeforest import Control, changeforest
 
 
 @pytest.mark.parametrize(
-    "segmentation_type, method, kwargs, expected",
+    "data, segmentation_type, method, kwargs, expected",
     [
         # minimal_relative_segment_length
-        ("bs", "knn", {"minimal_relative_segment_length": 0.05}, [50, 100]),
-        ("bs", "knn", {"minimal_relative_segment_length": 0.4}, [60]),
+        ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.05}, [50, 100]),
+        ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.4}, [60]),
         # minimal_gain_to_split
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 0.1}, [50, 100]),
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 0.1}, [50, 100]),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
         # model_selection_alpha
-        ("bs", "knn", {"model_selection_alpha": 0.001}, []),
-        ("bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
+        ("iris", "bs", "knn", {"model_selection_alpha": 0.001}, []),
+        ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
         # random_forest_ntree
         # This is impressive and unexpected.
-        ("bs", "random_forest", {"random_forest_ntrees": 1}, [48, 98]),
-        ("bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_ntrees": 1}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
+        # Use X_test instead
+        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 1}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 100}, [5]),
     ],
 )
 def test_control_model_selection_parameters(
-    iris_dataset, method, segmentation_type, kwargs, expected
+    iris_dataset, X_test, data, method, segmentation_type, kwargs, expected
 ):
-    result = changeforest(iris_dataset, method, segmentation_type, Control(**kwargs))
+    if data == "iris":
+        X = iris_dataset
+    else:
+        X = X_test
+
+    result = changeforest(X, method, segmentation_type, Control(**kwargs))
     np.testing.assert_array_equal(result.split_points(), expected)
 
 

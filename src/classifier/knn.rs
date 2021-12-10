@@ -178,7 +178,7 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 100, 40)]
+    #[case(0, 100, 25)]
     fn test_two_step_search(#[case] start: usize, #[case] stop: usize, #[case] expected: usize) {
         let X = testing::array();
         let X_view = X.view();
