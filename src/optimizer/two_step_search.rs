@@ -49,11 +49,7 @@ where
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
-        let split_candidates = self.split_candidates(start, stop);
-
-        if split_candidates.is_empty() {
-            return Err("Segment too small.");
-        }
+        let split_candidates = self.split_candidates(start, stop)?;
 
         let left_result =
             self._single_find_best_split(start, stop, (3 * start + stop) / 4, &split_candidates);
