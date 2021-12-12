@@ -19,11 +19,7 @@ where
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
-        let split_candidates = self.split_candidates(start, stop);
-
-        if split_candidates.is_empty() {
-            return Err("Segment too small.");
-        }
+        let split_candidates = self.split_candidates(start, stop)?;
 
         let mut full_gain = self.gain.gain_full(start, stop, &split_candidates);
 

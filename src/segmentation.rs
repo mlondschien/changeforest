@@ -34,7 +34,7 @@ impl<'a> Segmentation<'a> {
             SegmentationType::BS => (),
             SegmentationType::SBS => {
                 let minimal_segment_length = f64::max(
-                    (2. * optimizer.control().minimal_relative_segment_length
+                    2. * (optimizer.control().minimal_relative_segment_length
                         * optimizer.n() as f64)
                         .ceil(),
                     2.,
