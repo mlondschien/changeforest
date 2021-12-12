@@ -6,6 +6,8 @@
 
 - (Python) Parameters will not be correctly passed to `changeforest` via `Control` even
   if they have the incorrect data type.
+- Fixed a bug where SBS would panic in cases with very small minimal segments lengths
+  due to rounding.
 
 
 ## 0.2.0 - (2021-12-10)
