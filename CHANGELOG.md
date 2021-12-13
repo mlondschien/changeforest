@@ -4,11 +4,11 @@
 
 **Bug fixes:**
 
-- (Python only) Parameters will not be correctly passed to `changeforest` via `Control` even
-  if they have the incorrect data type.
+- (Python only) Parameters will now be correctly passed to `changeforest` via `Control` even
+  if they have an incorrect data type.
 - Fixed a bug where SBS would panic in cases with very small minimal segments lengths
   due to rounding.
-- Fixed a bug in model selection, resulting in a higher type I error.
+- Fixed a bug in model selection that resulted in a higher type I error.
 
 
 ## 0.2.0 - (2021-12-10)
@@ -27,4 +27,4 @@
 
 **Other changes**:
 
-- Added license file for compatibility with conda-forge.
+- Added license file for compatability with conda-forge.
