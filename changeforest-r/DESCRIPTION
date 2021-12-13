@@ -1,7 +1,7 @@
 Package: changeforest
 Type: Package
 Title: Classifier Based Non-Parametric Change Point Detection
-Version: 0.2.0
+Version: 0.2.1
 Author: Malte Londschien
 Maintainer: Malte Londschien <malte@londschien.ch>
 Description: Perform classifier based multivariate, non-parametric change point detection.
