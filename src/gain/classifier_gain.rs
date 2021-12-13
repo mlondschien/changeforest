@@ -77,7 +77,7 @@ where
             'outer: for idx in rand::seq::index::sample(&mut rng, segment_length, segment_length) {
                 for jdx in 0..3 {
                     values[jdx] += deltas[jdx][idx];
-                    if values[jdx] >= optimizer_result.max_gain {
+                    if values[jdx] >= max_gain {
                         p_value += 1;
                         // break both loops. We only need to check if the maximum of the
                         // maximal gain after permutation is ever greater than the
@@ -153,6 +153,8 @@ pub fn gain_from_likelihoods(likelihoods: &Array2<f64>) -> Array1<f64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::optimizer::{Optimizer, TwoStepSearch};
+    use crate::testing::RandomClassifier;
 
     #[test]
     fn test_gain_from_likelihoods() {
@@ -168,5 +170,32 @@ mod tests {
         let gain = gain_from_likelihoods(&likelihoods);
         let expected = ndarray::array![-1.5, 0.5, 2.5, 4.5, 2.5, 0.5];
         assert_eq!(gain, expected);
+    }
+
+    #[test]
+    fn test_model_selection() {
+        let n = 200;
+
+        let mut p_values = Vec::<f64>::new();
+
+        for seed in 0..100 {
+            let control = Control::default();
+            let classifier = RandomClassifier {
+                n,
+                control: &control,
+                seed,
+            };
+            let gain = ClassifierGain { classifier };
+            let optimizer = TwoStepSearch { gain };
+
+            let optimizer_result = optimizer.find_best_split(0, n).unwrap();
+
+            let model_selection = optimizer.model_selection(&optimizer_result);
+            p_values.push(model_selection.p_value.unwrap());
+        }
+        println!("{:?}", &p_values);
+        let p_value = p_values.into_iter().filter(|x| *x < 0.05).count() as f64 / n as f64;
+        assert!(p_value >= 0.03);
+        assert!(p_value <= 0.07);
     }
 }

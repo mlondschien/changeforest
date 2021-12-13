@@ -3,7 +3,7 @@ use crate::gain::{gain_from_likelihoods, ApproxGain, ApproxGainResult, Gain};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, ModelSelectionResult, Optimizer};
 use ndarray::{s, stack, Array, Array1, Array2, ArrayView2, Axis};
-use ndarray_rand::rand_distr::Uniform;
+use ndarray_rand::rand_distr::{Normal, Uniform};
 use ndarray_rand::RandomExt;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
@@ -154,6 +154,42 @@ impl<'a> Classifier for TrivialClassifier<'a> {
             .fill((stop - split - 1) as f64 / (stop - start - 1) as f64);
         X[[0]] = 0.;
         X
+    }
+
+    fn control(&self) -> &Control {
+        self.control
+    }
+}
+
+/// Classifier that predicts uniformly distributed values.
+pub struct RandomClassifier<'a> {
+    pub n: usize,
+    pub control: &'a Control,
+    pub seed: u64,
+}
+
+impl<'a> Classifier for RandomClassifier<'a> {
+    fn n(&self) -> usize {
+        self.n
+    }
+
+    fn predict(&self, start: usize, stop: usize, guess: usize) -> Array1<f64> {
+        let mut rng = StdRng::seed_from_u64(self.seed);
+        let mut predictions = Array1::zeros(stop - start);
+        let left = Array1::random_using(
+            guess - start,
+            Normal::new((stop - guess) as f64 / (stop - start - 1) as f64, 0.1).unwrap(),
+            &mut rng,
+        );
+        let right = Array1::random_using(
+            stop - guess,
+            Normal::new((stop - guess) as f64 / (stop - start - 1) as f64, 0.1).unwrap(),
+            &mut rng,
+        );
+        predictions.slice_mut(s![..(guess - start)]).assign(&left);
+        predictions.slice_mut(s![(guess - start)..]).assign(&right);
+        predictions.mapv_inplace(|x| f64::min(f64::max(0., x), 1.));
+        predictions
     }
 
     fn control(&self) -> &Control {
