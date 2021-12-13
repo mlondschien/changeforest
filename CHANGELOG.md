@@ -1,13 +1,14 @@
 # Changelog
 
-## 0.2.1 - (2021-12-xx)
+## 0.2.1 - (2021-12-13)
 
-**Bug fix:**
+**Bug fixes:**
 
-- (Python) Parameters will not be correctly passed to `changeforest` via `Control` even
+- (Python only) Parameters will not be correctly passed to `changeforest` via `Control` even
   if they have the incorrect data type.
 - Fixed a bug where SBS would panic in cases with very small minimal segments lengths
   due to rounding.
+- Fixed a bug in model selection, resulting in a higher type I error.
 
 
 ## 0.2.0 - (2021-12-10)
