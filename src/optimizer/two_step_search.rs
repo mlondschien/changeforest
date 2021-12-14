@@ -63,9 +63,9 @@ where
         }
 
         results.sort_by(|a, b| {
-            a.max_gain()
+            b.max_gain()
                 .unwrap()
-                .partial_cmp(&b.max_gain().unwrap())
+                .partial_cmp(&a.max_gain().unwrap())
                 .unwrap()
         });
         let best_split = results[0].best_split().unwrap();
