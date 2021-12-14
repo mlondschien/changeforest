@@ -46,6 +46,20 @@ impl GainResult {
         }
     }
 
+    pub fn max_gain(&self) -> Option<f64> {
+        match self {
+            GainResult::ApproxGainResult(result) => result.max_gain,
+            GainResult::FullGainResult(result) => result.max_gain,
+        }
+    }
+
+    pub fn best_split(&self) -> Option<usize> {
+        match self {
+            GainResult::ApproxGainResult(result) => result.best_split,
+            GainResult::FullGainResult(result) => result.best_split,
+        }
+    }
+
     pub fn gain(&self) -> &Array1<f64> {
         match self {
             GainResult::ApproxGainResult(result) => &result.gain,

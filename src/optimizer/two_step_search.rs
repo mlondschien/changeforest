@@ -1,4 +1,4 @@
-use crate::gain::{ApproxGain, ApproxGainResult, GainResult};
+use crate::gain::{ApproxGain, GainResult};
 use crate::optimizer::OptimizerResult;
 use crate::{Control, Gain, ModelSelectionResult, Optimizer};
 
@@ -16,7 +16,7 @@ where
         stop: usize,
         guess: usize,
         split_candidates: &[usize],
-    ) -> ApproxGainResult {
+    ) -> GainResult {
         let mut approx_gain_result = self.gain.gain_approx(start, stop, guess, split_candidates);
 
         let mut best_split = guess;
@@ -32,7 +32,7 @@ where
         approx_gain_result.best_split = Some(best_split);
         approx_gain_result.max_gain = Some(max_gain);
 
-        approx_gain_result
+        GainResult::ApproxGainResult(approx_gain_result)
     }
 }
 
@@ -51,40 +51,33 @@ where
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
         let split_candidates = self.split_candidates(start, stop)?;
 
-        let left_result =
-            self._single_find_best_split(start, stop, (3 * start + stop) / 4, &split_candidates);
-        let mid_result =
-            self._single_find_best_split(start, stop, (start + stop) / 2, &split_candidates);
-        let right_result =
-            self._single_find_best_split(start, stop, (start + 3 * stop) / 4, &split_candidates);
+        let guesses = vec![
+            (3 * start + stop) / 4,
+            (start + stop) / 2,
+            (start + 3 * stop) / 4,
+        ];
+        let mut results: Vec<GainResult> = vec![];
 
-        let best_split: usize;
-        let mid_max_gain = mid_result.max_gain.unwrap();
-        let left_max_gain = left_result.max_gain.unwrap();
-        let right_max_gain = right_result.max_gain.unwrap();
-
-        if mid_max_gain >= left_max_gain && mid_max_gain >= right_max_gain {
-            best_split = mid_result.best_split.unwrap();
-        } else if left_max_gain >= mid_max_gain && left_max_gain >= right_max_gain {
-            best_split = left_result.best_split.unwrap();
-        } else {
-            best_split = right_result.best_split.unwrap();
+        for guess in guesses.iter().filter(|x| split_candidates.contains(x)) {
+            results.push(self._single_find_best_split(start, stop, *guess, &split_candidates));
         }
 
-        let second_gain_result =
-            self._single_find_best_split(start, stop, best_split, &split_candidates);
+        results.sort_by(|a, b| {
+            b.max_gain()
+                .unwrap()
+                .partial_cmp(&a.max_gain().unwrap())
+                .unwrap()
+        });
+        let best_split = results[0].best_split().unwrap();
+
+        results.push(self._single_find_best_split(start, stop, best_split, &split_candidates));
 
         Ok(OptimizerResult {
             start,
             stop,
-            best_split: second_gain_result.best_split.unwrap(),
-            max_gain: second_gain_result.max_gain.unwrap(),
-            gain_results: vec![
-                GainResult::ApproxGainResult(left_result),
-                GainResult::ApproxGainResult(mid_result),
-                GainResult::ApproxGainResult(right_result),
-                GainResult::ApproxGainResult(second_gain_result),
-            ],
+            best_split: results.last().unwrap().best_split().unwrap(),
+            max_gain: results.last().unwrap().max_gain().unwrap(),
+            gain_results: results,
         })
     }
 
@@ -139,5 +132,37 @@ mod tests {
                 .best_split,
             expected
         );
+    }
+
+    #[rstest]
+    #[case(0, 100, 0.1, vec![25, 50, 75])]
+    #[case(0, 100, 0.01, vec![25, 50, 75])]
+    #[case(0, 30, 0.1, vec![15])]
+    #[case(0, 30, 0.01, vec![7, 15, 22])]
+    #[case(0, 100, 0.49, vec![50])]
+    fn test_change_in_mean_find_best_split_guesses(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] minimal_relative_segment_lengh: f64,
+        #[case] expected: Vec<usize>,
+    ) {
+        let X = testing::array();
+        let X_view = X.view();
+        let control =
+            Control::default().with_minimal_relative_segment_length(minimal_relative_segment_lengh);
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let two_step_search = TwoStepSearch { gain };
+
+        let results = two_step_search
+            .find_best_split(start, stop)
+            .unwrap()
+            .gain_results;
+        let guesses = results
+            .iter()
+            .map(|x| x.guess().unwrap())
+            .collect::<Vec<usize>>();
+        let mut guesses = guesses.split_last().unwrap().1.to_owned();
+        guesses.sort();
+        assert_eq!(guesses, expected);
     }
 }
