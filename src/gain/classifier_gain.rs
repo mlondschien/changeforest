@@ -52,8 +52,8 @@ where
         let mut deltas: Vec<Array1<f64>> = Vec::with_capacity(3);
         let mut likelihood_0: Vec<f64> = Vec::with_capacity(3);
 
-        for jdx in 0..3 {
-            let result = match &optimizer_result.gain_results[jdx] {
+        for gain_result in optimizer_result.gain_results.split_last().unwrap().1.iter() {
+            let result = match gain_result {
                 GainResult::ApproxGainResult(result) => result,
                 _ => panic!("Not an ApproxGainResult"),
             };
@@ -75,7 +75,7 @@ where
             // Test if for any jdx=1,2,3 the gain (likelihood_0[jdx] + cumsum(deltas[jdx]))
             // is greater than max_gain. This is the statistic we are comparing against.
             'outer: for idx in rand::seq::index::sample(&mut rng, segment_length, segment_length) {
-                for jdx in 0..3 {
+                for jdx in 0..deltas.len() {
                     values[jdx] += deltas[jdx][idx];
                     if values[jdx] >= max_gain {
                         p_value += 1;
