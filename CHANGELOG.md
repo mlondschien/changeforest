@@ -5,7 +5,7 @@
 **New features:**
 
 - Implemented trait `Display` for `BinarySegmentationResult`. In Python `str(result)`
-  now prints a pretty display.
+  now prints a pretty display (#77).
 
 **Other changes:**
 
