@@ -11,6 +11,10 @@
 
 - The `TwoStepSearch` algorithm now only uses valid guesses from `split_candidates` (#76).
 
+**Bug fixes:**
+
+- (R only) The R6 class `Control` now gets correctly exported.
+
 ## 0.2.1 - (2021-12-13)
 
 **Bug fixes:**
