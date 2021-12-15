@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.2.2 - (2021-12-xx)
+## 0.3.0 - (2021-12-xx)
+
+**New features:**
+
+- Implemented trait `Display` for `BinarySegmentationResult`. In Python `str(result)`
+  now prints a pretty display (#77).
 
 **Other changes:**
 
