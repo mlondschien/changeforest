@@ -71,7 +71,9 @@ In [5]: import matplotlib.pyplot as plt
    ...: plt.legend([f"approx. gain for {x}" for x in ["(0, 150]", "(0, 50]", "(50, 150"]])
    ...: plt.show()
 ```
-![Approx gain curves for Iris dataset](../docs/iris-approx-gains.png)
+<p align="center">
+  <img src="../docs/iris-approx-gains.png" />
+</p>
 
 One can clearly observe that the approx. gain curves are piecewise linear, with maxima
 at the true underlying change points.
