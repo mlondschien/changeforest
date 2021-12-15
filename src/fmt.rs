@@ -59,7 +59,13 @@ fn _format_tree(result: &BinarySegmentationResult) -> Vec<Vec<String>> {
     let mut output = vec![vec![
         format!("({}, {}]", result.start, result.stop),
         _display_option(&result.optimizer_result.as_ref().map(|x| x.best_split)),
-        _display_option(&result.optimizer_result.as_ref().map(|x| x.max_gain)),
+        // Truncate max_gain to three decimal places.
+        _display_option(
+            &result
+                .optimizer_result
+                .as_ref()
+                .map(|x| f64::trunc(x.max_gain * 1000.0) / 1000.0),
+        ),
         _display_option(&result.model_selection_result.p_value),
     ]];
 
@@ -108,7 +114,7 @@ mod tests {
                 start: 0,
                 stop: 20,
                 best_split: 11,
-                max_gain: 117.234567,
+                max_gain: 1234567.23456,
                 gain_results: vec![],
             }),
             left: Some(Box::new(BinarySegmentationResult {
@@ -158,7 +164,7 @@ mod tests {
         assert_eq!(
             output,
             vec![
-                vec!["(0, 20]", "11", "117.234567", "0.01"],
+                vec!["(0, 20]", "11", "1234567.234", "0.01"],
                 vec![" ¦--(0, 11]", "7", "0.1", "0.01"],
                 vec![" ¦   ¦--(0, 7]", "", "", "0.01"],
                 vec![" ¦   °--(7, 11]", "", "", ""],
@@ -170,12 +176,12 @@ mod tests {
         assert_eq!(
             fmt,
             r#"
-                 best_split   max_gain p_value
-(0, 20]                  11 117.234567    0.01
- ¦--(0, 11]               7        0.1    0.01
- ¦   ¦--(0, 7]                            0.01
- ¦   °--(7, 11]                               
- °--(11, 20]                              0.01"#
+                 best_split    max_gain p_value
+(0, 20]                  11 1234567.234    0.01
+ ¦--(0, 11]               7         0.1    0.01
+ ¦   ¦--(0, 7]                             0.01
+ ¦   °--(7, 11]                                
+ °--(11, 20]                               0.01"#
         );
     }
 }
