@@ -1,3 +1,7 @@
+#' Storage container for hyperparameters.
+#'
+#' See rust documentation of changeforest::control::Control for more details.
+#' @export
 Control = R6::R6Class(
     "control",
     list(

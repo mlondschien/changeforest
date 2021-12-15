@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - (2021-12-xx)
+## 0.3.0 - (2021-12-15)
 
 **New features:**
 
@@ -11,7 +11,11 @@
 
 - The `TwoStepSearch` algorithm now only uses valid guesses from `split_candidates` (#76).
 
-## 0.2.1 - (2021-12-13)
+**Bug fixes:**
+
+- (R only) The R6 class `Control` now gets correctly exported (#79).
+
+## 0.3.0 - (2021-12-13)
 
 **Bug fixes:**
 
