@@ -15,7 +15,7 @@
 
 - (R only) The R6 class `Control` now gets correctly exported (#79).
 
-## 0.3.0 - (2021-12-13)
+## 0.2.1 - (2021-12-13)
 
 **Bug fixes:**
 
