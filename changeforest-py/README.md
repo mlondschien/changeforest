@@ -9,12 +9,16 @@ in scenarios with reasonably large dimensionality.
 change points without any parametric assumptions even in high-dimensional scenarios.
 See [1] for details.
 
+## Installation
+
 `changeforest` is available on [`PyPI`](https://pypi.org/project/changeforest/) and
 [`conda-forge`](https://anaconda.org/conda-forge/changeforest). To install from
 `conda-forge` (recommended), simply run
 ```bash
 conda install -c conda-forge changeforest
 ```
+
+## Example
 
 The following example performs random forest based change point detection on the iris
 dataset. This includes three classes _setosa_, _versicolor_ and _virginica_ with 50
@@ -77,6 +81,26 @@ In [5]: import matplotlib.pyplot as plt
 
 One can clearly observe that the approx. gain curves are piecewise linear, with maxima
 at the true underlying change points.
+
+The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://gith\
+ub.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/contr\
+ol.rs#L3-L39) for their descriptions and default values. In Python, the parameters can
+be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blo\
+b/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L\
+26) which can be passed to `changeforest`. The following will build random forests with
+very few trees:
+
+```python
+In [6]: from changeforest import Control
+   ...: changeforest(iris, "random_forest", "bs", Control(random_forest_ntrees=10))
+Out[6]:
+                    best_split max_gain p_value
+(0, 150]                    50   96.071    0.01
+ ¦--(0, 50]                 16   -3.788       1
+ °--(50, 150]              100   46.544    0.01
+     ¦--(50, 100]           66   -7.793    0.43
+     °--(100, 150]         134   -9.329       1
+```
 
 ## References
 
