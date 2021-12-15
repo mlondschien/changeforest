@@ -4,7 +4,16 @@ use std::fmt::Display;
 impl Display for BinarySegmentationResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut max_lengths = vec![0; 4];
-        let rows = _format_tree(self);
+        let mut rows = _format_tree(self);
+        rows.insert(
+            0,
+            vec![
+                "".to_owned(),
+                "best_split".to_owned(),
+                "max_gain".to_owned(),
+                "p_value".to_owned(),
+            ],
+        );
         for row in rows.iter() {
             for idx in 0..4 {
                 if row[idx].chars().count() > max_lengths[idx] {
@@ -99,7 +108,7 @@ mod tests {
                 start: 0,
                 stop: 20,
                 best_split: 11,
-                max_gain: 117.2,
+                max_gain: 117.234567,
                 gain_results: vec![],
             }),
             left: Some(Box::new(BinarySegmentationResult {
@@ -149,7 +158,7 @@ mod tests {
         assert_eq!(
             output,
             vec![
-                vec!["(0, 20]", "11", "117.2", "0.01"],
+                vec!["(0, 20]", "11", "117.234567", "0.01"],
                 vec![" ¦--(0, 11]", "7", "0.1", "0.01"],
                 vec![" ¦   ¦--(0, 7]", "", "", "0.01"],
                 vec![" ¦   °--(7, 11]", "", "", ""],
@@ -157,14 +166,16 @@ mod tests {
             ]
         );
 
-        let fmt = format!("{}", tree);
+        let fmt = format!("\n{}", tree);
         assert_eq!(
             fmt,
-            r#"(0, 20]          11 117.2 0.01
- ¦--(0, 11]       7   0.1 0.01
- ¦   ¦--(0, 7]            0.01
- ¦   °--(7, 11]               
- °--(11, 20]              0.01"#
+            r#"
+                 best_split   max_gain p_value
+(0, 20]                  11 117.234567    0.01
+ ¦--(0, 11]               7        0.1    0.01
+ ¦   ¦--(0, 7]                            0.01
+ ¦   °--(7, 11]                               
+ °--(11, 20]                              0.01"#
         );
     }
 }
