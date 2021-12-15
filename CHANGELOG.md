@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - (2021-12-xx)
+## 0.3.0 - (2021-12-15)
 
 **New features:**
 
@@ -13,7 +13,7 @@
 
 **Bug fixes:**
 
-- (R only) The R6 class `Control` now gets correctly exported.
+- (R only) The R6 class `Control` now gets correctly exported (#79).
 
 ## 0.2.1 - (2021-12-13)
 
