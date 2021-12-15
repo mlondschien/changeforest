@@ -75,7 +75,7 @@ plot the approximated gain curves of the first three segments:
 ```
 
 <p align="center">
-  <img src="docs/r-iris-approx-gains.png" />
+  <img src="../docs/r-iris-approx-gains.png" />
 </p>
 
 One can clearly observe that the approx. gain curves are piecewise linear, with maxima
