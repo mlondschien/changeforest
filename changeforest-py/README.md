@@ -76,18 +76,16 @@ In [5]: import matplotlib.pyplot as plt
    ...: plt.show()
 ```
 <p align="center">
-  <img src="../docs/iris-approx-gains.png" />
+  <img src="../docs/py-iris-approx-gains.png" />
 </p>
 
 One can clearly observe that the approx. gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
-The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://gith\
-ub.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/contr\
-ol.rs#L3-L39) for their descriptions and default values. In Python, the parameters can
-be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blo\
-b/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L\
-26) which can be passed to `changeforest`. The following will build random forests with
+The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/control.rs#L3-L39)
+for their descriptions and default values. In Python, the parameters can
+be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26)
+which can be passed to `changeforest`. The following will build random forests with
 very few trees:
 
 ```python

@@ -15,6 +15,7 @@ To install from `conda-forge` (currently linux and MacOs only), simply run
 ```bash
 conda install -c conda-forge r-changeforest
 ```
+Note that `r-changeforest` is currently available for linux and MacOs only.
 
 ## Example
 
@@ -70,8 +71,7 @@ plot the approximated gain curves of the first three segments:
 > ggplot(data=data) +
         geom_line(aes(x=t, y=gain), color="blue") + 
         geom_line(aes(x=t, y=gain_left), color="orange") + 
-        geom_line(aes(x=t, y=gain_right), color="green") +
-        labs(y = 'gain') + theme(legend.position="bottom")
+        geom_line(aes(x=t, y=gain_right), color="green")
 ```
 
 <p align="center">
@@ -81,11 +81,9 @@ plot the approximated gain curves of the first three segments:
 One can clearly observe that the approx. gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
-The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://gith\
-ub.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/contr\
-ol.rs#L3-L39) for their descriptions and default values. In R, the parameters can
-be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blo\
-b/main/changeforest-r/R/control.R) which can be passed to `changeforest`. The following
+The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/control.rs#L3-L39) for their descriptions and default values. In R, the parameters can
+be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/main/changeforest-r/R/control.R)
+ which can be passed to `changeforest`. The following
 will build random forests with very few trees:
 
 ```R
