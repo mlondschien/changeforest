@@ -229,3 +229,10 @@ impl MyBinarySegmentationResult {
         self.result.split_points()
     }
 }
+
+#[pyproto]
+impl pyo3::class::basic::PyObjectProtocol for MyBinarySegmentationResult {
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("{}", self.result))
+    }
+}
