@@ -7,6 +7,7 @@
 mod binary_segmentation;
 pub mod classifier;
 mod control;
+mod fmt;
 pub mod gain;
 mod model_selection_result;
 pub mod optimizer;
