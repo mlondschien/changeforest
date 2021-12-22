@@ -21,11 +21,6 @@ pub trait Classifier {
         let (left, right) = predictions.slice(s![..]).split_at(Axis(0), split - start);
         let left_correction = ((stop - start - 1) as f64) / ((split - start - 1) as f64);
         let right_correction = ((stop - start - 1) as f64) / ((stop - split - 1) as f64);
-        println!(
-            "left={:?}, right={:?}",
-            left.mapv(|x| log_eta((1. - x) * left_correction)),
-            right.mapv(|x| log_eta(x * right_correction))
-        );
         left.mapv(|x| log_eta((1. - x) * left_correction)).sum()
             + right.mapv(|x| log_eta(x * right_correction)).sum()
     }

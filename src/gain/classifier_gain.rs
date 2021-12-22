@@ -193,7 +193,6 @@ mod tests {
             let model_selection = optimizer.model_selection(&optimizer_result);
             p_values.push(model_selection.p_value.unwrap());
         }
-        println!("{:?}", &p_values);
         let p_value = p_values.into_iter().filter(|x| *x < 0.05).count() as f64 / n as f64;
         assert!(p_value >= 0.03);
         assert!(p_value <= 0.07);
