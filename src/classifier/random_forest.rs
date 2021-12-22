@@ -1,8 +1,6 @@
 use crate::{Classifier, Control};
 use ndarray::{s, Array1, ArrayView2};
-use smartcore::ensemble::random_forest_regressor::{
-    RandomForestRegressor, RandomForestRegressorParameters,
-};
+use oobforest::RandomForest as OOBForest;
 
 pub struct RandomForest<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
@@ -23,24 +21,20 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
     fn predict(&self, start: usize, stop: usize, split: usize) -> Array1<f64> {
         let mut y = Array1::<f64>::zeros(stop - start);
         y.slice_mut(s![(split - start)..]).fill(1.);
+        let y_slice = y.slice(s![..]);
 
-        let X_slice = self.X.slice(s![start..stop, ..]).to_owned();
+        let X_slice = self.X.slice(s![start..stop, ..]);
 
-        let mut predictions = RandomForestRegressor::fit(
+        let forest = OOBForest::new(
             &X_slice,
-            &y,
-            RandomForestRegressorParameters {
-                max_depth: Some(4),
-                min_samples_leaf: 1,
-                min_samples_split: 2,
-                n_trees: self.control.random_forest_ntrees,
-                m: Option::None,
-                keep_samples: true,
-                seed: self.control.seed,
-            },
-        )
-        .and_then(|rf| rf.predict_oob(&X_slice))
-        .unwrap();
+            &y_slice,
+            Some(self.control().random_forest_ntrees as u16),
+            None,
+            None,
+            Some(self.control().seed),
+        );
+
+        let mut predictions = forest.predict();
 
         // For a very small n_trees, the predictions may be NaN. In this case use the
         // prior. Note that we need to adjust by -1 because the predictions are oob.
