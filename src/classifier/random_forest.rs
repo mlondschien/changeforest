@@ -29,6 +29,8 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
             &X_slice,
             &y_slice,
             Some(self.control().random_forest_ntrees as u16),
+            Some(16),
+            None,
             None,
             None,
             Some(self.control().seed),
