@@ -1,6 +1,6 @@
 use crate::{Classifier, Control};
+use biosphere::RandomForest as BioForest;
 use ndarray::{s, Array1, ArrayView2};
-use oobforest::RandomForest as OOBForest;
 
 pub struct RandomForest<'a, 'b> {
     X: &'a ArrayView2<'b, f64>,
@@ -25,11 +25,12 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
 
         let X_slice = self.X.slice(s![start..stop, ..]);
 
-        let forest = OOBForest::new(
+        let forest = BioForest::new(
             &X_slice,
             &y_slice,
             Some(self.control().random_forest_ntrees as u16),
-            Some(16),
+            Some(8),
+            None,
             None,
             None,
             None,
