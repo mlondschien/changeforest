@@ -95,7 +95,7 @@ def test_control_seed(iris_dataset):
         Control(seed=42, number_of_wild_segments=10),
     )
     assert result.segments[0].start == 5
-    assert abs(result.segments[0].max_gain - 17.44774) < 1e-5
+    assert abs(result.segments[0].max_gain - 8.35952) < 1e-5
 
     result = changeforest(
         iris_dataset,
@@ -104,4 +104,4 @@ def test_control_seed(iris_dataset):
         Control(seed=12, number_of_wild_segments=10),
     )
     assert result.segments[0].start == 21
-    assert abs(result.segments[0].max_gain - 45.43954) < 1e-5
+    assert abs(result.segments[0].max_gain - 44.98708) < 1e-5
