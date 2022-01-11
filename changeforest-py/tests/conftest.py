@@ -4,7 +4,13 @@ import numpy as np
 import pytest
 
 _IRIS_FILE = "iris.csv"
-_IRIS_PATH = Path(__file__).resolve().parents[2] / "testdata" / _IRIS_FILE
+# maturin build maps the parent directory of the python package to
+# "local_dependencies/changeforest". This allows tests to run e.g. on conda-forge.
+local_dependencies = Path(__file__).resolve().parents[1] / "local_dependencies"
+if local_dependencies.exists():
+    _IRIS_PATH = local_dependencies / "changeforest" / "testdata" / _IRIS_FILE
+else:
+    _IRIS_PATH = Path(__file__).resolve().parents[2] / "testdata" / _IRIS_FILE
 
 
 @pytest.fixture(scope="module")
