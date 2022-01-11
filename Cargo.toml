@@ -7,7 +7,7 @@ version = "0.4.0"
 edition = "2021"
 readme = "README.md"
 license = "BSD-3-Clause"
-exclude = ["/.github", "/changeforest-py", "changeforest-r", "/testdata", ".pre-commit-config.yaml", ".gitignore"]
+exclude = ["/.github", "/changeforest-py", "/changeforest-r", "/testdata", ".pre-commit-config.yaml", ".gitignore"]
 
 [lib]
 name = "changeforest"
