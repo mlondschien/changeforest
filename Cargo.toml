@@ -1,7 +1,7 @@
 [package]
 name = "changeforest"
-version = "0.3.0"
-edition = "2018"
+version = "0.4.0"
+edition = "2021"
 
 [lib]
 name = "changeforest"
@@ -9,10 +9,10 @@ name = "changeforest"
 [dependencies]
 ndarray = "0.15.3"
 rand = "0.8.4"
-biosphere = "0.1.0"
+biosphere = "0.2.0"
 
 [dev-dependencies]
-rstest = "0.11.0"
+rstest = "0.12.0"
 assert_approx_eq = "1.1.0"
 ndarray-rand = "0.14.0"
 ndarray = { version = "0.15.3", features = ["approx"] }

@@ -1,5 +1,6 @@
 use crate::{Classifier, Control};
 use biosphere::RandomForest as BioForest;
+use biosphere::RandomForestParameters;
 use ndarray::{s, Array1, ArrayView2};
 
 pub struct RandomForest<'a, 'b> {
@@ -24,20 +25,13 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
         let y_slice = y.slice(s![..]);
 
         let X_slice = self.X.slice(s![start..stop, ..]);
-
-        let forest = BioForest::new(
-            &X_slice,
-            &y_slice,
-            Some(self.control().random_forest_ntrees as u16),
-            Some(8),
-            None,
-            None,
-            None,
-            None,
-            Some(self.control().seed),
-        );
-
-        let mut predictions = forest.predict();
+        let parameters = RandomForestParameters::default()
+            .with_n_trees(self.control().random_forest_ntrees)
+            .with_max_depth(self.control().random_forest_max_depth)
+            .with_seed(self.control().seed)
+            .with_mtry(self.control().random_forest_mtry);
+        let mut forest = BioForest::new(parameters);
+        let mut predictions = forest.fit_predict_oob(&X_slice, &y_slice);
 
         // For a very small n_trees, the predictions may be NaN. In this case use the
         // prior. Note that we need to adjust by -1 because the predictions are oob.

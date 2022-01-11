@@ -19,10 +19,14 @@ pub struct Control {
     pub seeded_segments_alpha: f64,
     /// Seed used for segmentation.
     pub seed: u64,
-    /// Hyperparameters for random forests. See https://docs.rs/smartcore/0.2.0/smartco\
-    /// re/ensemble/random_forest_classifier/struct.RandomForestClassifierParameters.html
-    /// for details
+    /// Hyperparameter for random forest.
     pub random_forest_ntrees: usize,
+    /// Hyperparameter for random forest.
+    pub random_forest_mtry: Option<usize>,
+    /// Hyperparameter for random forest.
+    pub random_forest_n_jobs: Option<usize>,
+    /// Hyperparameter for random forest.
+    pub random_forest_max_depth: Option<usize>
 }
 
 impl Control {
@@ -35,6 +39,9 @@ impl Control {
             seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)
             seed: 0,
             random_forest_ntrees: 100,
+            random_forest_mtry: None,
+            random_forest_n_jobs: None,
+            random_forest_max_depth: Some(8),
         }
     }
 
