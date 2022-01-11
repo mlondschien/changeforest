@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 - (2021-01-11)
+
+**New features:**
+
+- `changeforest` now uses random forests from [`biosphere`](https://github.com/mlondschien/biosphere).
+  This should be faster than `smartcore` used previously and support parallelization.
+
 ## 0.3.0 - (2021-12-15)
 
 **New features:**
@@ -28,7 +35,7 @@
 
 ## 0.2.0 - (2021-12-10)
 
-**New feature**:
+**New features:**
 
 - The `TwoStepSearch` now uses three initial guesses, the 0.25, 0.5 and 0.75 quantiles
   of the segment, for the first step. The the best split corresponding to the highest
@@ -40,6 +47,6 @@
 
 ## 0.1.1 - (2021-11-25)
 
-**Other changes**:
+**Other changes:**
 
 - Added license file for compatability with conda-forge.
