@@ -5,7 +5,7 @@
 **New features:**
 
 - `changeforest` now uses random forests from [`biosphere`](https://github.com/mlondschien/biosphere).
-  This should be faster than `smartcore` used previously and support parallelization.
+  This should be faster than `smartcore` used previously and supports parallelization.
 
 ## 0.3.0 - (2021-12-15)
 
