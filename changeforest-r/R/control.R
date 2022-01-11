@@ -23,10 +23,10 @@ Control = R6::R6Class(
             number_of_wild_segments = NULL,
             seeded_segments_alpha = NULL,
             seed = NULL,
-            random_forest_n_trees = NULL ,
+            random_forest_n_trees = NULL,
             random_forest_mtry = NULL,
             random_forest_max_depth = NULL,
-            random_forest_n_jobs = NULL,
+            random_forest_n_jobs = NULL
         ) {
             self$minimal_relative_segment_length = minimal_relative_segment_length
             self$minimal_gain_to_split = minimal_gain_to_split

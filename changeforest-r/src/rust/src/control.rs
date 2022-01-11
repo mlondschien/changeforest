@@ -43,15 +43,15 @@ impl<'a> FromRobj<'a> for MyControl {
         }
 
         if let Some(value) = robj.dollar("random_forest_mtry").unwrap().as_real() {
-            control = control.with_random_forest_mtry(value as usize);
+            control = control.with_random_forest_mtry(Some(value as usize));
         }
 
         if let Some(value) = robj.dollar("random_forest_n_jobs").unwrap().as_real() {
-            control = control.with_random_forest_n_jobs(value as usize);
+            control = control.with_random_forest_n_jobs(Some(value as usize));
         }
 
         if let Some(value) = robj.dollar("random_forest_max_depth").unwrap().as_real() {
-            control = control.with_random_forest_max_depth(value as usize);
+            control = control.with_random_forest_max_depth(Some(value as usize));
         }
 
         Ok(MyControl { control })
