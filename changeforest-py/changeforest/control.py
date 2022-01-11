@@ -14,6 +14,9 @@ class Control:
         seeded_segments_alpha=None,
         seed=None,
         random_forest_n_trees=None,
+        random_forest_max_depth=None,
+        random_forest_mtry=None,
+        random_forest_n_jobs=None,
     ):
         self.minimal_relative_segment_length = _to_float(
             minimal_relative_segment_length
@@ -24,6 +27,9 @@ class Control:
         self.seeded_segments_alpha = _to_float(seeded_segments_alpha)
         self.seed = _to_int(seed)
         self.random_forest_n_trees = _to_int(random_forest_n_trees)
+        self.random_forest_max_depth = _to_int(random_forest_max_depth)
+        self.random_forest_mtry = _to_int(random_forest_mtry)
+        self.random_forest_n_jobs = _to_int(random_forest_n_jobs)
 
 
 def _to_float(value):

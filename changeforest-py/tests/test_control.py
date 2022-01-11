@@ -20,21 +20,32 @@ from changeforest import Control, changeforest
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
         # random_forest_ntree
         # This is impressive and unexpected.
-        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [47, 99]),
         ("iris", "bs", "random_forest", {"random_forest_n_trees": 100}, [50, 100]),
         # Use X_test instead
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1}, []),
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1.0}, []),
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 100}, [5]),
+        ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
+        ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
     ],
 )
 def test_control_model_selection_parameters(
-    iris_dataset, X_test, data, method, segmentation_type, kwargs, expected
+    iris_dataset,
+    X_test,
+    X_correlated,
+    data,
+    method,
+    segmentation_type,
+    kwargs,
+    expected,
 ):
     if data == "iris":
         X = iris_dataset
-    else:
+    elif data == "X_test":
         X = X_test
+    else:
+        X = X_correlated
 
     result = changeforest(X, method, segmentation_type, Control(**kwargs))
     np.testing.assert_array_equal(result.split_points(), expected)

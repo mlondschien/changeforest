@@ -30,6 +30,7 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
             .with_max_depth(self.control().random_forest_max_depth)
             .with_seed(self.control().seed)
             .with_mtry(self.control().random_forest_mtry);
+
         let mut forest = BioForest::new(parameters);
         let mut predictions = forest.fit_predict_oob(&X_slice, &y_slice);
 

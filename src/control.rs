@@ -100,4 +100,19 @@ impl Control {
         self.random_forest_n_trees = random_forest_n_trees;
         self
     }
+
+    pub fn with_random_forest_mtry(mut self, random_forest_mtry: Option<usize>) -> Self {
+        self.random_forest_mtry = random_forest_mtry;
+        self
+    }
+
+    pub fn with_random_forest_max_depth(mut self, random_forest_max_depth: Option<usize>) -> Self {
+        self.random_forest_max_depth = random_forest_max_depth;
+        self
+    }
+
+    pub fn with_random_forest_n_jobs(mut self, random_forest_n_jobs: Option<usize>) -> Self {
+        self.random_forest_n_jobs = random_forest_n_jobs;
+        self
+    }
 }

@@ -47,6 +47,24 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
             }
         };
 
+        if let Ok(pyvalue) = obj.getattr(py, "random_forest_max_depth") {
+            if let Ok(value) = pyvalue.extract::<Option<usize>>(py) {
+                control = control.with_random_forest_max_depth(value);
+            }
+        };
+
+        if let Ok(pyvalue) = obj.getattr(py, "random_forest_mtry") {
+            if let Ok(value) = pyvalue.extract::<Option<usize>>(py) {
+                control = control.with_random_forest_mtry(value);
+            }
+        };
+
+        if let Ok(pyvalue) = obj.getattr(py, "random_forest_n_jobs") {
+            if let Ok(value) = pyvalue.extract::<Option<usize>>(py) {
+                control = control.with_random_forest_n_jobs(value);
+            }
+        };
+
         if let Ok(pyvalue) = obj.getattr(py, "seeded_segments_alpha") {
             if let Ok(value) = pyvalue.extract::<f64>(py) {
                 control = control.with_seeded_segments_alpha(value);

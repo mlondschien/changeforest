@@ -13,7 +13,7 @@ def iris_dataset():
 
 
 @pytest.fixture(scope="module")
-def X_test(iris_dataset):
+def X_test():
     return np.array(
         [
             [0.0, 0.0, 0.0],
@@ -28,3 +28,16 @@ def X_test(iris_dataset):
             [1.0, 1.0, 1.0],
         ]
     )
+
+
+@pytest.fixture(scope="module")
+def X_correlated():
+    X = np.zeros((100, 2))
+
+    rng = np.random.default_rng(7)
+
+    X[:, 0] = rng.normal(0, 1, 100)
+    X[0:50, 1] = rng.normal(0, 1, 50)
+    X[50:100, 1] = X[50:100, 0]
+
+    return X
