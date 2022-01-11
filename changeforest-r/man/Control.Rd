@@ -25,7 +25,10 @@ See rust documentation of changeforest::control::Control for more details.
   number_of_wild_segments = NULL,
   seeded_segments_alpha = NULL,
   seed = NULL,
-  random_forest_ntrees = NULL
+  random_forest_n_trees = NULL,
+  random_forest_mtry = NULL,
+  random_forest_max_depth = NULL,
+  random_forest_n_jobs = NULL
 )}\if{html}{\out{</div>}}
 }
 

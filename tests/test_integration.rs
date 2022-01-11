@@ -47,7 +47,7 @@ fn test_integration_letters(#[case] method: &str, #[case] segmentation_type: &st
 
     let control = Control::default()
         .with_minimal_relative_segment_length(0.02)
-        .with_random_forest_ntrees(20);
+        .with_random_forest_n_trees(20);
 
     let _ = changeforest(&X.view(), method, segmentation_type, &control);
 }
