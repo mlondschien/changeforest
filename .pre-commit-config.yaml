@@ -12,7 +12,7 @@
         -   --safe
         -   --target-version=py38
 -   repo: https://github.com/Quantco/pre-commit-mirrors-isort
-    rev: 4.3.21
+    rev: ''
     hooks:
     -   id: isort-conda
         additional_dependencies: [toml]

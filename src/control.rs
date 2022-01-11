@@ -26,7 +26,7 @@ pub struct Control {
     /// Hyperparameter for random forest.
     pub random_forest_n_jobs: Option<usize>,
     /// Hyperparameter for random forest.
-    pub random_forest_max_depth: Option<usize>
+    pub random_forest_max_depth: Option<usize>,
 }
 
 impl Control {
