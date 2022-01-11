@@ -26,7 +26,7 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
 
         let X_slice = self.X.slice(s![start..stop, ..]);
         let parameters = RandomForestParameters::default()
-            .with_n_trees(self.control().random_forest_ntrees)
+            .with_n_trees(self.control().random_forest_n_trees)
             .with_max_depth(self.control().random_forest_max_depth)
             .with_seed(self.control().seed)
             .with_mtry(self.control().random_forest_mtry);
@@ -79,7 +79,7 @@ mod tests {
         #[case] stop: usize,
         #[case] split: usize,
         #[case] seed: u64,
-        #[case] random_forest_ntrees: usize,
+        #[case] random_forest_n_trees: usize,
         #[case] expected: Array1<f64>,
     ) {
         let X = ndarray::array![
@@ -93,7 +93,7 @@ mod tests {
         let X_view = X.view();
         let control = Control::default()
             .with_seed(seed)
-            .with_random_forest_ntrees(random_forest_ntrees);
+            .with_random_forest_n_trees(random_forest_n_trees);
 
         let rf = RandomForest::new(&X_view, &control);
         let predictions = rf.predict(start, stop, split);

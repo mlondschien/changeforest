@@ -20,7 +20,7 @@ pub struct Control {
     /// Seed used for segmentation.
     pub seed: u64,
     /// Hyperparameter for random forest.
-    pub random_forest_ntrees: usize,
+    pub random_forest_n_trees: usize,
     /// Hyperparameter for random forest.
     pub random_forest_mtry: Option<usize>,
     /// Hyperparameter for random forest.
@@ -38,7 +38,7 @@ impl Control {
             number_of_wild_segments: 100,
             seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)
             seed: 0,
-            random_forest_ntrees: 100,
+            random_forest_n_trees: 100,
             random_forest_mtry: None,
             random_forest_n_jobs: None,
             random_forest_max_depth: Some(8),
@@ -96,8 +96,8 @@ impl Control {
         self
     }
 
-    pub fn with_random_forest_ntrees(mut self, random_forest_ntrees: usize) -> Self {
-        self.random_forest_ntrees = random_forest_ntrees;
+    pub fn with_random_forest_n_trees(mut self, random_forest_n_trees: usize) -> Self {
+        self.random_forest_n_trees = random_forest_n_trees;
         self
     }
 }

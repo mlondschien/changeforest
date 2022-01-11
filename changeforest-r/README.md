@@ -87,7 +87,7 @@ be specified with the [`Control` class](https://github.com/mlondschien/changefor
 will build random forests with very few trees:
 
 ```R
-> changeforest(X, "random_forest", "bs", Control(random_forest_ntrees=10))
+> changeforest(X, "random_forest", "bs", Control(random_forest_n_trees=10))
 ... TODO
 ```
 

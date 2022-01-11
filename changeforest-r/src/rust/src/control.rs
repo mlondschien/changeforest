@@ -38,8 +38,8 @@ impl<'a> FromRobj<'a> for MyControl {
             control = control.with_seed(value as u64);
         }
 
-        if let Some(value) = robj.dollar("random_forest_ntrees").unwrap().as_real() {
-            control = control.with_random_forest_ntrees(value as usize);
+        if let Some(value) = robj.dollar("random_forest_n_trees").unwrap().as_real() {
+            control = control.with_random_forest_n_trees(value as usize);
         }
 
         Ok(MyControl { control })

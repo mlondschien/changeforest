@@ -20,12 +20,12 @@ from changeforest import Control, changeforest
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
         # random_forest_ntree
         # This is impressive and unexpected.
-        ("iris", "bs", "random_forest", {"random_forest_ntrees": 1}, [50, 100]),
-        ("iris", "bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_n_trees": 100}, [50, 100]),
         # Use X_test instead
-        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 1}, []),
-        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 1.0}, []),
-        ("X_test", "bs", "random_forest", {"random_forest_ntrees": 100}, [5]),
+        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1.0}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 100}, [5]),
     ],
 )
 def test_control_model_selection_parameters(
