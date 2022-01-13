@@ -46,7 +46,6 @@ where
     /// maximal gain to compute a p-value.
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
         let mut rng = StdRng::seed_from_u64(self.control().seed);
-        let n_permutations = 99;
 
         let mut max_gain = -f64::INFINITY;
         let mut deltas: Vec<Array1<f64>> = Vec::with_capacity(3);
@@ -69,7 +68,7 @@ where
         let mut p_value: u32 = 1;
         let segment_length = optimizer_result.stop - optimizer_result.start;
 
-        for _ in 0..n_permutations {
+        for _ in 0..self.control().model_selection_n_permutations {
             let mut values = likelihood_0.clone();
 
             // Test if for any jdx=1,2,3 the gain (likelihood_0[jdx] + cumsum(deltas[jdx]))
@@ -90,7 +89,7 @@ where
 
         // Up to here p_value is # of permutations for which the max_gain is higher than
         // the non-permuted max_gain. From this create a true p_value.
-        let p_value = p_value as f64 / (n_permutations + 1) as f64;
+        let p_value = p_value as f64 / (self.control().model_selection_n_permutations + 1) as f64;
         let is_significant = p_value < self.control().model_selection_alpha;
 
         ModelSelectionResult {

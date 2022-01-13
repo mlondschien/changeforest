@@ -10,6 +10,9 @@ pub struct Control {
     /// Type two error in model selection to be approximated. Relevant for classifier
     /// based changepoint detection.
     pub model_selection_alpha: f64,
+    /// Number of permutations for model selection in classifier-based change point
+    /// detection.
+    pub model_selection_n_permutations: usize,
     /// Number of randomly drawn segments. Corresponds to parameter `M` in
     /// https://arxiv.org/pdf/1411.0858.pdf.
     pub number_of_wild_segments: usize,
@@ -35,6 +38,7 @@ impl Control {
             minimal_relative_segment_length: 0.1,
             minimal_gain_to_split: 0.1,
             model_selection_alpha: 0.05,
+            model_selection_n_permutations: 99,
             number_of_wild_segments: 100,
             seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)
             seed: 0,
@@ -72,6 +76,14 @@ impl Control {
             );
         }
         self.model_selection_alpha = model_selection_alpha;
+        self
+    }
+
+    pub fn with_model_selection_n_permutations(
+        mut self,
+        model_selection_n_permutations: usize,
+    ) -> Self {
+        self.model_selection_n_permutations = model_selection_n_permutations;
         self
     }
 

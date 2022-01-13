@@ -10,6 +10,7 @@ class Control:
         minimal_relative_segment_length=None,
         minimal_gain_to_split=None,
         model_selection_alpha=None,
+        model_selection_n_permutations=None,
         number_of_wild_segments=None,
         seeded_segments_alpha=None,
         seed=None,
@@ -23,6 +24,7 @@ class Control:
         )
         self.minimal_gain_to_split = _to_float(minimal_gain_to_split)
         self.model_selection_alpha = _to_float(model_selection_alpha)
+        self.model_selection_n_permutations = _to_int(model_selection_n_permutations)
         self.number_of_wild_segments = _to_int(number_of_wild_segments)
         self.seeded_segments_alpha = _to_float(seeded_segments_alpha)
         self.seed = _to_int(seed)

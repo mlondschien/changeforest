@@ -28,6 +28,7 @@ from changeforest import Control, changeforest
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 100}, [5]),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
+        ("iris", "bs", "random_forest", {"model_selection_n_permutations": 10}, []),
     ],
 )
 def test_control_model_selection_parameters(

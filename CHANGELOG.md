@@ -6,6 +6,10 @@
 
 - Upgrade `biosphere` to `0.2.1` fixing a bug in `RandomForest`.
 
+**Other changes:**
+
+- New parameter `model_selection_n_permutations`.
+
 ## 0.4.0 - (2021-01-11)
 
 **New features:**
