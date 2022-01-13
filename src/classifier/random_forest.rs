@@ -65,43 +65,33 @@ mod tests {
     use crate::optimizer::{Optimizer, TwoStepSearch};
     use crate::testing;
     use crate::Control;
-    use assert_approx_eq::*;
-    use ndarray::arr1;
+    use csv::ReaderBuilder;
+    use ndarray::Array2;
+    use ndarray_csv::Array2Reader;
     use rstest::*;
+    use std::fs::File;
 
     #[rstest]
-    #[case(0, 6, 2, 0, 100, arr1(&[0.6, 0.45, 0.03, 0.59, 0.64, 0.64]))]
-    // What a difference a seed can make.
-    #[case(0, 6, 2, 87, 100, arr1(&[0.31, 0.23, 0.0, 0.55, 0.52, 0.54]))]
-    #[case(0, 6, 4, 0, 100, arr1(&[0.05, 0.09, 0.04, 0.57, 0.11, 0.05]))]
-    #[case(0, 6, 2, 0, 10, arr1(&[0.72, 0.5, 0., 0.83, 0.67, 0.6]))]
-    fn test_predictions(
-        #[case] start: usize,
-        #[case] stop: usize,
-        #[case] split: usize,
-        #[case] seed: u64,
-        #[case] random_forest_n_trees: usize,
-        #[case] expected: Array1<f64>,
-    ) {
-        let X = ndarray::array![
-            [1., 1.],
-            [1.5, 1.],
-            [0.5, 1.],
-            [3., 3.],
-            [4.5, 3.],
-            [2.5, 2.5]
-        ];
+    #[case(0, 50, 100)]
+    #[case(0, 100, 150)]
+    #[case(50, 100, 150)]
+    #[case(0, 50, 150)]
+    fn test_predictions(#[case] start: usize, #[case] split: usize, #[case] stop: usize) {
+        let file = File::open("testdata/iris.csv").unwrap();
+        let mut reader = ReaderBuilder::new().has_headers(true).from_reader(file);
+        let X: Array2<f64> = reader.deserialize_array2((150, 4)).unwrap();
         let X_view = X.view();
-        let control = Control::default()
-            .with_seed(seed)
-            .with_random_forest_n_trees(random_forest_n_trees);
+
+        let control = Control::default();
 
         let rf = RandomForest::new(&X_view, &control);
         let predictions = rf.predict(start, stop, split);
 
-        for (p, e) in predictions.iter().zip(expected) {
-            assert_approx_eq!(p, e, 1e-2);
-        }
+        let mut y = Array1::<f64>::zeros(stop - start);
+        y.slice_mut(s![(split - start)..]).fill(1.);
+
+        let mse = (y - predictions).mapv(|x| x.powi(2)).mean().unwrap();
+        assert!(mse < 0.06, "mse = {}", mse);
     }
 
     #[rstest]
