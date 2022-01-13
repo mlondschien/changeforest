@@ -29,7 +29,7 @@ test_that("control", {
     # seed
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=42))
     expect_equal(result$segments[[1]]$start, 5)
-    expect_equal(result$segments[[1]]$max_gain, 13.0162, tolerance=1e-5)
+    expect_equal(result$segments[[1]]$max_gain, 12.28034, tolerance=1e-5)
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=12))
     expect_equal(result$segments[[1]]$start, 21)
     expect_equal(result$segments[[1]]$max_gain, 44.987, tolerance=1e-5)
