@@ -15,7 +15,7 @@ name = "changeforest"
 [dependencies]
 ndarray = "0.15"
 rand = "0.8"
-biosphere = "0.2.0"
+biosphere = "0.2.1"
 
 [dev-dependencies]
 rstest = "0.12"
