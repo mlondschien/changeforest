@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 - (2021-01-13)
+
+**Bug fixes:**
+
+- Upgrade `biosphere` to `0.2.1` fixing a bug in `RandomForest`.
+
 ## 0.4.0 - (2021-01-11)
 
 **New features:**
