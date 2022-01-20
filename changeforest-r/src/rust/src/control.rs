@@ -1,4 +1,5 @@
 use changeforest::Control;
+use extendr_api::Operators;
 use extendr_api::{FromRobj, Robj};
 
 pub struct MyControl {
