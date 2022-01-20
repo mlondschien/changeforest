@@ -26,6 +26,14 @@ impl<'a> FromRobj<'a> for MyControl {
             control = control.with_model_selection_alpha(value);
         }
 
+        if let Some(value) = robj
+            .dollar("model_selection_n_permutations")
+            .unwrap()
+            .as_real()
+        {
+            control = control.with_model_selection_n_permutations(value as usize);
+        }
+
         // as_integer does not seem to work.
         if let Some(value) = robj.dollar("number_of_wild_segments").unwrap().as_real() {
             control = control.with_number_of_wild_segments(value as usize);

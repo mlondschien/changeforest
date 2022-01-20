@@ -29,6 +29,12 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
             }
         };
 
+        if let Ok(pyvalue) = obj.getattr(py, "model_selection_n_permutations") {
+            if let Ok(value) = pyvalue.extract::<usize>(py) {
+                control = control.with_model_selection_n_permutations(value);
+            }
+        };
+
         if let Ok(pyvalue) = obj.getattr(py, "number_of_wild_segments") {
             if let Ok(value) = pyvalue.extract::<usize>(py) {
                 control = control.with_number_of_wild_segments(value);

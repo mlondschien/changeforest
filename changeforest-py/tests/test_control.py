@@ -20,7 +20,7 @@ from changeforest import Control, changeforest
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
         # random_forest_ntree
         # This is impressive and unexpected.
-        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [47, 99]),
+        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [37, 52, 99]),
         ("iris", "bs", "random_forest", {"random_forest_n_trees": 100}, [50, 100]),
         # Use X_test instead
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1}, []),
@@ -28,6 +28,7 @@ from changeforest import Control, changeforest
         ("X_test", "bs", "random_forest", {"random_forest_n_trees": 100}, [5]),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
+        ("iris", "bs", "random_forest", {"model_selection_n_permutations": 10}, []),
     ],
 )
 def test_control_model_selection_parameters(
@@ -95,7 +96,7 @@ def test_control_seed(iris_dataset):
         Control(seed=42, number_of_wild_segments=10),
     )
     assert result.segments[0].start == 5
-    assert abs(result.segments[0].max_gain - 8.35952) < 1e-5
+    assert abs(result.segments[0].max_gain - 11.38617) < 1e-5
 
     result = changeforest(
         iris_dataset,

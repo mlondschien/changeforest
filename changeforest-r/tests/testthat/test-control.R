@@ -29,7 +29,7 @@ test_that("control", {
     # seed
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=42))
     expect_equal(result$segments[[1]]$start, 5)
-    expect_equal(result$segments[[1]]$max_gain, 13.0162, tolerance=1e-5)
+    expect_equal(result$segments[[1]]$max_gain, 12.28034, tolerance=1e-5)
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=12))
     expect_equal(result$segments[[1]]$start, 21)
     expect_equal(result$segments[[1]]$max_gain, 44.987, tolerance=1e-5)
@@ -40,5 +40,8 @@ test_that("control", {
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=1))$split_points(), c())
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=1))$split_points(), c())
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=10))$split_points(), c(3, 5))
+
+    # model_selection_n_permutations
+    expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(model_selection_n_permutations=10))$split_points(), c())
 })
 
