@@ -1,6 +1,6 @@
 [package]
 name = 'changeforestr'
-version = '0.4.1'
+version = '0.4.2'
 edition = '2021'
 
 [lib]
@@ -13,5 +13,5 @@ changeforest = { path = "../../../" }
 ndarray = "0.15.3"
 
 [patch.crates-io]
-libR-sys = { git = "https://github.com/extendr/libR-sys" }
-extendr-api = { git = 'https://github.com/extendr/extendr'} 
+libR-sys = { git = "https://github.com/extendr/libR-sys", rev = "a59d65c50e001810dadba2d8624517a36b4725d2" }
+extendr-api = { git = "https://github.com/extendr/extendr", rev = "355cf0de0dd7f28cfa3933a70b29deb247eb2017" } 
