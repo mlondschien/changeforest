@@ -45,7 +45,7 @@ impl Control {
             random_forest_n_trees: 100,
             random_forest_mtry: None,
             random_forest_n_jobs: None,
-            random_forest_max_depth: Some(4),
+            random_forest_max_depth: Some(8),
         }
     }
 

@@ -7,17 +7,17 @@ class Control:
 
     def __init__(
         self,
-        minimal_relative_segment_length=None,
-        minimal_gain_to_split=None,
-        model_selection_alpha=None,
-        model_selection_n_permutations=None,
-        number_of_wild_segments=None,
-        seeded_segments_alpha=None,
-        seed=None,
-        random_forest_n_trees=None,
-        random_forest_max_depth=None,
-        random_forest_mtry=None,
-        random_forest_n_jobs=None,
+        minimal_relative_segment_length="default",
+        minimal_gain_to_split="default",
+        model_selection_alpha="default",
+        model_selection_n_permutations="default",
+        number_of_wild_segments="default",
+        seeded_segments_alpha="default",
+        seed="default",
+        random_forest_n_trees="default",
+        random_forest_max_depth="default",
+        random_forest_mtry="default",
+        random_forest_n_jobs="default",
     ):
         self.minimal_relative_segment_length = _to_float(
             minimal_relative_segment_length
@@ -37,6 +37,8 @@ class Control:
 def _to_float(value):
     if value is None:
         return None
+    if value == "default":
+        return "default"
     else:
         return float(value)
 
@@ -44,5 +46,7 @@ def _to_float(value):
 def _to_int(value):
     if value is None:
         return None
+    if value == "default":
+        return "default"
     else:
         return int(value)
