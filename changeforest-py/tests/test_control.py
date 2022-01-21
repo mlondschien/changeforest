@@ -88,21 +88,24 @@ def test_control_segmentation_parameters(
     assert len(result.segments) == expected_number_of_segments
 
 
-def test_control_seed(iris_dataset):
-    result = changeforest(
-        iris_dataset,
-        "random_forest",
-        "wbs",
-        Control(seed=42, number_of_wild_segments=10),
+@pytest.mark.parametrize(
+    "key, default_value, another_value",
+    [
+        ("random_forest_n_trees", 100, 11),
+        ("minimal_relative_segment_length", 0.1, 0.05),
+        ("seed", 0, 1),
+        ("random_forest_mtry", None, 1),
+        ("random_forest_max_depth", 8, None),
+    ],
+)
+def test_control_defaults(iris_dataset, key, default_value, another_value):
+    result = changeforest(iris_dataset, "random_forest", "bs", Control())
+    default_result = changeforest(
+        iris_dataset, "random_forest", "bs", Control(**{key: default_value})
     )
-    assert result.segments[0].start == 5
-    assert abs(result.segments[0].max_gain - 11.38617) < 1e-5
+    another_result = changeforest(
+        iris_dataset, "random_forest", "bs", Control(**{key: another_value})
+    )
 
-    result = changeforest(
-        iris_dataset,
-        "random_forest",
-        "wbs",
-        Control(seed=12, number_of_wild_segments=10),
-    )
-    assert result.segments[0].start == 21
-    assert abs(result.segments[0].max_gain - 44.98708) < 1e-5
+    assert str(result) == str(default_result)
+    assert str(result) != str(another_result)

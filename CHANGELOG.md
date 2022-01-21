@@ -1,28 +1,37 @@
 # Changelog
 
+## 0.4.2 - (2021-01-21)
+
+**Other changes:**
+
+- The R-package now makes use of the latest version of `libR-sys`, enabling compilation for Apple silicon on `conda-forge` (#86).
+
+**Bug fixes:**
+
+- Fixed a bug where passing `Control()` to `changeforest` in the Python package overwrote the default value for `random_forest_max_depth` to `None`. Default values for `Control` in the python package are now `"default"` (#87).
+
 ## 0.4.1 - (2021-01-13)
 
 **Bug fixes:**
 
-- Upgrade `biosphere` to `0.2.1` fixing a bug in `RandomForest`.
+- Upgrade `biosphere` to `0.2.1` fixing a bug in `RandomForest` (#84).
 
 **Other changes:**
 
-- New parameter `model_selection_n_permutations`.
+- New parameter `model_selection_n_permutations` (#85).
 
 ## 0.4.0 - (2021-01-11)
 
 **New features:**
 
 - `changeforest` now uses random forests from [`biosphere`](https://github.com/mlondschien/biosphere).
-  This should be faster than `smartcore` used previously and supports parallelization.
+  This should be faster than `smartcore` used previously and supports parallelization (#82).
 
 ## 0.3.0 - (2021-12-15)
 
 **New features:**
 
-- Implemented trait `Display` for `BinarySegmentationResult`. In Python `str(result)`
-  now prints a pretty display (#77).
+- Implemented trait `Display` for `BinarySegmentationResult`. In Python `str(result)` now prints a pretty display (#77).
 
 **Other changes:**
 
