@@ -63,9 +63,13 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
     }
 
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
+        let minimal_gain_to_split = match self.control.minimal_gain_to_split {
+            Some(minimal_gain_to_split) => minimal_gain_to_split * self.X.shape()[0] as f64,
+            None => (self.X.shape()[0] as f64).ln() * self.X.shape()[1] as f64,
+        };
+
         ModelSelectionResult {
-            is_significant: optimizer_result.max_gain
-                > self.control.minimal_gain_to_split * (self.n() as f64),
+            is_significant: optimizer_result.max_gain > minimal_gain_to_split,
             p_value: None,
         }
     }

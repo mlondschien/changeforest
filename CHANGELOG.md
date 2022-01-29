@@ -1,4 +1,12 @@
+
 # Changelog
+
+## 0.4.3 - (2021-01-29)
+
+**Other changes:**
+
+- The default value for `Control.minimal_gain_to_split` is now `log(n_samples) * n_features / n_samples`,
+motivated by the Bayesian information criterion (BIC). 
 
 ## 0.4.2 - (2021-01-21)
 
