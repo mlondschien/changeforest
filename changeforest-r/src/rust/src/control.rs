@@ -19,7 +19,7 @@ impl<'a> FromRobj<'a> for MyControl {
         }
 
         if let Some(value) = robj.dollar("minimal_gain_to_split").unwrap().as_real() {
-            control = control.with_minimal_gain_to_split(value);
+            control = control.with_minimal_gain_to_split(Some(value));
         }
 
         if let Some(value) = robj.dollar("model_selection_alpha").unwrap().as_real() {

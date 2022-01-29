@@ -17,10 +17,10 @@ test_that("control", {
     expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(model_selection_alpha=0.05))$split_points(), c(50, 100))
 
     # seeded_segments_alpha
-    expect_equal(length(changeforest(X, "change_in_mean", "bs")$segments), 4)
+    expect_equal(length(changeforest(X, "change_in_mean", "bs")$segments), 1)
     expect_equal(length(changeforest(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/sqrt(2)))$segments), 44 + 5)
     expect_equal(length(changeforest(X_iris, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 25 + 5)
-    expect_equal(length(changeforest(X, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 10 + 4)
+    expect_equal(length(changeforest(X, "change_in_mean", "sbs", Control$new(minimal_relative_segment_length=0.05, seeded_segments_alpha=1/2))$segments), 10 + 1)
 
     # number_of_wild_segments
     expect_equal(length(changeforest(X_iris, "change_in_mean", "wbs", Control$new(number_of_wild_segments=10))$segments), 10 + 5)
