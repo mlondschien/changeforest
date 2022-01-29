@@ -44,7 +44,7 @@ impl<'a> Gain for ChangeInMean<'a> {
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
         ModelSelectionResult {
             is_significant: optimizer_result.max_gain
-                > self.control.minimal_gain_to_split * (self.n() as f64),
+                > self.control.minimal_gain_to_split.unwrap_or(0.1) * (self.n() as f64),
             p_value: None,
         }
     }
@@ -206,7 +206,8 @@ pub fn array() -> Array2<f64> {
     X.slice_mut(s![0..25, 0]).fill(2.);
     X.slice_mut(s![40..80, 0]).fill(1.);
     X.slice_mut(s![0..40, 1]).fill(-2.);
-    X.slice_mut(s![40..100, 1]).fill(-3.);
+    X.slice_mut(s![25..40, 2]).fill(3.);
+    X.slice_mut(s![25..80, 1]).fill(-2.);
 
     X + Array::random_using((100, 5), Uniform::new(0., 1.), &mut rng)
 }

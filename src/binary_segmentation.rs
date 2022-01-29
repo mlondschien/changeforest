@@ -156,7 +156,7 @@ mod tests {
         binary_segmentation.grow(&mut segmentation);
 
         let optimizer_result = binary_segmentation.optimizer_result.as_ref().unwrap();
-        assert_eq!(optimizer_result.best_split, 25);
+        assert_eq!(optimizer_result.best_split, 80);
         assert_eq!(optimizer_result.start, 0);
         assert_eq!(optimizer_result.stop, 100);
     }
@@ -180,25 +180,25 @@ mod tests {
         assert_eq!(result.split_points(), vec![25, 40, 80]);
         assert_eq!(result.start, 0);
         assert_eq!(result.stop, 100);
-        assert_eq!(result.optimizer_result.as_ref().unwrap().best_split, 25);
+        assert_eq!(result.optimizer_result.as_ref().unwrap().best_split, 40);
         assert!(result.model_selection_result.is_significant);
         assert!(result.optimizer_result.is_some());
 
         let right = result.right.as_ref().unwrap();
-        assert_eq!(right.split_points(), vec![40, 80]);
-        assert_eq!(right.start, 25);
+        assert_eq!(right.split_points(), vec![80]);
+        assert_eq!(right.start, 40);
         assert_eq!(right.stop, 100);
-        assert_eq!(right.optimizer_result.as_ref().unwrap().best_split, 40);
+        assert_eq!(right.optimizer_result.as_ref().unwrap().best_split, 80);
         assert!(right.model_selection_result.is_significant);
         assert!(right.optimizer_result.is_some());
 
         let left = result.left.as_ref().unwrap();
-        assert_eq!(left.split_points(), vec![]);
+        assert_eq!(left.split_points(), vec![25]);
         assert_eq!(left.start, 0);
-        assert_eq!(left.stop, 25);
-        assert_eq!(left.optimizer_result.as_ref().unwrap().best_split, 10);
-        assert!(!left.model_selection_result.is_significant);
-        assert!(left.optimizer_result.is_some()); // even though is_significant is false
+        assert_eq!(left.stop, 40);
+        assert_eq!(left.optimizer_result.as_ref().unwrap().best_split, 25);
+        assert!(left.model_selection_result.is_significant);
+        assert!(left.optimizer_result.is_some());
 
         let result = result.with_segments(segmentation);
         assert!(!result.segments.as_ref().unwrap().is_empty());

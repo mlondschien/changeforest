@@ -15,6 +15,13 @@ from changeforest import Control, changeforest
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
         ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10.0}, []),
+        (
+            "iris",
+            "bs",
+            "change_in_mean",
+            {"minimal_gain_to_split": None},
+            [50, 100],
+        ),  # log(150) * 4 / 150
         # model_selection_alpha
         ("iris", "bs", "knn", {"model_selection_alpha": 0.001}, []),
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),

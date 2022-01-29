@@ -12,7 +12,7 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
         };
 
         if let Ok(pyvalue) = obj.getattr(py, "minimal_gain_to_split") {
-            if let Ok(value) = pyvalue.extract::<f64>(py) {
+            if let Ok(value) = pyvalue.extract::<Option<f64>>(py) {
                 control = control.with_minimal_gain_to_split(value);
             }
         };

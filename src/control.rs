@@ -5,8 +5,10 @@ pub struct Control {
     /// not be split.
     pub minimal_relative_segment_length: f64,
     /// Only keep split point if the gain exceeds `minimal_gain_to_split`. Relevant for
-    /// change in mean.
-    pub minimal_gain_to_split: f64,
+    /// change in mean. Note that this is relative to the number of observations.
+    /// Use value motivated by BIC `minimal_gain_to_split = log(n_samples) * n_features / n_samples`
+    /// if `None`.
+    pub minimal_gain_to_split: Option<f64>,
     /// Type two error in model selection to be approximated. Relevant for classifier
     /// based changepoint detection.
     pub model_selection_alpha: f64,
@@ -36,7 +38,7 @@ impl Control {
     pub fn default() -> Control {
         Control {
             minimal_relative_segment_length: 0.1,
-            minimal_gain_to_split: 0.1,
+            minimal_gain_to_split: None,
             model_selection_alpha: 0.05,
             model_selection_n_permutations: 99,
             number_of_wild_segments: 100,
@@ -63,7 +65,7 @@ impl Control {
         self
     }
 
-    pub fn with_minimal_gain_to_split(mut self, minimal_gain_to_split: f64) -> Self {
+    pub fn with_minimal_gain_to_split(mut self, minimal_gain_to_split: Option<f64>) -> Self {
         self.minimal_gain_to_split = minimal_gain_to_split;
         self
     }
