@@ -131,3 +131,13 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_GH_TOKEN }}
+  
+  release-crates-io:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    - steps:
+      - uses: actions/checkout@v1
+      - run: cargo login ${CRATES_IO_TOKEN}
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+      - run: cargo publish
