@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.4.4 - (2022-02-22)
+
+**Other changes:**
+
+- Bump `biosphere` dependency to 0.2.2.
+
 ## 0.4.3 - (2021-01-29)
 
 **Other changes:**
