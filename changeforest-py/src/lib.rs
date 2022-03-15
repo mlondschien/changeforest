@@ -16,11 +16,13 @@ fn changeforest(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     fn changeforest(
         py: Python<'_>,
         X: PyReadonlyArray2<f64>,
-        method: String,
-        segmentation_type: String,
+        method: Option<String>,
+        segmentation_type: Option<String>,
         control: Option<PyObject>,
     ) -> PyResult<MyBinarySegmentationResult> {
         let control = control_from_pyobj(py, control).unwrap();
+        let method = method.unwrap_or("random_forest".to_string());
+        let segmentation_type = segmentation_type.unwrap_or("bs".to_string());
         Ok(MyBinarySegmentationResult {
             result: wrapper::changeforest(&X.as_array(), &method, &segmentation_type, &control),
         })

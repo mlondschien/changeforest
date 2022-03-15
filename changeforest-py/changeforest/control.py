@@ -14,9 +14,9 @@ class Control:
         number_of_wild_segments="default",
         seeded_segments_alpha="default",
         seed="default",
-        random_forest_n_trees="default",
+        random_forest_n_estimators="default",
         random_forest_max_depth="default",
-        random_forest_mtry="default",
+        random_forest_max_features="default",
         random_forest_n_jobs="default",
     ):
         self.minimal_relative_segment_length = _to_float(
@@ -28,9 +28,9 @@ class Control:
         self.number_of_wild_segments = _to_int(number_of_wild_segments)
         self.seeded_segments_alpha = _to_float(seeded_segments_alpha)
         self.seed = _to_int(seed)
-        self.random_forest_n_trees = _to_int(random_forest_n_trees)
+        self.random_forest_n_estimators = _to_int(random_forest_n_estimators)
         self.random_forest_max_depth = _to_int(random_forest_max_depth)
-        self.random_forest_mtry = _to_int(random_forest_mtry)
+        self.random_forest_max_features = _to_int(random_forest_max_features)
         self.random_forest_n_jobs = _to_int(random_forest_n_jobs)
 
 

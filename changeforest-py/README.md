@@ -90,7 +90,7 @@ very few trees:
 
 ```python
 In [6]: from changeforest import Control
-   ...: changeforest(iris, "random_forest", "bs", Control(random_forest_n_trees=10))
+   ...: changeforest(iris, "random_forest", "bs", Control(random_forest_n_estimators=10))
 Out[6]:
                     best_split max_gain p_value
 (0, 150]                    50   96.071    0.01
