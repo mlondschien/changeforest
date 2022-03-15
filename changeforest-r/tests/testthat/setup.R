@@ -1,7 +1,7 @@
 expect_lists_equal = function(l1, l2) {
     expect(
         length(l1) == length(l2),
-        paste0("length mismatch. len(l1)=", length(l1), ", len(l2)=", length(l2))
+        paste0("length mismatch. len(l1)=", length(l1), ", len(l2)=", length(l2), ", l1=", paste0(l1, collapse=", "), ", l2=", paste0(l2, collapse=", "))
     )
 
     if (length(l1) == length(l2) & length(l1) > 0) {  # unbelievable that we have to do this in R.
