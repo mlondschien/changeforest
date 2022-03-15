@@ -25,14 +25,14 @@ from changeforest import Control, changeforest
         # model_selection_alpha
         ("iris", "bs", "knn", {"model_selection_alpha": 0.001}, []),
         ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
-        # random_forest_ntree
+        # random_forest_n_estimators
         # This is impressive and unexpected.
-        ("iris", "bs", "random_forest", {"random_forest_n_trees": 1}, [37, 52, 99]),
-        ("iris", "bs", "random_forest", {"random_forest_n_trees": 100}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_n_estimators": 1}, [47, 99]),
+        ("iris", "bs", "random_forest", {"random_forest_n_estimators": 100}, [50, 100]),
         # Use X_test instead
-        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1}, []),
-        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 1.0}, []),
-        ("X_test", "bs", "random_forest", {"random_forest_n_trees": 100}, [5]),
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 1}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 1.0}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 100}, [5]),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
         ("iris", "bs", "random_forest", {"model_selection_n_permutations": 10}, []),
@@ -98,10 +98,10 @@ def test_control_segmentation_parameters(
 @pytest.mark.parametrize(
     "key, default_value, another_value",
     [
-        ("random_forest_n_trees", 100, 11),
-        ("minimal_relative_segment_length", 0.1, 0.05),
+        ("random_forest_n_estimators", 100, 11),
+        ("minimal_relative_segment_length", 0.01, 0.05),
         ("seed", 0, 1),
-        ("random_forest_mtry", None, 1),
+        ("random_forest_max_features", "default", 1),
         ("random_forest_max_depth", 8, None),
     ],
 )

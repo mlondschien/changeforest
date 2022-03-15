@@ -1,4 +1,5 @@
 # Check that all hyperparameters in control are correctly passed to rust.
+# TODO: Figure out how to make testing in R less of a pain.
 test_that("control", {
     X = get_X()
     X_iris = get_iris()
@@ -30,15 +31,27 @@ test_that("control", {
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=42))
     expect_equal(result$segments[[1]]$start, 5)
     result = changeforest(X_iris, "random_forest", "wbs", Control$new(number_of_wild_segments=10, seed=12))
-    expect_equal(result$segments[[1]]$start, 21)
-    expect_equal(result$segments[[1]]$max_gain, 44.987, tolerance=1e-5)
+    expect_equal(result$segments[[1]]$start, 72)
 
-    # random_forest_ntree
-    expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_n_trees=1))$split_points(), c(37, 52, 99))
-    expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_n_trees=100))$split_points(), c(50, 100))
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=1))$split_points(), c())
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=1))$split_points(), c())
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_trees=10))$split_points(), c(3, 5))
+    # random_forest_n_estimators
+    expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_n_estimators=1))$split_points(), c(47, 99))
+    expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(random_forest_n_estimators=100))$split_points(), c(50, 100))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=1))$split_points(), c())
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=10))$split_points(), c(3, 5))
+
+    # max_features
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=1))$split_points(), c(3))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=0.4))$split_points(), c(3))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features="sqrt"))$split_points(), c(3))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1))$split_points(), c(3))  # sqrt is the default value.
+    
+
+
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=2))$split_points(), c(3, 5, 8))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=0.7))$split_points(), c(3, 5, 8))
+
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=NULL))$split_points(), c(3, 5, 8))
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=3))$split_points(), c(3, 5, 8))
 
     # model_selection_n_permutations
     expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(model_selection_n_permutations=10))$split_points(), c())

@@ -1,6 +1,21 @@
 
 # Changelog
 
+## 0.5.0 - (2022-03-15)
+
+**Breaking changes:**
+
+- The parameters `random_forest_mtry` and `random_forest_n_trees` of `Control` have been renamed to `random_forest_max_features` and `random_forest_n_estimators`.
+- The default value for `random_forest_max_features` now is `floor(sqrt(d))`.
+
+**New features:**
+
+- The parameter `random_forest_max_features` now can be supplied with a fraction `0 < f < 1`, an integer `i>=1`, `None` (Python, Rust) / `NULL` (R) and `"sqrt"`. Then, for each split, repsectively `floor(f d)`, `i`, `d` or `floor(sqrt(d))` features are considered.
+
+**Other changes:**
+
+- Bump `biosphere` dependency to 0.3.0
+
 ## 0.4.4 - (2022-02-22)
 
 **Other changes:**

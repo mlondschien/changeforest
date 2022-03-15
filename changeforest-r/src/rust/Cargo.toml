@@ -1,6 +1,6 @@
 [package]
 name = 'changeforestr'
-version = '0.4.4'
+version = '0.5.0'
 edition = '2021'
 
 [lib]
@@ -11,6 +11,7 @@ crate-type = [ 'staticlib' ]
 extendr-api = { version="0.2.0", features = ["ndarray"] }
 changeforest = { path = "../../../" }
 ndarray = "0.15.3"
+biosphere = "0.3.0"
 
 [patch.crates-io]
 libR-sys = { git = "https://github.com/extendr/libR-sys", rev = "355cf0de0dd7f28cfa3933a70b29deb247eb2017" }

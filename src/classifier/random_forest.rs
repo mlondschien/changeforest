@@ -1,6 +1,5 @@
 use crate::{Classifier, Control};
 use biosphere::RandomForest as BioForest;
-use biosphere::RandomForestParameters;
 use ndarray::{s, Array1, ArrayView2};
 
 pub struct RandomForest<'a, 'b> {
@@ -25,11 +24,7 @@ impl<'a, 'b> Classifier for RandomForest<'a, 'b> {
         let y_slice = y.slice(s![..]);
 
         let X_slice = self.X.slice(s![start..stop, ..]);
-        let parameters = RandomForestParameters::default()
-            .with_n_trees(self.control().random_forest_n_trees)
-            .with_max_depth(self.control().random_forest_max_depth)
-            .with_seed(self.control().seed)
-            .with_mtry(self.control().random_forest_mtry);
+        let parameters = self.control().random_forest_parameters.clone();
 
         let mut forest = BioForest::new(parameters);
         let mut predictions = forest.fit_predict_oob(&X_slice, &y_slice);
