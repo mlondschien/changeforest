@@ -96,7 +96,7 @@ very few trees:
 
 ```python
 In [6]: from changeforest import Control
-   ...: changeforest(iris, "random_forest", "bs", Control(random_forest_n_trees=10))
+   ...: changeforest(iris, "random_forest", "bs", Control(random_forest_n_estimators=10))
 Out[6]:
                     best_split max_gain p_value
 (0, 150]                    50   96.071    0.01
@@ -185,7 +185,7 @@ which can be passed to `changeforest`. The following
 will build random forests with very few trees:
 
 ```R
-> changeforest(X, "random_forest", "bs", Control(random_forest_n_trees=10))
+> changeforest(X, "random_forest", "bs", Control(random_forest_n_estimators=10))
 ... TODO
 ```
 
