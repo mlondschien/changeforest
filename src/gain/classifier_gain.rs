@@ -106,7 +106,7 @@ where
         // Up to here p_value is # of permutations for which the max_gain is higher than
         // the non-permuted max_gain. From this create a true p_value.
         let p_value = p_value as f64 / (self.control().model_selection_n_permutations + 1) as f64;
-        let is_significant = p_value < self.control().model_selection_alpha;
+        let is_significant = p_value <= self.control().model_selection_alpha;
 
         ModelSelectionResult {
             is_significant,
