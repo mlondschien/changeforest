@@ -6,6 +6,8 @@ use crate::ModelSelectionResult;
 use ndarray::{s, Array1, Array2, Axis};
 use rand::{rngs::StdRng, SeedableRng};
 
+const THRESHOLD: f64 = 1e-6;
+
 pub struct ClassifierGain<T: Classifier> {
     pub classifier: T,
 }
@@ -73,11 +75,18 @@ where
         let minimal_segment_length =
             (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
 
+        if segment_length - 2 * minimal_segment_length <= 2 {
+            return ModelSelectionResult {
+                is_significant: false,
+                p_value: None,
+            };
+        }
+
         for _ in 0..self.control().model_selection_n_permutations {
             let mut values = likelihood_0.clone();
             let permutation = rand::seq::index::sample(&mut rng, segment_length, segment_length);
 
-            for idx in permutation.iter().take(minimal_segment_length) {
+            for idx in permutation.iter().take(minimal_segment_length - 1) {
                 for jdx in 0..deltas.len() {
                     values[jdx] += deltas[jdx][idx];
                 }
@@ -87,12 +96,12 @@ where
             // is greater than max_gain. This is the statistic we are comparing against.
             'outer: for idx in permutation
                 .iter()
-                .skip(minimal_segment_length)
-                .take(segment_length - 2 * minimal_segment_length)
+                .skip(minimal_segment_length - 1)
+                .take(segment_length - 2 * minimal_segment_length + 1)
             {
                 for jdx in 0..deltas.len() {
                     values[jdx] += deltas[jdx][idx];
-                    if values[jdx] >= max_gain {
+                    if values[jdx] >= max_gain - THRESHOLD {
                         p_value += 1;
                         // break both loops. We only need to check if the maximum of the
                         // maximal gain after permutation is ever greater than the
