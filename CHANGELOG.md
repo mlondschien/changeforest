@@ -3,6 +3,10 @@
 
 ## 0.5.1 - (2022-03-xx)
 
+**Bug fixes:**
+
+- The pseudo-permutation-test now correctly skips the first and last `minimal_segment_length * n` observations when calculating the permuted maximal gains.
+
 **Other changes:**
 
 - The first three elements of the `result.optimizer_result.gain_results` returned by the two-step search are no longer sorted by their maximal gain.
