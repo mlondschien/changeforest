@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.5.1 - (2022-03-xx)
+
+**Other changes:**
+
+- The first three elements of the `result.optimizer_result.gain_results` returned by the two-step search are no longer sorted by their maximal gain.
+
 ## 0.5.0 - (2022-03-15)
 
 **Breaking changes:**
