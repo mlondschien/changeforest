@@ -58,17 +58,22 @@ where
         ];
         let mut results: Vec<GainResult> = vec![];
 
+        // Don't use first and last guess if stop - start / 4 < delta.
         for guess in guesses.iter().filter(|x| split_candidates.contains(x)) {
             results.push(self._single_find_best_split(start, stop, *guess, &split_candidates));
         }
 
-        results.sort_by(|a, b| {
-            b.max_gain()
-                .unwrap()
-                .partial_cmp(&a.max_gain().unwrap())
-                .unwrap()
-        });
-        let best_split = results[0].best_split().unwrap();
+        let max_gain = results
+            .iter()
+            .map(|x| x.max_gain().unwrap())
+            .reduce(f64::max)
+            .unwrap();
+        let best_split = results
+            .iter()
+            .find(|x| x.max_gain().unwrap() >= max_gain)
+            .unwrap()
+            .best_split()
+            .unwrap();
 
         results.push(self._single_find_best_split(start, stop, best_split, &split_candidates));
 
