@@ -73,13 +73,6 @@ where
         let minimal_segment_length =
             (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
 
-        // if segment_length - 2 * minimal_segment_length <= 2 {
-        //     return ModelSelectionResult {
-        //         is_significant: false,
-        //         p_value: None,
-        //     };
-        // }
-
         for _ in 0..self.control().model_selection_n_permutations {
             let mut values = likelihood_0.clone();
             let permutation = rand::seq::index::sample(&mut rng, segment_length, segment_length);
