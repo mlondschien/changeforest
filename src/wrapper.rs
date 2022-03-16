@@ -74,7 +74,9 @@ mod tests {
     #[case("random_forest", "sbs")]
     fn test_binary_segmentation_wrapper(#[case] method: &str, #[case] segmentation_type: &str) {
         let X = testing::array();
-        let control = Control::default().with_minimal_relative_segment_length(0.1);
+        let control = Control::default()
+            .with_minimal_relative_segment_length(0.1)
+            .with_model_selection_alpha(0.02);
 
         assert_eq!(X.shape(), &[100, 5]);
         assert_eq!(

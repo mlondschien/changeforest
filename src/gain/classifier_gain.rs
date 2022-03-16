@@ -60,6 +60,7 @@ where
             deltas
                 .push(&result.likelihoods.slice(s![0, ..]) - &result.likelihoods.slice(s![1, ..]));
             likelihood_0.push(result.likelihoods.slice(s![1, ..]).sum());
+
             if result.max_gain.unwrap() > max_gain {
                 max_gain = result.max_gain.unwrap();
             }
@@ -68,12 +69,27 @@ where
         let mut p_value: u32 = 1;
         let segment_length = optimizer_result.stop - optimizer_result.start;
 
+        // ceil(delta * n)
+        let minimal_segment_length =
+            (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
+
         for _ in 0..self.control().model_selection_n_permutations {
             let mut values = likelihood_0.clone();
+            let permutation = rand::seq::index::sample(&mut rng, segment_length, segment_length);
+
+            for idx in permutation.iter().take(minimal_segment_length) {
+                for jdx in 0..deltas.len() {
+                    values[jdx] += deltas[jdx][idx];
+                }
+            }
 
             // Test if for any jdx=1,2,3 the gain (likelihood_0[jdx] + cumsum(deltas[jdx]))
             // is greater than max_gain. This is the statistic we are comparing against.
-            'outer: for idx in rand::seq::index::sample(&mut rng, segment_length, segment_length) {
+            'outer: for idx in permutation
+                .iter()
+                .skip(minimal_segment_length)
+                .take(segment_length - 2 * minimal_segment_length)
+            {
                 for jdx in 0..deltas.len() {
                     values[jdx] += deltas[jdx][idx];
                     if values[jdx] >= max_gain {
