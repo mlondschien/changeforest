@@ -10,8 +10,8 @@ test_that("control", {
 
     # minimal_gain_to_split
     expect_lists_equal(changeforest(X, "change_in_mean", "bs", Control$new(minimal_gain_to_split=0.1))$split_points(), c(3, 5))
-    expect_lists_equal(changeforest(X, "change_in_mean", "bs", Control$new(minimal_gain_to_split=0.2))$split_points(), c(5))
-    expect_lists_equal(changeforest(X, "change_in_mean", "bs", Control$new(minimal_gain_to_split=1))$split_points(), c())
+    expect_lists_equal(changeforest(X, "change_in_mean", "bs", Control$new(minimal_gain_to_split=0.2))$split_points(), c(3, 5))
+    expect_lists_equal(changeforest(X, "change_in_mean", "bs", Control$new(minimal_gain_to_split=10))$split_points(), c())
 
     # model_selection_alpha
     expect_lists_equal(changeforest(X_iris, "random_forest", "bs", Control$new(model_selection_alpha=0.001))$split_points(),  c())
@@ -40,10 +40,10 @@ test_that("control", {
     expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=10))$split_points(), c(3, 5))
 
     # max_features
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=1))$split_points(), c(3))
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=0.4))$split_points(), c(3))
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features="sqrt"))$split_points(), c(3))
-    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1))$split_points(), c(3))  # sqrt is the default value.
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=1))$split_points(), c())
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features=0.4))$split_points(), c())
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1, random_forest_max_features="sqrt"))$split_points(), c())
+    expect_lists_equal(changeforest(X, "random_forest", "bs", Control$new(random_forest_n_estimators=2, random_forest_max_depth=1))$split_points(), c())  # sqrt is the default value.
     
 
 

@@ -1,6 +1,17 @@
 
 # Changelog
 
+## 0.6.0 - (2022-03-17)
+
+**Breaking changes:**
+
+- The default value for `model_selection_n_permutations` is now 199.
+- The default value for `model_selection_alpha` is now 0.02
+- The default value for `minimal_gain_to_split`, use in the `change_in_mean` setup, is now `log(n) * (d + 1)`, motivated by the BIC and [1].
+- The value for `minimal_gain_to_split` no longer gets automatically multiplied by `n`.
+
+[1] Yao, Y.-C. (1988). Estimating the number of change-points via Schwarz’ criterion. Statist. Probab. Lett. 6 181–189. MR0919373
+
 ## 0.5.1 - (2022-03-16)
 
 **Bug fixes:**
