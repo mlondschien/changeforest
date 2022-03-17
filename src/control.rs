@@ -35,8 +35,8 @@ impl Control {
         Control {
             minimal_relative_segment_length: 0.01,
             minimal_gain_to_split: None,
-            model_selection_alpha: 0.05,
-            model_selection_n_permutations: 99,
+            model_selection_alpha: 0.02,
+            model_selection_n_permutations: 199,
             number_of_wild_segments: 100,
             seeded_segments_alpha: std::f64::consts::FRAC_1_SQRT_2, // 1 / sqrt(2)
             seed: 0,
