@@ -11,10 +11,16 @@ from changeforest import Control, changeforest
         ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.05}, [50, 100]),
         ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.4}, [60]),
         # minimal_gain_to_split
-        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 0.1}, [50, 100]),
-        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
-        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
-        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 10.0}, []),
+        (
+            "iris",
+            "bs",
+            "change_in_mean",
+            {"minimal_gain_to_split": 150 * 0.1},
+            [50, 100],
+        ),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 1}, [50]),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 10}, []),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 10.0}, []),
         (
             "iris",
             "bs",
