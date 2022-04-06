@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.6.1 - (2022-04-06)
+
+**Bug fixes:**
+
+- Fixed a bug in the Python package when passing `random_forest_max_features='sqrt'` to `Control`.
+
 ## 0.6.0 - (2022-03-17)
 
 **Breaking changes:**
