@@ -12,7 +12,7 @@
 **Breaking changes:**
 
 - The default value for `model_selection_n_permutations` is now 199.
-- The default value for `model_selection_alpha` is now 0.02
+- The default value for `model_selection_alpha` is now 0.02.
 - The default value for `minimal_gain_to_split`, use in the `change_in_mean` setup, is now `log(n) * (d + 1)`, motivated by the BIC and [1].
 - The value for `minimal_gain_to_split` no longer gets automatically multiplied by `n`.
 
