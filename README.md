@@ -1,13 +1,18 @@
-# Classifier based non-parametric change point detection
+# Random Forests for Change Point Detection
 
-Change point detection tries to identify times when the probability distribution of a
-stochastic process or time series changes. Existing methods either assume a parametric
-model for within-segment distributions or a based on ranks or distances, and thus fail
-in scenarios with reasonably large dimensionality.
+Change point detection aims to identify structural breaks in the probability
+distribution of a time series. Existing methods either assume a parametric model for
+within-segment distributions or a based on ranks or distances, and thus fail in
+scenarios with reasonably large dimensionality.
 
-`changeforest` implements a classifier based algorithm that consistently estimates
+`changeforest` implements a classifier-based algorithm that consistently estimates
 change points without any parametric assumptions even in high-dimensional scenarios.
+It uses the out-of-bag probability predictions of a random forest to construct a
+pseudo-log-likelihood that gets optimized using a computationally feasible two-step
+method.
+
 See [1] for details.
+
 
 `changeforest` is available as rust crate, a Python package (on
 [`PyPI`](https://pypi.org/project/changeforest/) and
@@ -191,4 +196,4 @@ will build random forests with very few trees:
 
 ## References
 
-[1] M. Londschien, S. Kovács and P. Bühlmann (2021), "Random Forests and other nonparametric classifiers for multivariate change point detection", working paper.
+[1] M. Londschien, S. Kovács and P. Bühlmann (2022), "Random Forests for Change Point Detection", working paper.
