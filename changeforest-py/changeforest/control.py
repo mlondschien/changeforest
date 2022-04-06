@@ -37,8 +37,8 @@ class Control:
 def _to_float(value):
     if value is None:
         return None
-    if value == "default":
-        return "default"
+    elif isinstance(value, str):
+        return value
     else:
         return float(value)
 
@@ -46,7 +46,7 @@ def _to_float(value):
 def _to_int(value):
     if value is None:
         return None
-    if value == "default":
-        return "default"
+    elif isinstance(value, str):
+        return value
     else:
         return int(value)

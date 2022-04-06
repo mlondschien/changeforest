@@ -41,6 +41,13 @@ from changeforest import Control, changeforest
         ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 100}, [5]),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
         ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
+        (
+            "X_correlated",
+            "bs",
+            "random_forest",
+            {"random_forest_max_features": "sqrt"},
+            [49],
+        ),
         ("iris", "bs", "random_forest", {"model_selection_n_permutations": 10}, []),
     ],
 )
