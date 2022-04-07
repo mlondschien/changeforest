@@ -13,13 +13,6 @@ method.
 
 See [1] for details.
 
-
-`changeforest` is available as rust crate, a Python package (on
-[`PyPI`](https://pypi.org/project/changeforest/) and
-[`conda-forge`](https://anaconda.org/conda-forge/changeforest))
-and as an R package (on [`conda-forge`](https://anaconda.org/conda-forge/r-changeforest)
-, linux and MacOS only). See below for their respective user guides.
-
 ## Installation
 
 To install from `conda-forge` (recommended), simply run
@@ -102,7 +95,7 @@ result.optimizer_result.plot().show()
   <img src="../docs/py_cic_rf_optimizer_result_plot.png" />
 </p>
  
-One can clearly observe that the approx. gain curves are piecewise linear, with maxima
+One can clearly observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
 The `BinarySegmentationResult` returned by `changeforest` is a tree-like object with attributes

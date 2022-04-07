@@ -104,7 +104,7 @@ result.optimizer_result.plot().show()
   <img src="docs/py_cic_rf_optimizer_result_plot.png" />
 </p>
  
-One can clearly observe that the approx. gain curves are piecewise linear, with maxima
+One can clearly observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
 The `BinarySegmentationResult` returned by `changeforest` is a tree-like object with attributes
@@ -216,7 +216,7 @@ plot the approximated gain curves of the first three segments:
   <img src="docs/r-iris-approx-gains.png" />
 </p>
 
-One can clearly observe that the approx. gain curves are piecewise linear, with maxima
+One can clearly observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
 The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/control.rs#L3-L39)
