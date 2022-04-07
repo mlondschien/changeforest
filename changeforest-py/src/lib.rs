@@ -2,7 +2,7 @@ mod control;
 mod result;
 
 use crate::control::control_from_pyobj;
-use crate::result::MyBinarySegmentationResult;
+use crate::result::{MyBinarySegmentationResult, MyOptimizerResult};
 use changeforest::wrapper;
 use numpy::PyReadonlyArray2;
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
@@ -27,5 +27,8 @@ fn changeforest(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             result: wrapper::changeforest(&X.as_array(), &method, &segmentation_type, &control),
         })
     }
+
+    m.add_class::<MyBinarySegmentationResult>()?;
+    m.add_class::<MyOptimizerResult>()?;
     Ok(())
 }

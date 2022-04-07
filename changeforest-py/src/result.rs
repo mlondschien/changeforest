@@ -7,7 +7,7 @@ use changeforest::{BinarySegmentationResult, ModelSelectionResult};
 use numpy::{PyArray1, PyArray2, ToPyArray};
 use pyo3::prelude::*;
 
-#[pyclass]
+#[pyclass(name = "ModelSelectionResult")]
 #[derive(Clone, Debug)]
 pub struct MyModelSelectionResult {
     pub result: ModelSelectionResult,
@@ -33,7 +33,7 @@ impl pyo3::class::basic::PyObjectProtocol for MyModelSelectionResult {
     }
 }
 
-#[pyclass]
+#[pyclass(name = "GainResult")]
 #[derive(Clone, Debug)]
 pub struct MyGainResult {
     pub result: GainResult,
@@ -79,7 +79,7 @@ impl pyo3::class::basic::PyObjectProtocol for MyGainResult {
     }
 }
 
-#[pyclass]
+#[pyclass(name = "OptimizerResult")]
 #[derive(Clone, Debug)]
 pub struct MyOptimizerResult {
     pub result: OptimizerResult,
@@ -129,7 +129,7 @@ impl pyo3::class::basic::PyObjectProtocol for MyOptimizerResult {
     }
 }
 
-#[pyclass]
+#[pyclass(name = "BinarySegmentationResult")]
 #[derive(Clone, Debug)]
 pub struct MyBinarySegmentationResult {
     pub result: BinarySegmentationResult,
@@ -235,4 +235,10 @@ impl pyo3::class::basic::PyObjectProtocol for MyBinarySegmentationResult {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{}", self.result))
     }
+}
+
+#[pymodule]
+fn my_module(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_class::<MyBinarySegmentationResult>()?;
+    Ok(())
 }
