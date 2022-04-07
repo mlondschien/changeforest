@@ -1,6 +1,6 @@
 import numpy as np
 
-from .changeforest import OptimizerResult
+from .changeforest import BinarySegmentationResult, OptimizerResult
 
 try:
     import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ except ImportError:
     MATPLOTLIB_INSTALLED = False
 
 
-def plot_two_step_search_result(optimizer_result):
+def _plot_two_step_search_result(optimizer_result):
     if not MATPLOTLIB_INSTALLED:
         raise ImportError("The matplotlib package is required for OptimizerResult.plot")
 
@@ -87,7 +87,7 @@ def plot_two_step_search_result(optimizer_result):
     return fig
 
 
-def plot_gain_result(gain_result):
+def _plot_gain_result(gain_result):
     if not MATPLOTLIB_INSTALLED:
         raise ImportError("The matplotlib package is required for OptimizerResult.plot")
 
@@ -108,11 +108,94 @@ def plot_gain_result(gain_result):
     return fig
 
 
-def plot_optimizer_result(optimizer_result):
+def _plot_optimizer_result(optimizer_result):
     if len(optimizer_result.gain_results) == 4:
-        return plot_two_step_search_result(optimizer_result)
+        return _plot_two_step_search_result(optimizer_result)
     else:
-        return plot_gain_result(optimizer_result.gain_results[-1])
+        return _plot_gain_result(optimizer_result.gain_results[-1])
 
 
-OptimizerResult.plot = plot_optimizer_result
+def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
+    nodes = [binary_segmentation_result]
+    gains = []
+    splits = []
+    found_changepoints = []
+    guesses = []
+    n = binary_segmentation_result.stop
+
+    for _ in range(0, max_depth):
+        new_nodes = []
+
+        if len(nodes) == 0:
+            break
+
+        gains.append([])
+        found_changepoints.append([])
+        splits.append([])
+        guesses.append([])
+
+        for node in nodes:
+            splits[-1].append(node.start)
+            splits[-1].append(node.stop)
+
+            if node.optimizer_result is not None:
+                result = node.optimizer_result.gain_results[-1]
+                gains[-1].append(np.full(n, np.nan))
+                gains[-1][-1][node.start : node.stop] = result.gain  # noqa: E203
+                guesses[-1].append(result.guess)
+
+            if node.model_selection_result.is_significant:
+                found_changepoints[-1].append(node.best_split)
+
+            if node.left is not None:
+                new_nodes.append(node.left)
+            if node.right is not None:
+                new_nodes.append(node.right)
+
+        nodes = new_nodes
+
+    depth = len(gains)
+
+    fig, axes = plt.subplots(nrows=depth)
+    if depth == 1:
+        axes = [axes]
+
+    for idx in range(depth):
+
+        for gain in gains[idx]:
+            axes[idx].plot(gain, color="black")
+
+        ymin, ymax = axes[idx].get_ylim()
+        new_ymin, new_ymax = ymin - 0.05 * (ymax - ymin), ymax + 0.05 * (ymax - ymin)
+
+        axes[idx].vlines(splits[idx], color="black", ymin=new_ymin, ymax=new_ymax)
+
+        axes[idx].vlines(
+            guesses[idx],
+            color="#4477AA",  # blue
+            ymin=ymin,
+            ymax=ymax,
+            linewidth=2,
+            linestyles="dashed",
+        )
+
+        axes[idx].vlines(
+            found_changepoints[idx],
+            color="#EE6677",  # red
+            ymin=ymin,
+            ymax=ymax,
+            linewidth=2,
+            linestyles="dotted",
+        )
+
+        axes[idx].set_xlim(0, n)
+        axes[idx].set_ylim(new_ymin, new_ymax)
+        axes[idx].set_ylabel("approx. gain")
+
+    axes[-1].set_xlabel("split")
+
+    return fig
+
+
+OptimizerResult.plot = _plot_optimizer_result
+BinarySegmentationResult.plot = _plot_binary_segmentation_result
