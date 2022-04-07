@@ -81,7 +81,7 @@ plot the approximated gain curves of the first three segments:
 One can clearly observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
-The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/control.rs#L3-L39) for their descriptions and default values. In R, the parameters can
+The `changeforest` algorithm can be tuned with hyperparameters. See [here](https://github.com/mlondschien/changeforest/blob/287ac0f10728518d6a00bf698a4d5834ae98715d/src/control.rs#L3-L30) for their descriptions and default values. In R, the parameters can
 be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/main/changeforest-r/R/control.R)
  which can be passed to `changeforest`. The following
 will build random forests with very few trees:

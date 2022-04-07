@@ -112,7 +112,7 @@ The `BinarySegmentationResult` returned by `changeforest` is a tree-like object 
 These can be interesting to further investigate the output of the algorithm.
 
 The `changeforest` algorithm can be tuned with hyperparameters. See
-[here](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/src/control.rs#L3-L39)
+[here](https://github.com/mlondschien/changeforest/blob/287ac0f10728518d6a00bf698a4d5834ae98715d/src/control.rs#L3-L30)
 for their descriptions and default values. In Python, the parameters can
 be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26)
 which can be passed to `changeforest`. The following will build random forests with
