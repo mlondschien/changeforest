@@ -116,6 +116,11 @@ def _plot_optimizer_result(optimizer_result):
 
 
 def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
+    if not MATPLOTLIB_INSTALLED:
+        raise ImportError(
+            "The matplotlib package is required for BinarySegmentationResult.plot"
+        )
+
     nodes = [binary_segmentation_result]
     gains = []
     splits = []

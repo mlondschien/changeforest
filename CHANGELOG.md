@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.7.0 - (2022-04-xx)
+
+**New features:
+
+- New methods `BinarySegmentationResult.plot` and `OptimizerResult.plot` (Python).
+
 ## 0.6.1 - (2022-04-06)
 
 **Bug fixes:**
