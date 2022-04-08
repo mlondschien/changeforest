@@ -32,6 +32,9 @@ BinarySegmentationResult = R6::R6Class(
             self$max_gain = max_gain
             self$model_selection_result = model_selection_result
             self$optimizer_result = optimizer_result
+            if (!is.null(self$optimizer_result)) {
+                class(self$optimizer_result) = "optimizer_result"
+            }
             self$p_value = p_value
             self$is_significant = is_significant
             self$segments = segments
