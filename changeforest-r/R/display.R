@@ -59,6 +59,7 @@ print.binary_segmentation_result = function(x, ...) {
 #'
 #' @param x An object of class `binary_segmentation_result`.
 #' @param ... Not used.
+#' @importFrom("graphics", "abline", "lines", "par")
 #' @export
 plot.binary_segmentation_result = function(x, ...) {
     nodes = c(x)
@@ -135,6 +136,7 @@ plot.binary_segmentation_result = function(x, ...) {
 #'
 #' @param x An object of class `optimizer_result`.
 #' @param ... Not used.
+#' @importFrom("graphics", "abline", "lines", "par")
 #' @export
 plot.optimizer_result = function(x, ...) {
     range = (x$start + 1) : (x$stop - 1)
