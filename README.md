@@ -92,10 +92,10 @@ Change point estimates are marked in red.
 
 For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
-at the segment's 1/4, 1/2 and 3/4 quantiles , computes approximate gain curves using
+at the segment's 1/4, 1/2 and 3/4 quantiles, computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`
-the initial guesses are marked in blue.
+We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`.
+The initial guesses are marked in blue.
 
 ```
 result.optimizer_result.plot().show()
@@ -105,7 +105,7 @@ result.optimizer_result.plot().show()
 </p>
  
 One can observe that the approximate gain curves are piecewise linear, with maxima
-at the true underlying change points.
+around the true underlying change points.
 
 The `BinarySegmentationResult` returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 
@@ -215,8 +215,8 @@ For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm 
 find an optimizer of the gain. This fits a classifier for three split candidates
 at the segment's 1/4, 1/2 and 3/4 quantiles  computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`
-the initial guesses are marked in blue.
+We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`.
+The initial guesses are marked in blue.
 
 ```
 result.optimizer_result.plot().show()
@@ -226,7 +226,7 @@ result.optimizer_result.plot().show()
 </p>
  
 One can observe that the approximate gain curves are piecewise linear, with maxima
-at the true underlying change points.
+around the true underlying change points.
 
 The `binary_segmentation_result` object returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 

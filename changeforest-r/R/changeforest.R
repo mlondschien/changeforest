@@ -91,7 +91,7 @@ to_binary_segmentation_result = function(result) {
 #' 
 #' @return Object of type \code{binary_segmentation_result}.
 #' @export
-changeforest = function(X,  method, segmentation, control=Control$new()) {
+changeforest = function(X,  method="random_forest", segmentation="bs", control=Control$new()) {
     result = changeforest_api(X, method, segmentation, control)
     to_binary_segmentation_result(result)
 }
