@@ -1,11 +1,14 @@
 
 # Changelog
 
-## 0.7.0 - (2022-04-xx)
+## 0.7.0 - (2022-04-08)
 
 **New features:
 
-- New methods `BinarySegmentationResult.plot` and `OptimizerResult.plot` (Python).
+- New plotting methods `BinarySegmentationResult.plot` and `OptimizerResult.plot` (Python).
+- New plotting methods `plot.binary_segmentation_result` and `plot.binary_segmentation_result` (R).
+- Expanded documentation (R).
+- The `changeforest` function now has default values `method="random_forest"` and `segmentation="bs"` (R).
 
 ## 0.6.1 - (2022-04-06)
 
