@@ -5,31 +5,31 @@
 #' for more details.
 #' 
 #' @param minimal_relative_segment_length Segments with length smaller than
-#' `2 * n * minimal_relative_segment_length` will not be split. Equal to 0.01 by default.
+#' \code{2 * n * minimal_relative_segment_length} will not be split. Equal to 0.01 by default.
 #' @param minimal_gain_to_split Only keep split point if the gain exceeds
-#' `minimal_gain_to_split`. Relevant for change in mean. Use value motivated by BIC
-#' `minimal_gain_to_split = log(n_samples) * n_features / n_samples` by default.
+#' \code{minimal_gain_to_split}. Relevant for change in mean. Use value motivated by BIC
+#' \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.
 #' @param model_selection_alpha Type two error in model selection to be approximated.
 #' Relevant for classifier based changepoint detection. Equal to 0.02 by default.
 #' @param model_selection_n_permutations Number of permutations for model selection in
 #' classifier-based change point detection. Equal to 199 by default.
 #' @param number_of_wild_segments Number of randomly drawn segments. Corresponds to
-#' parameter `M` in https://arxiv.org/pdf/1411.0858.pdf. Only relevant if
-#' `segmentation='wbs'`. Equal to 100 by default.
+#' parameter \code{M} in https://arxiv.org/pdf/1411.0858.pdf. Only relevant if
+#' \code{segmentation='wbs'}. Equal to 100 by default.
 #' @param seeded_segments_alpha Decay parameter in seeded binary segmentation. Should
-#' be in `[1/2, 1)`, with a value close to 1 resulting in many segments. Corresponds to
-#' `\alpha` in https://arxiv.org/pdf/2002.06633.pdf. Only relevant if
-#' `segmentation='sbs'`. Equal to `1 / \sqrt{2}` by default.
+#' be in \code{[1/2, 1)}, with a value close to 1 resulting in many segments. Corresponds to
+#' \eqn{\alpha} in https://arxiv.org/pdf/2002.06633.pdf. Only relevant if
+#' \code{segmentatin='sbs'}. Equal to \eqn{1 / \sqrt{2} by default.
 #' @param seed Seed for segmentation and random forest. Only relevant for
-#' `segmentation='wbs'` or `method='random_forest'`.
+#' \code{segmentation='wbs'} or \code{method='random_forest'}.
 #' @param random_forest_n_estimators Parameter passed to random forest classifier if
-#' `method='random_forest'`. Equal to 100 by default.
+#' \code{method='random_forest'}. Equal to 100 by default.
 #' @param random_forest_max_features Parameter passed to random forest classifier if
-#' `method='random_forest'`. Equal to `\sqrt{d}` by default.
+#' \code{method='random_forest'}. Equal to \eqn{\sqrt{d}} by default.
 #' @param random_forest_max_depth Parameter passed to random forest classifier if
-#' `method='random_forest'`. Equal to 8 by default.
+#' \code{method='random_forest'}. Equal to 8 by default.
 #' @param random_forest_n_jobs Parameter passed to random forest classifier if
-#' `method='random_forest'`. Use all cores if -1. Equal to -1 by default.
+#' \code{method='random_forest'}. Use all cores if -1. Equal to -1 by default.
 #'
 #' @return Object of class Control containing hyperparameters.
 #' @export
