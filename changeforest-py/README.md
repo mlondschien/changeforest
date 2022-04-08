@@ -2,7 +2,7 @@
 
 Change point detection aims to identify structural breaks in the probability
 distribution of a time series. Existing methods either assume a parametric model for
-within-segment distributions or a based on ranks or distances, and thus fail in
+within-segment distributions or are based on ranks or distances, and thus fail in
 scenarios with reasonably large dimensionality.
 
 `changeforest` implements a classifier-based algorithm that consistently estimates
@@ -86,7 +86,8 @@ For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm 
 find an optimizer of the gain. This fits a classifier for three split candidates
 at the 1/4, 1/2 and 3/4 quantiles of the segment, computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`.
+We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`,
+the initial guesses are marked in blue.
 
 ```
 result.optimizer_result.plot().show()
