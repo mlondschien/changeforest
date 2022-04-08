@@ -3,7 +3,7 @@
 
 ## 0.7.0 - (2022-04-08)
 
-**New features:
+**New features**:
 
 - New plotting methods `BinarySegmentationResult.plot` and `OptimizerResult.plot` (Python).
 - New plotting methods `plot.binary_segmentation_result` and `plot.binary_segmentation_result` (R).
