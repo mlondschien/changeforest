@@ -105,7 +105,7 @@ result.optimizer_result.plot().show()
 </p>
  
 One can observe that the approximate gain curves are piecewise linear, with maxima
-at the true underlying change points.
+around the true underlying change points.
 
 The `BinarySegmentationResult` returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 
@@ -226,7 +226,7 @@ result.optimizer_result.plot().show()
 </p>
  
 One can observe that the approximate gain curves are piecewise linear, with maxima
-at the true underlying change points.
+around the true underlying change points.
 
 The `binary_segmentation_result` object returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 
