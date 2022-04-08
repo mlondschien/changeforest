@@ -84,10 +84,10 @@ Change point estimates are marked in red.
 
 For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
-at the segment's 1/4, 1/2 and 3/4 quantiles , computes approximate gain curves using
+at the segment's 1/4, 1/2 and 3/4 quantiles, computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`
-the initial guesses are marked in blue.
+We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`.
+The initial guesses are marked in blue.
 
 ```
 result.optimizer_result.plot().show()
