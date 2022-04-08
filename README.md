@@ -2,11 +2,11 @@
 
 Change point detection aims to identify structural breaks in the probability
 distribution of a time series. Existing methods either assume a parametric model for
-within-segment distributions or are based on ranks or distances, and thus fail in
-scenarios with reasonably large dimensionality.
+within-segment distributions or are based on ranks or distances and thus fail in
+scenarios with a reasonably large dimensionality.
 
 `changeforest` implements a classifier-based algorithm that consistently estimates
-change points without any parametric assumptions even in high-dimensional scenarios.
+change points without any parametric assumptions, even in high-dimensional scenarios.
 It uses the out-of-bag probability predictions of a random forest to construct a
 pseudo-log-likelihood that gets optimized using a computationally feasible two-step
 method.
@@ -15,15 +15,15 @@ See [1] for details.
 
 `changeforest` is available as rust crate, a Python package (on
 [`PyPI`](https://pypi.org/project/changeforest/) and
-[`conda-forge`](https://anaconda.org/conda-forge/changeforest))
-and as an R package (on [`conda-forge`](https://anaconda.org/conda-forge/r-changeforest)
+[`conda-forge`](https://anaconda.org/conda-forge/changeforest)),
+and an R package (on [`conda-forge`](https://anaconda.org/conda-forge/r-changeforest)
 , linux and MacOS only). See below for their respective user guides.
 
 ## Python
 
 ### Installation
 
-To install from `conda-forge` (recommended), simply run
+To install from `conda-forge` (recommended), run
 ```bash
 conda install -c conda-forge changeforest
 ```
@@ -35,7 +35,7 @@ pip install changeforest
 
 ### Example
 
-In the following example we perform random forest-based change point detection on
+In the following example, we perform random forest-based change point detection on
 a simulated dataset with `n=600` observations and covariance shifts at `t=200, 400`.
 
 ```python
@@ -78,7 +78,7 @@ In [3]: result.split_points()
 Out[3]: [201, 412]
 ```
 
-`changeforest` correctly identifies the change point around `t=200`, but is slightly
+`changeforest` correctly identifies the change point around `t=200` but is slightly
 off at `t=412`. The `changeforest` function returns a `BinarySegmentationResult`.
 We use its `plot` method to investigate the gain curves maximized by the change point estimates:
 
@@ -92,9 +92,9 @@ Change point estimates are marked in red.
 
 For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
-at the 1/4, 1/2 and 3/4 quantiles of the segment, computes approximate gain curves using
+at the segment's 1/4, 1/2 and 3/4 quantiles , computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`,
+We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`
 the initial guesses are marked in blue.
 
 ```
@@ -104,17 +104,17 @@ result.optimizer_result.plot().show()
   <img src="docs/py_cic_rf_optimizer_result_plot.png" />
 </p>
  
-One can clearly observe that the approximate gain curves are piecewise linear, with maxima
+One can observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
 The `BinarySegmentationResult` returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 
-These can be interesting to further investigate the output of the algorithm.
+These can be interesting to investigate the output of the algorithm further.
 
 The `changeforest` algorithm can be tuned with hyperparameters. See
 [here](https://github.com/mlondschien/changeforest/blob/287ac0f10728518d6a00bf698a4d5834ae98715d/src/control.rs#L3-L30)
 for their descriptions and default values. In Python, the parameters can
-be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26)
+be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26),
 which can be passed to `changeforest`. The following will build random forests with
 20 trees:
 
@@ -134,8 +134,8 @@ Out[6]:
  °--(592, 600]     
 ```
 
-The `changeforest` algorithm still detects change points around `t=200, 400`, but also
-returns two false-positives.
+The `changeforest` algorithm still detects change points around `t=200, 400` but also
+returns two false positives.
 
 Due to the nature of the change, `method="change_in_mean"` is unable to detect any
 change points at all:
@@ -148,7 +148,7 @@ Out[7]:
 
 ## R
 
-To install from `conda-forge`, simply run
+To install from `conda-forge`, run
 
 ```bash
 conda install -c conda-forge r-changeforest
@@ -158,7 +158,7 @@ See [here](https://github.com/conda-forge/miniforge) for instructions on how to 
 
 ### Example
 
-In the following example we perform random forest-based change point detection on
+In the following example, we perform random forest-based change point detection on
 a simulated dataset with `n=600` observations and covariance shifts at `t=200, 400`.
 
 ```R
@@ -198,7 +198,7 @@ between coordinates. This is a challenging scenario.
 [1] 199 410
 ```
 
-`changeforest` correctly identifies the change point around `t=200`, but is slightly
+`changeforest` correctly identifies the change point around `t=200` but is slightly
 off at `t=410`. The `changeforest` function returns an object of class `binary_segmentation_result`.
 We use its `plot` method to investigate the gain curves maximized by the change point estimates:
 
@@ -213,9 +213,9 @@ Change point estimates are marked in red.
 
 For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
-at the 1/4, 1/2 and 3/4 quantiles of the segment computes approximate gain curves using
+at the segment's 1/4, 1/2 and 3/4 quantiles  computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
-We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`,
+We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`
 the initial guesses are marked in blue.
 
 ```
@@ -225,18 +225,18 @@ result.optimizer_result.plot().show()
   <img src="docs/r_cic_rf_optimizer_result_plot.png" />
 </p>
  
-One can clearly observe that the approximate gain curves are piecewise linear, with maxima
+One can observe that the approximate gain curves are piecewise linear, with maxima
 at the true underlying change points.
 
 The `binary_segmentation_result` object returned by `changeforest` is a tree-like object with attributes
 `start`, `stop`, `best_split`, `max_gain`, `p_value`, `is_significant`, `optimizer_result`, `model_selection_result`, `left`, `right` and `segments`. 
-These can be interesting to further investigate the output of the algorithm.
+These can be interesting to investigate the output of the algorithm further.
 
 The `changeforest` algorithm can be tuned with hyperparameters. See
 [here](https://github.com/mlondschien/changeforest/blob/287ac0f10728518d6a00bf698a4d5834ae98715d/src/control.rs#L3-L30)
 for their descriptions and default values. In R, the parameters can
-be specified with the `Control` class
-that can be passed to `changeforest`. The following will build random forests with
+be specified with the `Control` class,
+which can be passed to `changeforest`. The following will build random forests with
 20 trees:
 
 ```R
@@ -253,8 +253,8 @@ that can be passed to `changeforest`. The following will build random forests wi
 9      °--(561, 600]                 568  -5.230075   0.120          FALSE    
 ```
 
-The `changeforest` algorithm still detects the change point around `t=200`, but also
-returns false-positives.
+The `changeforest` algorithm still detects the change point around `t=200` but also
+returns false positives.
 
 Due to the nature of the change, `method="change_in_mean"` is unable to detect any
 change points at all:
