@@ -9,11 +9,17 @@ changeforest(X, method, segmentation, control = Control$new())
 \arguments{
 \item{X}{Numerical matrix with time series.}
 
-\item{method}{Either 'knn','change_in_mean' of 'random_forest'.}
+\item{method}{Either \code{'knn'}, \code{'change_in_mean'} of \code{'random_forest'}
+Equal to \code{'random_forest'} by default.}
 
-\item{segmentation}{Either 'bs', 'sbs' or 'wbs'.}
+\item{segmentation}{Either \code{'bs'}, \code{'sbs'} or \code{'wbs'}. Equal to \code{'bs'} 
+by default.}
 
-\item{control}{Object of class Control containing hyperparameters.}
+\item{control}{Object of class Control containing hyperparameters. See documentation
+of \code{\link{Control}} for details.}
+}
+\value{
+Object of type \code{binary_segmentation_result}.
 }
 \description{
 Find change points in a time series.

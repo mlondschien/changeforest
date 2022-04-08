@@ -82,9 +82,14 @@ to_binary_segmentation_result = function(result) {
 #' Find change points in a time series.
 #'
 #' @param X Numerical matrix with time series.
-#' @param method Either 'knn','change_in_mean' of 'random_forest'.
-#' @param segmentation Either 'bs', 'sbs' or 'wbs'.
-#' @param control Object of class Control containing hyperparameters.
+#' @param method Either \code{'knn'}, \code{'change_in_mean'} of \code{'random_forest'}
+#' Equal to \code{'random_forest'} by default.
+#' @param segmentation Either \code{'bs'}, \code{'sbs'} or \code{'wbs'}. Equal to \code{'bs'} 
+#' by default.
+#' @param control Object of class Control containing hyperparameters. See documentation
+#' of \code{\link{Control}} for details.
+#' 
+#' @return Object of type \code{binary_segmentation_result}.
 #' @export
 changeforest = function(X,  method, segmentation, control=Control$new()) {
     result = changeforest_api(X, method, segmentation, control)
