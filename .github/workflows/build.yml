@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: ./wheelhouse/*.whl
@@ -96,7 +96,7 @@ jobs:
       - name: Build sdist
         run: maturin sdist -m changeforest-py/Cargo.toml
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: wheels
           path: changeforest-py/target/wheels/*.tar.gz
