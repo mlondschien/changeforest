@@ -72,7 +72,7 @@ We use its `plot` method to investigate the gain curves maximized by the change 
 
 Change point estimates are marked in red.
 
-For `method="random_forest"` (and `method="knn"`), the `changeforest` algorithm uses a two-step approach to
+For `method="random_forest"` and `method="knn"`, the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
 at the segment's 1/4, 1/2 and 3/4 quantiles  computes approximate gain curves using
 the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
@@ -80,7 +80,7 @@ We can investigate the gain curves from the optimizer using the `plot` method of
 The initial guesses are marked in blue.
 
 ```
-result.optimizer_result.plot().show()
+> plot(result$optimizer_result)
 ```
 <p align="center">
   <img src="../docs/r_cic_rf_optimizer_result_plot.png" />
