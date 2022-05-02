@@ -196,7 +196,7 @@ def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
         axes[idx].set_xlim(0, n)
         axes[idx].set_ylim(new_ymin, new_ymax)
         axes[idx].set_ylabel("approx. gain")
-        if idx < depth:
+        if idx < depth - 1:
             axes[idx].set_xticklabels([])
 
     axes[-1].set_xlabel("split")
