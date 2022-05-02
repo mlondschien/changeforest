@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.7.1 - (2022-05-02)
+
+**Bug fixes:**
+
+- Fixed a bug resulting in no tick-labels being shown on the x-axis when plotting a `BinarySegmentationResult`.
+
 ## 0.7.0 - (2022-04-08)
 
 **New features**:
