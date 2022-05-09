@@ -149,7 +149,7 @@ def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
             if node.optimizer_result is not None:
                 result = node.optimizer_result.gain_results[-1]
                 gains[-1].append(np.full(n, np.nan))
-                gains[-1][-1][node.start : node.stop] = result.gain  # noqa: E203
+                gains[-1][-1][result.start : result.stop] = result.gain  # noqa: E203
 
                 if result.guess is not None:  # For change_in_mean
                     guesses[-1].append(result.guess)
