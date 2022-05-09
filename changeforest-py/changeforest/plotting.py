@@ -96,7 +96,7 @@ def _plot_gain_result(gain_result):
     axes.plot(range(gain_result.start, gain_result.stop), gain_result.gain, color="k")
     ymin, ymax = axes.get_ylim()
     axes.vlines(
-        np.nanmax(gain_result.gain) + gain_result.start,
+        np.nanargmax(gain_result.gain) + gain_result.start,
         linestyles="dotted",
         color="#EE6677",  # red
         linewidth=2,
