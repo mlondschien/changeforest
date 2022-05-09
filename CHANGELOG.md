@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 0.7.2 - (2022-05-09)
+
+**Bug fixes:**
+
+- Fixed bugs when plotting results created with `method="change_in_mean"` or `segmentation="sbs"` or `"wbs"` (Python).
+
 ## 0.7.1 - (2022-05-02)
 
 **Bug fixes:**

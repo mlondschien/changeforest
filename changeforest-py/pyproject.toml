@@ -2,7 +2,7 @@
 name = "changeforest"
 description = "Classifier based non-parametric change point detection"
 readme = "README.md"
-version = "0.7.1"
+version = "0.7.2"
 requires-python = ">=3.7"
 author = "Malte Londschien <malte@londschien.ch>"
 urls = {homepage = "https://github.com/mlondschien/changeforest/"}
@@ -25,7 +25,7 @@ skip_glob = '\.eggs/*,\.git/*,\.venv/*,build/*,dist/*'
 default_section = 'THIRDPARTY'
 
 [tool.cibuildwheel]
-test-requires = "numpy pytest"
+test-requires = "numpy matplotlib pytest"
 test-command = "pytest {project}/changeforest-py/tests"
 
 # macos arm64 wheels can be built on X86_64, but cannot be tested.

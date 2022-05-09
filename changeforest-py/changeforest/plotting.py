@@ -94,11 +94,14 @@ def _plot_gain_result(gain_result):
     fig, axes = plt.subplots()
 
     axes.plot(range(gain_result.start, gain_result.stop), gain_result.gain, color="k")
+    ymin, ymax = axes.get_ylim()
     axes.vlines(
-        np.nanmax(gain_result.gain) + gain_result.start,
+        np.nanargmax(gain_result.gain) + gain_result.start,
         linestyles="dotted",
         color="#EE6677",  # red
         linewidth=2,
+        ymax=ymax,
+        ymin=ymin,
     )
 
     axes.set_xlabel("split")
@@ -146,8 +149,10 @@ def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
             if node.optimizer_result is not None:
                 result = node.optimizer_result.gain_results[-1]
                 gains[-1].append(np.full(n, np.nan))
-                gains[-1][-1][node.start : node.stop] = result.gain  # noqa: E203
-                guesses[-1].append(result.guess)
+                gains[-1][-1][result.start : result.stop] = result.gain  # noqa: E203
+
+                if result.guess is not None:  # For change_in_mean
+                    guesses[-1].append(result.guess)
 
             if node.model_selection_result.is_significant:
                 found_changepoints[-1].append(node.best_split)
