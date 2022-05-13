@@ -140,4 +140,4 @@ Out[7]:
 
 ## References
 
-[1] M. Londschien, S. Kovács and P. Bühlmann (2022), "Random Forests for Change Point Detection", working paper.
+[1] M. Londschien, P. Bühlmann and S. Kovács (2022), "Random Forests for Change Point Detection", https://arxiv.org/abs/2205.04997
