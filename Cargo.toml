@@ -1,6 +1,6 @@
 [package]
 name = "changeforest"
-description = "Classifier based non-parametric change point detection."
+description = "Random Forests for Change Point Detection"
 authors = ["Malte Londschien <malte@londschien.ch>"]
 repository = "https://github.com/mlondschien/changeforest/"
 version = "0.7.2"

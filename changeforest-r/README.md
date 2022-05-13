@@ -1,4 +1,4 @@
-# Classifier based non-parametric change point detection
+# Random Forests for Change Point Detection
 
 Change point detection tries to identify times when the probability distribution of a
 stochastic process or time series changes. Existing methods either assume a parametric
