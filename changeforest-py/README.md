@@ -8,7 +8,7 @@ scenarios with a reasonably large dimensionality.
 `changeforest` implements a classifier-based algorithm that consistently estimates
 change points without any parametric assumptions, even in high-dimensional scenarios.
 It uses the out-of-bag probability predictions of a random forest to construct a
-pseudo-log-likelihood that gets optimized using a computationally feasible two-step
+classifier log-likelihood ratio that gets optimized using a computationally feasible two-step
 method.
 
 See [1] for details.
@@ -85,7 +85,7 @@ Change point estimates are marked in red.
 For `method="random_forest"` and `method="knn"`, the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
 at the segment's 1/4, 1/2 and 3/4 quantiles, computes approximate gain curves using
-the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
+the resulting classifier log-likelihood ratios and selects the overall optimizer as a second guess.
 We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`.
 The initial guesses are marked in blue.
 
