@@ -63,7 +63,7 @@ between coordinates. This is a challenging scenario.
 off at `t=410`. The `changeforest` function returns an object of class `binary_segmentation_result`.
 We use its `plot` method to investigate the gain curves maximized by the change point estimates:
 
-```
+```R
 > plot(result)
 ```
 <p align="center">
@@ -79,7 +79,7 @@ the resulting pseudo-log-likelihoods and selects the overall optimizer as a seco
 We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`.
 The initial guesses are marked in blue.
 
-```
+```R
 > plot(result$optimizer_result)
 ```
 <p align="center">
