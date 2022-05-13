@@ -74,7 +74,7 @@ Out[3]: [201, 412]
 off at `t=412`. The `changeforest` function returns a `BinarySegmentationResult`.
 We use its `plot` method to investigate the gain curves maximized by the change point estimates:
 
-```
+```python
 In [4]: result.plot().show()
 ```
 <p align="center">
@@ -89,7 +89,7 @@ the resulting classifier log-likelihood ratios and selects the overall optimizer
 We can investigate the gain curves from the optimizer using the `plot` method of `OptimizerResult`.
 The initial guesses are marked in blue.
 
-```
+```python
 In [5]: result.optimizer_result.plot().show()
 ```
 <p align="center">
