@@ -1,11 +1,11 @@
-# Classifier based non-parametric change point detection
+# Random Forests for Change Point Detection
 
 Change point detection tries to identify times when the probability distribution of a
 stochastic process or time series changes. Existing methods either assume a parametric
 model for within-segment distributions or are based on ranks or distances and thus fail
 in scenarios with a reasonably large dimensionality.
 
-`changeforest` implements a classifier based algorithm that consistently estimates
+`changeforest` implements a classifier-based algorithm that consistently estimates
 change points without any parametric assumptions, even in high-dimensional scenarios.
 See [1] for details.
 
@@ -75,7 +75,7 @@ Change point estimates are marked in red.
 For `method="random_forest"` and `method="knn"`, the `changeforest` algorithm uses a two-step approach to
 find an optimizer of the gain. This fits a classifier for three split candidates
 at the segment's 1/4, 1/2 and 3/4 quantiles  computes approximate gain curves using
-the resulting pseudo-log-likelihoods and selects the overall optimizer as a second guess.
+the resulting classifier log-likelihood ratios and selects the overall optimizer as a second guess.
 We can investigate the gain curves from the optimizer using the `plot` method of `optimizer_result`.
 The initial guesses are marked in blue.
 
@@ -128,4 +128,4 @@ change points at all:
 
 ## References
 
-[1] M. Londschien, S. Kovács and P. Bühlmann (2022), "Random Forests for Change Point Detection", working paper.
+[1] M. Londschien, P. Bühlmann and S. Kovács (2022), "Random Forests for Change Point Detection", https://arxiv.org/abs/2205.04997

@@ -19,7 +19,7 @@ where
         self.classifier.n()
     }
 
-    /// Return classifier-likelihood based gain when splitting segment `[start, stop)`
+    /// Return classifier log-likelihood ratio when splitting segment `[start, stop)`
     /// at `split`.
     fn gain(&self, start: usize, stop: usize, split: usize) -> f64 {
         let predictions = self.classifier.predict(start, stop, split);
@@ -123,7 +123,7 @@ impl<T> ApproxGain for ClassifierGain<T>
 where
     T: Classifier,
 {
-    /// Return an approximation of the classifier-likelihood based gain when splitting
+    /// Return an approximation of the classifier log- likelihood ratio when splitting
     /// segment `[start, stop)` for each split in `split_candidates`.
     ///
     /// A single fit is generated with a split at `guess`.

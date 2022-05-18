@@ -4,7 +4,12 @@
 \alias{changeforest}
 \title{Find change points in a time series.}
 \usage{
-changeforest(X, method, segmentation, control = Control$new())
+changeforest(
+  X,
+  method = "random_forest",
+  segmentation = "bs",
+  control = Control$new()
+)
 }
 \arguments{
 \item{X}{Numerical matrix with time series.}

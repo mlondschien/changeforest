@@ -11,7 +11,7 @@ pub struct Control {
     /// Use value motivated by BIC `minimal_gain_to_split = log(n_samples) * n_features / n_samples`
     /// if `None`.
     pub minimal_gain_to_split: Option<f64>,
-    /// Type two error in model selection to be approximated. Relevant for classifier
+    /// Type two error in model selection to be approximated. Relevant for classifier-
     /// based changepoint detection.
     pub model_selection_alpha: f64,
     /// Number of permutations for model selection in classifier-based change point

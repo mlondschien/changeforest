@@ -28,7 +28,7 @@ for more details.
 \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.}
 
 \item{\code{model_selection_alpha}}{Type two error in model selection to be approximated.
-Relevant for classifier based changepoint detection. Equal to 0.02 by default.}
+Relevant for classifier-based changepoint detection. Equal to 0.02 by default.}
 
 \item{\code{model_selection_n_permutations}}{Number of permutations for model selection in
 classifier-based change point detection. Equal to 199 by default.}
@@ -98,7 +98,7 @@ Create a new object of class \code{binary_segmentation_resutl}.
 \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.}
 
 \item{\code{model_selection_alpha}}{Type two error in model selection to be approximated.
-Relevant for classifier based changepoint detection. Equal to 0.02 by default.}
+Relevant for classifier-based changepoint detection. Equal to 0.02 by default.}
 
 \item{\code{model_selection_n_permutations}}{Number of permutations for model selection in
 classifier-based change point detection. Equal to 199 by default.}

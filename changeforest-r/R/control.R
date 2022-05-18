@@ -10,7 +10,7 @@
 #' \code{minimal_gain_to_split}. Relevant for change in mean. Use value motivated by BIC
 #' \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.
 #' @param model_selection_alpha Type two error in model selection to be approximated.
-#' Relevant for classifier based changepoint detection. Equal to 0.02 by default.
+#' Relevant for classifier-based changepoint detection. Equal to 0.02 by default.
 #' @param model_selection_n_permutations Number of permutations for model selection in
 #' classifier-based change point detection. Equal to 199 by default.
 #' @param number_of_wild_segments Number of randomly drawn segments. Corresponds to
@@ -45,7 +45,7 @@ Control = R6::R6Class(
         #' \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.
         minimal_gain_to_split = "default",
         #' @field model_selection_alpha Type two error in model selection to be approximated.
-        #' Relevant for classifier based changepoint detection. Equal to 0.02 by default.
+        #' Relevant for classifier-based changepoint detection. Equal to 0.02 by default.
         model_selection_alpha = "default",
         #' @field model_selection_n_permutations Number of permutations for model selection in
         #' classifier-based change point detection. Equal to 199 by default.
@@ -83,7 +83,7 @@ Control = R6::R6Class(
         #' \code{minimal_gain_to_split}. Relevant for change in mean. Use value motivated by BIC
         #' \code{minimal_gain_to_split = log(n_samples) * n_features / n_samples} by default.
         #' @param model_selection_alpha Type two error in model selection to be approximated.
-        #' Relevant for classifier based changepoint detection. Equal to 0.02 by default.
+        #' Relevant for classifier-based changepoint detection. Equal to 0.02 by default.
         #' @param model_selection_n_permutations Number of permutations for model selection in
         #' classifier-based change point detection. Equal to 199 by default.
         #' @param number_of_wild_segments Number of randomly drawn segments. Corresponds to

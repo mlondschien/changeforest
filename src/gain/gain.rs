@@ -55,7 +55,7 @@ pub trait ApproxGain {
     /// Returns an `ndarray::Array1` of length `stop - start`. Entries without
     /// corresponding entry in `split_candidates` are `f64::NAN`.
     ///
-    /// This can be useful when combining classifier based gains and the two-step-search
+    /// This can be useful when combining classifier-based gains and the two-step-search
     /// optimizer.
     fn gain_approx(
         &self,

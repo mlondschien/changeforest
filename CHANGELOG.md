@@ -138,7 +138,7 @@ motivated by the Bayesian information criterion (BIC).
   maximal gain from the three guesses is used in the second step. The permutation test
   used for model selection has also been adjusted to be consistent (#65).
 
-  This increases estimation performance for classifier based methods, especially if used
+  This increases estimation performance for classifier-based methods, especially if used
   with standard binary segmentation, i.e. for `changeforst_bs` and `changeforest_knn`.
 
 ## 0.1.1 - (2021-11-25)
