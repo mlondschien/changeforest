@@ -154,7 +154,8 @@ To install from `conda-forge`, run
 conda install -c conda-forge r-changeforest
 ```
 
-See [here](https://github.com/conda-forge/miniforge) for instructions on how to install `conda`.
+See [here](changeforest-r/Installing_R_packages_with_conda.md) for a detailed description
+on installing the `changeforest` R package with `conda`.
 
 ### Example
 
