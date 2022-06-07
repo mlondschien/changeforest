@@ -38,7 +38,7 @@ and activate the new environment:
 Next, install `r-essentials` and `r-changeforest`:
 
 ```bash
-(R) ~ $ conda install -c conda-forge -y r-essentials r-changeforest
+(R) ~ $ conda install -c conda-forge -y r-base r-changeforest
 ```
 
 The `-c conda-forge` tells `conda` to install `r-changeforest` from the open-source channel
