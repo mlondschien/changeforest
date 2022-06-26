@@ -38,10 +38,8 @@ test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
 # musllinux is sloooow, >1h per build. Why?
 skip = "cp36-* pp*-macosx* pp* *-musllinux*"
 
-# Add cargobin to PATH. This is otherwise achieved by restarting the shellThis 
-# See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
-# This enables relative paths, e.g. in the Cargo.toml.
-environment = { PATH="$PATH:$HOME/.cargo/bin", PIP_USE_FEATURE="in-tree-build"}
+# Add cargobin to PATH. This is otherwise achieved by restarting the shell.
+environment = { PATH="$PATH:$HOME/.cargo/bin" }
 
 [tool.cibuildwheel.linux]
 # Install rust in container before building wheels.
