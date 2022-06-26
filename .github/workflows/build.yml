@@ -19,11 +19,8 @@ jobs:
       matrix:
         include:  # https://cibuildwheel.readthedocs.io/en/stable/options/#archs
 
-          # Tests fail for 32bit linux, possibly due to RNG?
-          # - vers: i686
+          # - vers: aarch64
           #   os: ubuntu-20.04
-          - vers: aarch64
-            os: ubuntu-20.04
           - vers: x86_64
             os: ubuntu-20.04
 
