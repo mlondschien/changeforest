@@ -116,7 +116,7 @@ The `changeforest` algorithm can be tuned with hyperparameters. See
 for their descriptions and default values. In Python, the parameters can
 be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26),
 which can be passed to `changeforest`. The following will build random forests with
-20 trees:
+50 trees:
 
 ```python
 In [6]: from changeforest import Control
