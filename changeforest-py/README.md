@@ -40,7 +40,7 @@ In [1]: import numpy as np
    ...: X = np.concatenate(
    ...:     (
    ...:         rng.normal(0, 1, (200, 5)),
-   ...:         rng.multivariate_normal(np.zeros(5), Sigma, 200),
+   ...:         rng.multivariate_normal(np.zeros(5), Sigma, 200, method="cholesky"),
    ...:         rng.normal(0, 1, (200, 5)),
    ...:     ),
    ...:     axis=0,
@@ -48,7 +48,7 @@ In [1]: import numpy as np
 ```
 
 The simulated dataset `X` coincides with the _change in covariance_ (CIC) setup
-described in [1]. Observations in the first and last segment are independently drawn
+described in [1]. Observations in the first and last segments are independently drawn
 from a standard multivariate Gaussian distribution. Observations in the second segment
 are i.i.d. normal with mean zero and unit variance, but with a covariance of ρ = 0.7
 between coordinates. This is a challenging scenario.
@@ -60,19 +60,19 @@ In [2]: from changeforest import changeforest
    ...: result
 Out[2]: 
                     best_split max_gain p_value
-(0, 600]                   412   19.603   0.005
- ¦--(0, 412]               201   62.981   0.005
- ¦   ¦--(0, 201]           194  -12.951    0.76
- ¦   °--(201, 412]         211   -9.211   0.545
- °--(412, 600]             418  -37.519   0.915
+(0, 600]                   400   14.814   0.005
+ ¦--(0, 400]               200   59.314   0.005
+ ¦   ¦--(0, 200]             6    -1.95    0.67
+ ¦   °--(200, 400]         393   -8.668    0.81
+ °--(400, 600]             412   -9.047    0.66
 
 In [3]: result.split_points()
-Out[3]: [201, 412]
+Out[3]: [200, 400]
 ```
 
-`changeforest` correctly identifies the change point around `t=200` but is slightly
-off at `t=412`. The `changeforest` function returns a `BinarySegmentationResult`.
-We use its `plot` method to investigate the gain curves maximized by the change point estimates:
+`changeforest` correctly identifies the change points at `t=200` and `t=400`. The
+`changeforest` function returns a `BinarySegmentationResult`. We use its `plot` method
+to investigate the gain curves maximized by the change point estimates:
 
 ```python
 In [4]: result.plot().show()
@@ -108,26 +108,22 @@ The `changeforest` algorithm can be tuned with hyperparameters. See
 for their descriptions and default values. In Python, the parameters can
 be specified with the [`Control` class](https://github.com/mlondschien/changeforest/blob/b33533fe0ddf64c1ea60d0d2203e55b117811667/changeforest-py/changeforest/control.py#L1-L26),
 which can be passed to `changeforest`. The following will build random forests with
-20 trees:
+50 trees:
 
 ```python
 In [6]: from changeforest import Control
-   ...: changeforest(X, "random_forest", "bs", Control(random_forest_n_estimators=20))
+   ...: changeforest(X, "random_forest", "bs", Control(random_forest_n_estimators=50))
 Out[6]: 
-                            best_split max_gain p_value
-(0, 600]                           592  -11.786    0.01
- ¦--(0, 592]                       121    -6.26   0.015
- ¦   ¦--(0, 121]                    13  -14.219   0.615
- ¦   °--(121, 592]                 416   21.272   0.005
- ¦       ¦--(121, 416]             201   37.157   0.005
- ¦       ¦   ¦--(121, 201]         192   -17.54    0.65
- ¦       ¦   °--(201, 416]         207   -6.701    0.74
- ¦       °--(416, 592]             584  -44.054   0.935
- °--(592, 600]     
+                    best_split max_gain p_value
+(0, 600]                   416    7.463    0.01
+ ¦--(0, 416]               200   43.935   0.005
+ ¦   ¦--(0, 200]           193  -14.993   0.945
+ ¦   °--(200, 416]         217    -9.13   0.085
+ °--(416, 600]             591   -12.07       1 
 ```
 
-The `changeforest` algorithm still detects change points around `t=200, 400` but also
-returns two false positives.
+The `changeforest` algorithm still detects change points at `t=200`, but is slightly off
+with `t=416`.
 
 Due to the nature of the change, `method="change_in_mean"` is unable to detect any
 change points at all:
@@ -135,7 +131,7 @@ change points at all:
 In [7]: changeforest(X, "change_in_mean", "bs")
 Out[7]: 
           best_split max_gain p_value
-(0, 600]         589    8.318 
+(0, 600]         589    8.625  
 ```
 
 ## References
