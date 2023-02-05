@@ -171,7 +171,6 @@ def _plot_binary_segmentation_result(binary_segmentation_result, max_depth=5):
         axes = [axes]
 
     for idx in range(depth):
-
         for gain in gains[idx]:
             axes[idx].plot(gain, color="black")
 
