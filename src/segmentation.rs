@@ -55,7 +55,7 @@ impl<'a> Segmentation<'a> {
                     n_segments = 2 * ((1. / alpha_k) as f32).ceil() as usize - 1; // n_k
                     segment_step =
                         (optimizer.n() as f64 - segment_length) / (n_segments - 1) as f64; // s_k
-                    for segment_id in 0..(n_segments as usize) {
+                    for segment_id in 0..n_segments {
                         start = ((segment_id as f64 * segment_step) as f32) as usize;
                         // start + segment_length > n through floating point errors in
                         // n_segments, e.g. for n = 20'000, alpha_k = 1/sqrt(2), k=6

@@ -132,6 +132,8 @@ jobs:
       matrix:
         python-version: [3.9]
         os: [ubuntu-latest, macos-latest, windows-latest]
+    env:
+      MPLBACKEND: Agg  # https://github.com/orgs/community/discussions/26434
 
     steps:
 
