@@ -49,10 +49,7 @@ pub fn changeforest(
         tree.grow(&mut segmentation);
         BinarySegmentationResult::from_tree(tree).with_segments(segmentation)
     } else {
-        panic!(
-            "method should be one of 'knn', 'random_forest' or 'change_in_mean'. Got {}",
-            method
-        );
+        panic!("method should be one of 'knn', 'random_forest' or 'change_in_mean'. Got {method}",);
     }
 }
 

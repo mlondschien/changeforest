@@ -49,7 +49,7 @@ where
     T: Display,
 {
     if let Some(val) = option {
-        format!("{}", val)
+        format!("{val}")
     } else {
         "".to_string()
     }

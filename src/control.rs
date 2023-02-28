@@ -31,6 +31,7 @@ pub struct Control {
 }
 
 impl Control {
+    #[allow(clippy::should_implement_trait)]
     pub fn default() -> Control {
         Control {
             minimal_relative_segment_length: 0.01,
@@ -53,8 +54,7 @@ impl Control {
     ) -> Self {
         if (minimal_relative_segment_length >= 0.5) | (minimal_relative_segment_length <= 0.) {
             panic!(
-                "minimal_relative_segment_length needs to be strictly between 0 and 0.5 Got {}",
-                minimal_relative_segment_length
+                "minimal_relative_segment_length needs to be strictly between 0 and 0.5 Got {minimal_relative_segment_length}"
             );
         }
         self.minimal_relative_segment_length = minimal_relative_segment_length;
@@ -69,8 +69,7 @@ impl Control {
     pub fn with_model_selection_alpha(mut self, model_selection_alpha: f64) -> Self {
         if (model_selection_alpha >= 1.) | (model_selection_alpha <= 0.) {
             panic!(
-                "model_selection_alpha needs to be strictly between 0 and 1. Got {}",
-                model_selection_alpha
+                "model_selection_alpha needs to be strictly between 0 and 1. Got {model_selection_alpha}"                
             );
         }
         self.model_selection_alpha = model_selection_alpha;
@@ -93,8 +92,7 @@ impl Control {
     pub fn with_seeded_segments_alpha(mut self, seeded_segments_alpha: f64) -> Self {
         if (1. <= seeded_segments_alpha) | (seeded_segments_alpha <= 0.) {
             panic!(
-                "seeded_segments_alpha needs to be strictly between 0 and 1. Got {}",
-                seeded_segments_alpha
+                "seeded_segments_alpha needs to be strictly between 0 and 1. Got {seeded_segments_alpha}"                
             );
         }
         self.seeded_segments_alpha = seeded_segments_alpha;

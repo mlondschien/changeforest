@@ -59,7 +59,7 @@ impl<'a> FromRobj<'a> for MyControl {
 
         if let Some(value) = robj.dollar("random_forest_max_features").unwrap().as_real() {
             if value <= 0. {
-                panic!("Got random_forest_max_features = {}", value);
+                panic!("Got random_forest_max_features = {value}");
             } else if value < 1. {
                 control.random_forest_parameters = control
                     .random_forest_parameters
@@ -79,7 +79,7 @@ impl<'a> FromRobj<'a> for MyControl {
                     .random_forest_parameters
                     .with_max_features(MaxFeatures::Sqrt);
             } else if value != "default" {
-                panic!("Got random_forest_max_features = {}", value);
+                panic!("Got random_forest_max_features = {value}");
             }
         }
 
