@@ -11,7 +11,7 @@ Description:
     in scenarios with a reasonably large dimensionality.
     changeforest implements a classifier-based algorithm that consistently estimates
     change points without any parametric assumptions, even in high-dimensional scenarios.
-    See M. Londschien, P. Bühlmann and S. Kovács (2022), "Random Forests for Change Point Detection", https://arxiv.org/abs/2205.04997
+    See M. Londschien, P. Bühlmann and S. Kovács (2023). "Random Forests for Change Point Detection" Journal of Machine Learning Research
     for details.
 License: BSD_3_clause + file LICENSE
 URL: https://github.com/mlondschien/changeforest

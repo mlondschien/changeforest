@@ -128,4 +128,4 @@ change points at all:
 
 ## References
 
-[1] M. Londschien, P. Bühlmann and S. Kovács (2022), "Random Forests for Change Point Detection", https://arxiv.org/abs/2205.04997
+[1] M. Londschien, P. Bühlmann and S. Kovács (2023). "Random Forests for Change Point Detection" Journal of Machine Learning Research
