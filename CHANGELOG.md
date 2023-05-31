@@ -1,7 +1,11 @@
 
 # Changelog
 
-## 0.7.2 - (2022-05-09)
+## 1.0.0 - (2022-05-30)
+
+First major release. There have been no changes since the last release. The manuscript is to be published in JMLR.
+
+## 1.0.0 - (2022-05-09)
 
 **Bug fixes:**
 
