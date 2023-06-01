@@ -25,11 +25,11 @@ jobs:
             os: ubuntu-20.04
 
           - vers: arm64
-            os: macos-10.15
+            os: macos-latest
           - vers: x86_64
-            os: macos-10.15
+            os: macos-latest
           - vers: universal2
-            os: macos-10.15
+            os: macos-latest
 
           - vers: AMD64
             os: windows-2019
