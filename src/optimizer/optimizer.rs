@@ -18,12 +18,22 @@ pub trait Optimizer {
     /// Control parameters.
     fn control(&self) -> &Control;
 
+    /// Start point when user supplies limit
+    fn actual_start(&self, start: usize) -> usize {
+        max(start, self.control().nosplit_before_index.unwrap_or(0))
+    }
+
+    /// Stop point when user supplies limit
+    fn actual_stop(&self, stop: usize) -> usize {
+        min(stop, self.control().nosplit_after_index.unwrap_or(self.n()))
+    }
+
     /// Vector with indices of allowed split points.
     fn split_candidates(&self, start: usize, stop: usize) -> Result<Vec<usize>, &str> {
         // when the user supplies nosplit_before_index or nosplit_after_index
         // we change the start and stop this way
-        let actual_start = max(start, self.control().nosplit_before_index.unwrap_or(0));
-        let actual_stop = min(stop, self.control().nosplit_after_index.unwrap_or(self.n()));
+        let actual_start = self.actual_start(start);
+        let actual_stop = self.actual_stop(stop);
         let minimal_segment_length =
             (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
         if 2 * minimal_segment_length >= (actual_stop - actual_start) {
