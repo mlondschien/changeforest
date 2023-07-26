@@ -124,8 +124,8 @@ Control = R6::R6Class(
             random_forest_max_features = "default",
             random_forest_max_depth = "default",
             random_forest_n_jobs = "default",
-            nosplit_before_index = "nosplit_before_index",
-            nosplit_after_index = "nosplit_after_index"
+            nosplit_before_index = "default",
+            nosplit_after_index = "default"
         ) {
             self$minimal_relative_segment_length = minimal_relative_segment_length
             self$minimal_gain_to_split = minimal_gain_to_split
