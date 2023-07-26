@@ -95,6 +95,14 @@ impl<'a> FromRobj<'a> for MyControl {
                 .with_max_depth(Some(value as usize));
         }
 
+        if let Some(value) = robj.dollar("nosplit_before_index").unwrap().as_real() {
+            control = control.with_nosplit_before_index(value as usize);
+        }
+
+        if let Some(value) = robj.dollar("nosplit_after_index").unwrap().as_real() {
+            control = control.with_nosplit_after_index(value as usize);
+        }
+
         Ok(MyControl { control })
     }
 }
