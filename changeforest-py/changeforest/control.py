@@ -18,6 +18,8 @@ class Control:
         random_forest_max_depth="default",
         random_forest_max_features="default",
         random_forest_n_jobs="default",
+        nosplit_before_index="default",
+        nosplit_after_index="default",
     ):
         self.minimal_relative_segment_length = _to_float(
             minimal_relative_segment_length
@@ -32,6 +34,8 @@ class Control:
         self.random_forest_max_depth = _to_int(random_forest_max_depth)
         self.random_forest_max_features = _to_int(random_forest_max_features)
         self.random_forest_n_jobs = _to_int(random_forest_n_jobs)
+        self.nosplit_before_index = _to_int(nosplit_before_index)
+        self.nosplit_after_index = _to_int(nosplit_after_index)
 
 
 def _to_float(value):

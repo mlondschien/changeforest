@@ -86,6 +86,18 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
                     control.random_forest_parameters.with_n_jobs(value);
             }
         };
+
+        if let Ok(pyvalue) = obj.getattr(py, "nosplit_before_index") {
+            if let Ok(value) = pyvalue.extract::<Option<usize>>(py) {
+                control = control.with_nosplit_before_index(value);
+            }
+        };
+
+        if let Ok(pyvalue) = obj.getattr(py, "nosplit_after_index") {
+            if let Ok(value) = pyvalue.extract::<Option<usize>>(py) {
+                control = control.with_nosplit_after_index(value);
+            }
+        };
     }
 
     Ok(control)

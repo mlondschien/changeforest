@@ -36,7 +36,7 @@ pub trait Optimizer {
         let actual_stop = self.actual_stop(stop);
         let minimal_segment_length =
             (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
-        if 2 * minimal_segment_length >= (actual_stop - actual_start) {
+        if (actual_stop < actual_start) || (2 * minimal_segment_length >= (actual_stop - actual_start)) {
             Err("Segment too small.")
         } else {
             Ok(((actual_start + minimal_segment_length)..(actual_stop - minimal_segment_length)).collect())
