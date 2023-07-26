@@ -28,6 +28,10 @@ pub struct Control {
     pub seed: u64,
     /// Hyperparameters for random forests.
     pub random_forest_parameters: RandomForestParameters,
+    /// don't split at or before this index; if None, ignored
+    pub nosplit_before_index: Option<usize>,
+    /// don't split at or after this index; if None, ignored
+    pub nosplit_after_index: Option<usize>,
 }
 
 impl Control {
@@ -45,6 +49,8 @@ impl Control {
                 .with_max_depth(Some(8))
                 .with_max_features(MaxFeatures::Sqrt)
                 .with_n_jobs(Some(-1)),
+            nosplit_before_index: None,
+            nosplit_after_index: None,
         }
     }
 
@@ -111,4 +117,15 @@ impl Control {
         self.random_forest_parameters = random_forest_parameters;
         self
     }
+    
+    pub fn with_nosplit_before_index(mut self, nosplit_before_index: Option<usize>) -> Self {
+        self.nosplit_before_index = nosplit_before_index;
+        self
+    }
+    
+    pub fn with_nosplit_after_index(mut self, nosplit_after_index: Option<usize>) -> Self {
+        self.nosplit_after_index = nosplit_after_index;
+        self
+    }
+    
 }
