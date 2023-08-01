@@ -117,7 +117,6 @@ impl Control {
     
     pub fn with_forbidden_segments(mut self, forbidden_segments: Option<Vec<(usize, usize)>>) -> Self {
         // check that segments are well specified
-        
         if !forbidden_segments.is_none() {
             for el in forbidden_segments.as_ref().unwrap().iter() {
                 if el.0 > el.1 {
@@ -125,10 +124,9 @@ impl Control {
                 }
             }
         }
-
         self.forbidden_segments = forbidden_segments;
         self
     }
-    
-    
+
 }
+
