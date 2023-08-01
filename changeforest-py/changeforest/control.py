@@ -52,7 +52,8 @@ def _to_int(value):
         return value
     else:
         return int(value)
-        
+
+
 def _to_segments(value):
     if (value is None) or isinstance(value, str):
         return value
@@ -60,4 +61,7 @@ def _to_segments(value):
         try:
             return [(int(el1), int(el2)) for (el1, el2) in value]
         except Exception:
-            raise SyntaxError('forbidden_segments must be provided as [(a,b), ...] where a and b are integers')
+            raise SyntaxError(
+                "forbidden_segments must be provided as [(a,b), ...] where a and b are "
+                "integers."
+            )

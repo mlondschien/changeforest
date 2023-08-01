@@ -32,7 +32,12 @@ def test_changeforest_repr(iris_dataset):
 
 
 def test_changeforest_repr_segments(iris_dataset):
-    result = changeforest(iris_dataset, "random_forest", "bs", control=Control(forbidden_segments=[(0,49), (101,120)]))
+    result = changeforest(
+        iris_dataset,
+        "random_forest",
+        "bs",
+        control=Control(forbidden_segments=[(0, 49), (101, 120)]),
+    )
     assert (
         result.__repr__()
         == """\
@@ -42,11 +47,17 @@ def test_changeforest_repr_segments(iris_dataset):
  °--(50, 150]              100   52.799   0.005
      ¦--(50, 100]           53    6.892   0.315
      °--(100, 150]         136   -3.516    0.68\
-"""
+"""  # noqa: W291
     )
-    
+
+
 def test_changeforest_repr_segments2(iris_dataset):
-    result = changeforest(iris_dataset, "random_forest", "bs", control=Control(forbidden_segments=[(49,101)]))
+    result = changeforest(
+        iris_dataset,
+        "random_forest",
+        "bs",
+        control=Control(forbidden_segments=[(49, 101)]),
+    )
     assert (
         result.__repr__()
         == """\
@@ -56,6 +67,5 @@ def test_changeforest_repr_segments2(iris_dataset):
  °--(48, 150]              102   38.877   0.005
      ¦--(48, 102]                              
      °--(102, 150]         136    1.114    0.36\
-"""
+"""  # noqa: W291
     )
-    

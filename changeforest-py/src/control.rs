@@ -92,7 +92,6 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
                 control = control.with_forbidden_segments(value);
             }
         };
-
     }
 
     Ok(control)

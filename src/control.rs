@@ -114,11 +114,14 @@ impl Control {
         self.random_forest_parameters = random_forest_parameters;
         self
     }
-    
-    pub fn with_forbidden_segments(mut self, forbidden_segments: Option<Vec<(usize, usize)>>) -> Self {
+
+    pub fn with_forbidden_segments(
+        mut self,
+        forbidden_segments: Option<Vec<(usize, usize)>>,
+    ) -> Self {
         // check that segments are well specified
-        if !forbidden_segments.is_none() {
-            for el in forbidden_segments.as_ref().unwrap().iter() {
+        if let Some(ref _forbidden_segments) = forbidden_segments {
+            for el in _forbidden_segments.iter() {
                 if el.0 > el.1 {
                     panic!("Forbidden segments must be specified as [(a,b), ...] where a <= b!");
                 }
@@ -127,6 +130,4 @@ impl Control {
         self.forbidden_segments = forbidden_segments;
         self
     }
-
 }
-
