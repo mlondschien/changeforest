@@ -51,12 +51,32 @@ where
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
         let split_candidates = self.split_candidates(start, stop)?;
 
-        let guesses = vec![
-            (3 * start + stop) / 4,
-            (start + stop) / 2,
-            (start + 3 * stop) / 4,
-        ];
+        let mut guesses = vec![];
         let mut results: Vec<GainResult> = vec![];
+
+        // if there are forbidden segments change the heuristics
+        // pick middle element of split_candidates, 1/4th and 3/4th
+        if let Some(_forbidden_segments) = &self.control().forbidden_segments {
+
+            // there is at least one element in split_candidates
+            guesses.push(split_candidates.clone().into_iter().nth(split_candidates.len() / 4).unwrap());
+
+            // we add this if it is not equal to last
+            let cand = split_candidates.clone().into_iter().nth(split_candidates.len() / 2).unwrap();
+            if cand > guesses[guesses.len()-1] {guesses.push(cand)};
+
+            // same
+            let cand = split_candidates.clone().into_iter().nth(3 * split_candidates.len() / 4).unwrap();
+            if cand > guesses[guesses.len()-1] {guesses.push(cand)};
+
+            } else {
+
+            // this is same logic that was there before
+            guesses.push((3 * start + stop) / 4);
+            guesses.push((start + stop) / 2);
+            guesses.push((start + 3 * stop) / 4);
+
+        }
 
         // Don't use first and last guess if stop - start / 4 < delta.
         for guess in guesses.iter().filter(|x| split_candidates.contains(x)) {
