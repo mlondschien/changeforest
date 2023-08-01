@@ -5,7 +5,7 @@
 
 **New features**:
 
-- New argument `forbidden_segments` to `Control`. If not `None`, `changeforest` will not split on split points contained in segments passed via `forbidden_segments`.
+- New argument `forbidden_segments` (list or vector of 2-tuple) or `None` to `Control`. If not `None`, `changeforest` will not split on split points contained in segments `(a, b]` in `forbidden_segments` (rust and Python only).
 
 ## 1.0.1 - (2022-06-01)
 
