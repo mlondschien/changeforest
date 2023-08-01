@@ -23,7 +23,6 @@ pub trait Optimizer {
         if 2 * minimal_segment_length >= (stop - start) {
             Err("Segment too small.")
         } else {
-            // implementation suggested by @mlondschien in https://github.com/mlondschien/changeforest/pull/151 
             let mut split_candidates: Vec<usize> = ((start + minimal_segment_length)..(stop - minimal_segment_length)).collect();
             
             if let Some(forbidden_segments) = &self.control().forbidden_segments {
