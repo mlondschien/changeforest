@@ -30,7 +30,7 @@ pub trait Optimizer {
                 split_candidates.retain(|x| {
                     forbidden_segments
                         .iter()
-                        .all(|segment| x <= &segment.0 || x >= &segment.1)
+                        .all(|segment| x <= &segment.0 || x > &segment.1)
                 });
             }
 

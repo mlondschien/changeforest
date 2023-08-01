@@ -95,10 +95,10 @@ mod tests {
     }
 
     #[rstest]
-    #[case(0, 10, Some(vec![(0, 3)]), 0.09, vec![3, 4, 5, 6, 7, 8])]
+    #[case(0, 10, Some(vec![(0, 3)]), 0.09, vec![4, 5, 6, 7, 8])]
     #[case(1, 10, Some(vec![(6, 10)]), 0.15, vec![3, 4, 5, 6])]
-    #[case(0, 10, Some(vec![(2, 4), (5, 7)]), 0.09, vec![1, 2, 4, 5, 7, 8])]
-    #[case(1, 7, Some(vec![(2, 4), (5, 7)]), 0.09, vec![2, 4, 5])]
+    #[case(0, 10, Some(vec![(2, 4), (5, 7)]), 0.09, vec![1, 2, 5, 8])]
+    #[case(1, 7, Some(vec![(2, 4), (5, 7)]), 0.09, vec![2, 5])]
     fn test_split_candidates(
         #[case] start: usize,
         #[case] stop: usize,

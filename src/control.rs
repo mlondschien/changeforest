@@ -28,7 +28,7 @@ pub struct Control {
     pub seed: u64,
     /// Hyperparameters for random forests.
     pub random_forest_parameters: RandomForestParameters,
-    /// Segments of indexes were no segmentation is allowed
+    /// Segments of indexes were no segmentation is allowed.
     pub forbidden_segments: Option<Vec<(usize, usize)>>,
 }
 
