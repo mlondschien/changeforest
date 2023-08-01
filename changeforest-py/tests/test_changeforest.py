@@ -29,3 +29,20 @@ def test_changeforest_repr(iris_dataset):
      °--(100, 150]         136   -2.398   0.875\
 """
     )
+
+
+def test_changeforest_repr_segments(iris_dataset):
+    result = changeforest(iris_dataset, "random_forest", "bs", control=Control(forbidden_segments=[(0,49), (101,120)]))
+    print(result)
+    assert (
+        result.__repr__()
+        == """\
+                    best_split max_gain p_value
+(0, 150]                    50     95.1   0.005
+ ¦--(0, 50]                                    
+ °--(50, 150]              100   52.799   0.005
+     ¦--(50, 100]           53    6.892   0.315
+     °--(100, 150]         136   -3.516    0.68\
+"""
+    )
+    

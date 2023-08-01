@@ -129,3 +129,15 @@ def test_control_defaults(iris_dataset, key, default_value, another_value):
 
     assert str(result) == str(default_result)
     assert str(result) != str(another_result)
+    
+
+def test_control_segments():
+    
+    with pytest.raises(SyntaxError):
+        Control(forbidden_segments=[(2),])
+        
+    with pytest.raises(SyntaxError):
+        Control(forbidden_segments=[(2,3,4),])
+        
+    with pytest.raises(SyntaxError):
+        Control(forbidden_segments=[2,3])
