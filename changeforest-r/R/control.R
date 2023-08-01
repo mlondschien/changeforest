@@ -30,8 +30,6 @@
 #' \code{method='random_forest'}. Equal to 8 by default.
 #' @param random_forest_n_jobs Parameter passed to random forest classifier if
 #' \code{method='random_forest'}. Use all cores if -1. Equal to -1 by default.
-#' @param nosplit_before_index Don't split before this index if provided, else ignore.
-#' @param nosplit_after_index Don't split after this index if provided, else ignore.
 #'
 #' @return Object of class Control containing hyperparameters.
 #' @export
@@ -76,10 +74,6 @@ Control = R6::R6Class(
         #' @field random_forest_n_jobs Parameter passed to random forest classifier if
         #' \code{method='random_forest'}. Use all cores if -1. Equal to -1 by default.
         random_forest_n_jobs = "default",
-        #' @param nosplit_before_index Don't split before this index if provided, else ignore.
-        nosplit_before_index = "default",
-        #' @param nosplit_after_index Don't split after this index if provided, else ignore.
-        nosplit_after_index = "default"
 
         #' @description
         #' Create a new object of class \code{binary_segmentation_resutl}.
@@ -110,8 +104,6 @@ Control = R6::R6Class(
         #' @param random_forest_n_jobs Parameter passed to random forest classifier if
         #' \code{method='random_forest'}. Use all cores if -1. Equal to -1 by default.
         #' @return A new object of class \code{binary_segmentation_resutl}.
-        #' @param nosplit_before_index Don't split before this index if provided, else ignore.
-        #' @param nosplit_after_index Don't split after this index if provided, else ignore.
         initialize = function(
             minimal_relative_segment_length = "default",
             minimal_gain_to_split = "default",
@@ -123,9 +115,7 @@ Control = R6::R6Class(
             random_forest_n_estimators = "default",
             random_forest_max_features = "default",
             random_forest_max_depth = "default",
-            random_forest_n_jobs = "default",
-            nosplit_before_index = "nosplit_before_index",
-            nosplit_after_index = "nosplit_after_index"
+            random_forest_n_jobs = "default"
         ) {
             self$minimal_relative_segment_length = minimal_relative_segment_length
             self$minimal_gain_to_split = minimal_gain_to_split
@@ -138,8 +128,6 @@ Control = R6::R6Class(
             self$random_forest_max_features = random_forest_max_features
             self$random_forest_max_depth = random_forest_max_depth
             self$random_forest_n_jobs = random_forest_n_jobs
-            self$nosplit_before_index = nosplit_before_index
-            self$nosplit_after_index = nosplit_after_index
         }
     )
 )

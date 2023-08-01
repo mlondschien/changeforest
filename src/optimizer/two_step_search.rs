@@ -51,13 +51,10 @@ where
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
         let split_candidates = self.split_candidates(start, stop)?;
 
-        let actual_start = self.actual_start(start);
-        let actual_stop = self.actual_start(stop);
-
         let guesses = vec![
-            (3 * actual_start + actual_stop) / 4,
-            (actual_start + actual_stop) / 2,
-            (actual_start + 3 * actual_stop) / 4,
+            (3 * start + stop) / 4,
+            (start + stop) / 2,
+            (start + 3 * stop) / 4,
         ];
         let mut results: Vec<GainResult> = vec![];
 
