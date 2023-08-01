@@ -28,6 +28,8 @@ pub struct Control {
     pub seed: u64,
     /// Hyperparameters for random forests.
     pub random_forest_parameters: RandomForestParameters,
+    /// Segments of indexes were no segmentation is allowed.
+    pub forbidden_segments: Option<Vec<(usize, usize)>>,
 }
 
 impl Control {
@@ -45,6 +47,7 @@ impl Control {
                 .with_max_depth(Some(8))
                 .with_max_features(MaxFeatures::Sqrt)
                 .with_n_jobs(Some(-1)),
+            forbidden_segments: None,
         }
     }
 
@@ -109,6 +112,22 @@ impl Control {
         random_forest_parameters: RandomForestParameters,
     ) -> Self {
         self.random_forest_parameters = random_forest_parameters;
+        self
+    }
+
+    pub fn with_forbidden_segments(
+        mut self,
+        forbidden_segments: Option<Vec<(usize, usize)>>,
+    ) -> Self {
+        // check that segments are well specified
+        if let Some(ref _forbidden_segments) = forbidden_segments {
+            for el in _forbidden_segments.iter() {
+                if el.0 > el.1 {
+                    panic!("Forbidden segments must be specified as [(a,b), ...] where a <= b!");
+                }
+            }
+        }
+        self.forbidden_segments = forbidden_segments;
         self
     }
 }

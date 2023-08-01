@@ -60,7 +60,9 @@ impl<'a> Segmentation<'a> {
                         // start + segment_length > n through floating point errors in
                         // n_segments, e.g. for n = 20'000, alpha_k = 1/sqrt(2), k=6
                         stop = (start + (segment_length as f32).ceil() as usize).min(optimizer.n());
-                        segments.push(optimizer.find_best_split(start, stop).unwrap());
+                        if let Ok(optimizer_result) = optimizer.find_best_split(start, stop) {
+                            segments.push(optimizer_result)
+                        }
                     }
                 }
             }
