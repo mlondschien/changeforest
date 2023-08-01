@@ -18,6 +18,7 @@ class Control:
         random_forest_max_depth="default",
         random_forest_max_features="default",
         random_forest_n_jobs="default",
+        forbidden_segments="default",
     ):
         self.minimal_relative_segment_length = _to_float(
             minimal_relative_segment_length
@@ -32,6 +33,7 @@ class Control:
         self.random_forest_max_depth = _to_int(random_forest_max_depth)
         self.random_forest_max_features = _to_int(random_forest_max_features)
         self.random_forest_n_jobs = _to_int(random_forest_n_jobs)
+        self.forbidden_segments = _to_segments(forbidden_segments)
 
 
 def _to_float(value):
@@ -50,3 +52,12 @@ def _to_int(value):
         return value
     else:
         return int(value)
+        
+def _to_segments(value):
+    if (value is None) or isinstance(value, str):
+        return value
+    else:
+        try:
+            return [(int(el1), int(el2)) for (el1, el2) in value]
+        except Exception:
+            raise SyntaxError('forbidden_segments must be provided as [(a,b), ...] where a and b are integers')

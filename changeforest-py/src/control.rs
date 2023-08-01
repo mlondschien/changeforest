@@ -86,6 +86,13 @@ pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control
                     control.random_forest_parameters.with_n_jobs(value);
             }
         };
+
+        if let Ok(pyvalue) = obj.getattr(py, "forbidden_segments") {
+            if let Ok(value) = pyvalue.extract::<Option<Vec<(usize, usize)>>>(py) {
+                control = control.with_forbidden_segments(value);
+            }
+        };
+
     }
 
     Ok(control)
