@@ -71,7 +71,6 @@ where
 
             } else {
 
-            // this is same logic that was there before
             guesses.push((3 * start + stop) / 4);
             guesses.push((start + stop) / 2);
             guesses.push((start + 3 * stop) / 4);
