@@ -56,7 +56,7 @@ jobs:
           platforms: arm64
 
       - name: Install darwin target for apple silicon
-        if: matrix.vers == 'universal2'
+        if: matrix.vers == 'universal2' || (matrix.vers == 'arm64' && matrix.os == 'macos-latest')
         run: rustup target add aarch64-apple-darwin
 
       - name: Setup env when not using docker
