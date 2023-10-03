@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.1.1 - (2023-10-03)
+
+**Other changes:**
+
+- Upgraded `pyo3` dependency in Python package.
+
 ## 1.1.0 - (2023-08-01)
 
 **New features**:
