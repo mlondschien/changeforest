@@ -3,7 +3,7 @@ use std::fmt::Display;
 
 impl Display for BinarySegmentationResult {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut max_lengths = vec![0; 4];
+        let mut max_lengths = [0; 4];
         let mut rows = _format_tree(self);
         rows.insert(
             0,
