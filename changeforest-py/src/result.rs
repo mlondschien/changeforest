@@ -1,9 +1,9 @@
 // Wrap GainResult, OptimizerResult and BinarySegmentationResult.
 // See https://github.com/PyO3/pyo3/issues/287.
 
+use ::changeforest::{BinarySegmentationResult, ModelSelectionResult};
 use changeforest::gain::GainResult;
 use changeforest::optimizer::OptimizerResult;
-use changeforest::{BinarySegmentationResult, ModelSelectionResult};
 use numpy::{PyArray1, PyArray2, ToPyArray};
 use pyo3::prelude::*;
 
@@ -24,10 +24,7 @@ impl MyModelSelectionResult {
     pub fn p_value(&self) -> Option<f64> {
         self.result.p_value
     }
-}
 
-#[pyproto]
-impl pyo3::class::basic::PyObjectProtocol for MyModelSelectionResult {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{}", self.result))
     }
@@ -70,10 +67,7 @@ impl MyGainResult {
     pub fn predictions<'py>(&self, py: Python<'py>) -> Option<&'py PyArray1<f64>> {
         self.result.predictions().map(|arr| arr.to_pyarray(py))
     }
-}
 
-#[pyproto]
-impl pyo3::class::basic::PyObjectProtocol for MyGainResult {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{}", self.result))
     }
@@ -117,13 +111,7 @@ impl MyOptimizerResult {
             })
             .collect()
     }
-}
 
-#[pyproto]
-// https://stackoverflow.com/questions/62666926/str-function-of-class-ported-from-\
-// rust-to-python-using-pyo3-doesnt-get-used
-// https://pyo3.rs/v0.9.2/python_from_rust.html
-impl pyo3::class::basic::PyObjectProtocol for MyOptimizerResult {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{}", self.result))
     }
@@ -228,10 +216,7 @@ impl MyBinarySegmentationResult {
     fn split_points(&self) -> Vec<usize> {
         self.result.split_points()
     }
-}
 
-#[pyproto]
-impl pyo3::class::basic::PyObjectProtocol for MyBinarySegmentationResult {
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{}", self.result))
     }
