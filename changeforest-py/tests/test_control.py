@@ -5,28 +5,70 @@ from changeforest import Control, changeforest
 
 
 @pytest.mark.parametrize(
-    "segmentation_type, method, kwargs, expected",
+    "data, segmentation_type, method, kwargs, expected",
     [
         # minimal_relative_segment_length
-        ("bs", "knn", {"minimal_relative_segment_length": 0.05}, [50, 100]),
-        ("bs", "knn", {"minimal_relative_segment_length": 0.4}, [60]),
+        ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.05}, [50, 100]),
+        ("iris", "bs", "knn", {"minimal_relative_segment_length": 0.4}, [60]),
         # minimal_gain_to_split
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 0.1}, [50, 100]),
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 1}, [50]),
-        ("bs", "change_in_mean", {"minimal_gain_to_split": 10}, []),
+        (
+            "iris",
+            "bs",
+            "change_in_mean",
+            {"minimal_gain_to_split": 150 * 0.1},
+            [50, 100],
+        ),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 1}, [50]),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 10}, []),
+        ("iris", "bs", "change_in_mean", {"minimal_gain_to_split": 150 * 10.0}, []),
+        (
+            "iris",
+            "bs",
+            "change_in_mean",
+            {"minimal_gain_to_split": None},
+            [50, 100],
+        ),  # log(150) * 4 / 150
         # model_selection_alpha
-        ("bs", "knn", {"model_selection_alpha": 0.001}, []),
-        ("bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
-        # random_forest_ntree
+        ("iris", "bs", "knn", {"model_selection_alpha": 0.001}, []),
+        ("iris", "bs", "knn", {"model_selection_alpha": 0.05}, [50, 100]),
+        # random_forest_n_estimators
         # This is impressive and unexpected.
-        ("bs", "random_forest", {"random_forest_ntrees": 1}, [48, 98]),
-        ("bs", "random_forest", {"random_forest_ntrees": 100}, [50, 100]),
+        ("iris", "bs", "random_forest", {"random_forest_n_estimators": 1}, [47, 99]),
+        ("iris", "bs", "random_forest", {"random_forest_n_estimators": 100}, [50, 100]),
+        # Use X_test instead
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 1}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 1.0}, []),
+        ("X_test", "bs", "random_forest", {"random_forest_n_estimators": 100}, [5]),
+        ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 1}, []),
+        ("X_correlated", "bs", "random_forest", {"random_forest_max_depth": 2}, [49]),
+        (
+            "X_correlated",
+            "bs",
+            "random_forest",
+            {"random_forest_max_features": "sqrt"},
+            [49],
+        ),
+        ("iris", "bs", "random_forest", {"model_selection_n_permutations": 10}, []),
     ],
 )
 def test_control_model_selection_parameters(
-    iris_dataset, method, segmentation_type, kwargs, expected
+    iris_dataset,
+    X_test,
+    X_correlated,
+    data,
+    method,
+    segmentation_type,
+    kwargs,
+    expected,
 ):
-    result = changeforest(iris_dataset, method, segmentation_type, Control(**kwargs))
+    if data == "iris":
+        X = iris_dataset
+    elif data == "X_test":
+        X = X_test
+    else:
+        X = X_correlated
+
+    result = changeforest(X, method, segmentation_type, Control(**kwargs))
     np.testing.assert_array_equal(result.split_points(), expected)
 
 
@@ -66,21 +108,43 @@ def test_control_segmentation_parameters(
     assert len(result.segments) == expected_number_of_segments
 
 
-def test_control_seed(iris_dataset):
-    result = changeforest(
-        iris_dataset,
-        "random_forest",
-        "wbs",
-        Control(seed=42, number_of_wild_segments=10),
+@pytest.mark.parametrize(
+    "key, default_value, another_value",
+    [
+        ("random_forest_n_estimators", 100, 11),
+        ("minimal_relative_segment_length", 0.01, 0.05),
+        ("seed", 0, 1),
+        ("random_forest_max_features", "default", 1),
+        ("random_forest_max_depth", 8, None),
+    ],
+)
+def test_control_defaults(iris_dataset, key, default_value, another_value):
+    result = changeforest(iris_dataset, "random_forest", "bs", Control())
+    default_result = changeforest(
+        iris_dataset, "random_forest", "bs", Control(**{key: default_value})
     )
-    assert result.segments[0].start == 5
-    assert abs(result.segments[0].max_gain - 17.44774) < 1e-5
+    another_result = changeforest(
+        iris_dataset, "random_forest", "bs", Control(**{key: another_value})
+    )
 
-    result = changeforest(
-        iris_dataset,
-        "random_forest",
-        "wbs",
-        Control(seed=12, number_of_wild_segments=10),
-    )
-    assert result.segments[0].start == 21
-    assert abs(result.segments[0].max_gain - 45.43954) < 1e-5
+    assert str(result) == str(default_result)
+    assert str(result) != str(another_result)
+
+
+def test_control_segments():
+    with pytest.raises(SyntaxError):
+        Control(
+            forbidden_segments=[
+                (2),
+            ]
+        )
+
+    with pytest.raises(SyntaxError):
+        Control(
+            forbidden_segments=[
+                (2, 3, 4),
+            ]
+        )
+
+    with pytest.raises(SyntaxError):
+        Control(forbidden_segments=[2, 3])

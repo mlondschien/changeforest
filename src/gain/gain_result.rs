@@ -9,6 +9,8 @@ pub struct ApproxGainResult {
     pub stop: usize,
     pub guess: usize,
     pub gain: Array1<f64>,
+    pub max_gain: Option<f64>,
+    pub best_split: Option<usize>,
     pub likelihoods: Array2<f64>,
     pub predictions: Array1<f64>,
 }
@@ -18,6 +20,8 @@ pub struct ApproxGainResult {
 pub struct FullGainResult {
     pub start: usize,
     pub stop: usize,
+    pub max_gain: Option<f64>,
+    pub best_split: Option<usize>,
     pub gain: Array1<f64>,
 }
 
@@ -39,6 +43,20 @@ impl GainResult {
         match self {
             GainResult::ApproxGainResult(result) => result.stop,
             GainResult::FullGainResult(result) => result.stop,
+        }
+    }
+
+    pub fn max_gain(&self) -> Option<f64> {
+        match self {
+            GainResult::ApproxGainResult(result) => result.max_gain,
+            GainResult::FullGainResult(result) => result.max_gain,
+        }
+    }
+
+    pub fn best_split(&self) -> Option<usize> {
+        match self {
+            GainResult::ApproxGainResult(result) => result.best_split,
+            GainResult::FullGainResult(result) => result.best_split,
         }
     }
 

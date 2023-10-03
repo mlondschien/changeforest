@@ -34,7 +34,7 @@ impl<'a> Segmentation<'a> {
             SegmentationType::BS => (),
             SegmentationType::SBS => {
                 let minimal_segment_length = f64::max(
-                    (2. * optimizer.control().minimal_relative_segment_length
+                    2. * (optimizer.control().minimal_relative_segment_length
                         * optimizer.n() as f64)
                         .ceil(),
                     2.,
@@ -55,12 +55,14 @@ impl<'a> Segmentation<'a> {
                     n_segments = 2 * ((1. / alpha_k) as f32).ceil() as usize - 1; // n_k
                     segment_step =
                         (optimizer.n() as f64 - segment_length) / (n_segments - 1) as f64; // s_k
-                    for segment_id in 0..(n_segments as usize) {
+                    for segment_id in 0..n_segments {
                         start = ((segment_id as f64 * segment_step) as f32) as usize;
                         // start + segment_length > n through floating point errors in
                         // n_segments, e.g. for n = 20'000, alpha_k = 1/sqrt(2), k=6
                         stop = (start + (segment_length as f32).ceil() as usize).min(optimizer.n());
-                        segments.push(optimizer.find_best_split(start, stop).unwrap());
+                        if let Ok(optimizer_result) = optimizer.find_best_split(start, stop) {
+                            segments.push(optimizer_result)
+                        }
                     }
                 }
             }

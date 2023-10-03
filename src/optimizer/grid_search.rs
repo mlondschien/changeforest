@@ -19,13 +19,9 @@ where
     }
 
     fn find_best_split(&self, start: usize, stop: usize) -> Result<OptimizerResult, &str> {
-        let split_candidates = self.split_candidates(start, stop);
+        let split_candidates = self.split_candidates(start, stop)?;
 
-        if split_candidates.is_empty() {
-            return Err("Segment too small.");
-        }
-
-        let full_gain = self.gain.gain_full(start, stop, &split_candidates);
+        let mut full_gain = self.gain.gain_full(start, stop, &split_candidates);
 
         let mut best_split = 0;
         let mut max_gain = -f64::INFINITY;
@@ -37,6 +33,9 @@ where
             }
         }
 
+        full_gain.max_gain = Some(max_gain);
+        full_gain.best_split = Some(best_split);
+
         Ok(OptimizerResult {
             start,
             stop,
@@ -47,9 +46,7 @@ where
     }
 
     fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
-        let gain_result = optimizer_result.gain_results.last().unwrap();
-        self.gain
-            .model_selection(optimizer_result.max_gain, gain_result)
+        self.gain.model_selection(optimizer_result)
     }
 }
 
@@ -95,5 +92,38 @@ mod tests {
             grid_search.find_best_split(start, stop).unwrap().best_split,
             expected
         );
+    }
+
+    #[rstest]
+    #[case(0, 10, Some(vec![(0, 3)]), 0.09, vec![4, 5, 6, 7, 8])]
+    #[case(1, 10, Some(vec![(6, 10)]), 0.15, vec![3, 4, 5, 6])]
+    #[case(0, 10, Some(vec![(2, 4), (5, 7)]), 0.09, vec![1, 2, 5, 8])]
+    #[case(1, 7, Some(vec![(2, 4), (5, 7)]), 0.09, vec![2, 5])]
+    fn test_split_candidates(
+        #[case] start: usize,
+        #[case] stop: usize,
+        #[case] forbidden_segments: Option<Vec<(usize, usize)>>,
+        #[case] delta: f64,
+        #[case] expected: Vec<usize>,
+    ) {
+        let X = ndarray::array![
+            [0.0],
+            [0.0],
+            [0.0],
+            [0.0],
+            [-0.0],
+            [-0.0],
+            [-0.0],
+            [-0.0],
+            [-0.0],
+            [-0.0]
+        ];
+        let X_view = X.view();
+        let control = Control::default()
+            .with_minimal_relative_segment_length(delta)
+            .with_forbidden_segments(forbidden_segments);
+        let gain = testing::ChangeInMean::new(&X_view, &control);
+        let grid_search = GridSearch { gain };
+        assert_eq!(grid_search.split_candidates(start, stop).unwrap(), expected);
     }
 }

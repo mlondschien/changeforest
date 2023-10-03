@@ -17,13 +17,28 @@ pub trait Optimizer {
     fn control(&self) -> &Control;
 
     /// Vector with indices of allowed split points.
-    fn split_candidates(&self, start: usize, stop: usize) -> Vec<usize> {
+    fn split_candidates(&self, start: usize, stop: usize) -> Result<Vec<usize>, &str> {
         let minimal_segment_length =
             (self.control().minimal_relative_segment_length * (self.n() as f64)).ceil() as usize;
         if 2 * minimal_segment_length >= (stop - start) {
-            vec![]
+            Err("Segment too small.")
         } else {
-            ((start + minimal_segment_length)..(stop - minimal_segment_length)).collect()
+            let mut split_candidates: Vec<usize> =
+                ((start + minimal_segment_length)..(stop - minimal_segment_length)).collect();
+
+            if let Some(forbidden_segments) = &self.control().forbidden_segments {
+                split_candidates.retain(|x| {
+                    forbidden_segments
+                        .iter()
+                        .all(|segment| x <= &segment.0 || x > &segment.1)
+                });
+            }
+
+            if split_candidates.is_empty() {
+                Err("No split_candidates left after filtering out forbidden_segments.")
+            } else {
+                Ok(split_candidates)
+            }
         }
     }
 }

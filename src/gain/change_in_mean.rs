@@ -1,5 +1,6 @@
 use crate::control::Control;
-use crate::gain::{Gain, GainResult};
+use crate::gain::Gain;
+use crate::optimizer::OptimizerResult;
 use crate::ModelSelectionResult;
 use std::cell::{Ref, RefCell};
 
@@ -61,9 +62,17 @@ impl<'a, 'b> Gain for ChangeInMean<'a, 'b> {
         result / (s * s_1 * s_2)
     }
 
-    fn model_selection(&self, max_gain: f64, _: &GainResult) -> ModelSelectionResult {
+    fn model_selection(&self, optimizer_result: &OptimizerResult) -> ModelSelectionResult {
+        let minimal_gain_to_split = match self.control.minimal_gain_to_split {
+            Some(minimal_gain_to_split) => minimal_gain_to_split,
+            // log(n) * (d + 1), where (d + 1) is the number of additional parameters through
+            // an additional changepoint. See also
+            // Yao, Y.-C. (1988). Estimating the number of change-points via Schwarz’ criterion.
+            None => (self.X.shape()[0] as f64).ln() * (self.X.shape()[1] as f64 + 1.),
+        };
+
         ModelSelectionResult {
-            is_significant: max_gain > self.control.minimal_gain_to_split * (self.n() as f64),
+            is_significant: optimizer_result.max_gain > minimal_gain_to_split,
             p_value: None,
         }
     }

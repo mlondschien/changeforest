@@ -1,7 +1,7 @@
 [package]
 name = "changeforest_py"
-version = "0.1.0"
-edition = "2018"
+version = "1.1.1"
+edition = "2021"
 
 [lib]
 name = "changeforest"
@@ -11,7 +11,8 @@ crate-type = ["cdylib"]
 name = "changeforest"
 
 [dependencies]
-numpy = "0.14.1"
+numpy = "0.19"
 changeforest = { path = "../" }
-ndarray = "0.15.3"
-pyo3 = {version = "0.14.5", features = ["extension-module"]}
+ndarray = "0.15"
+pyo3 = {version = "0.19", features = ["extension-module"]}
+biosphere = "0.3.0"

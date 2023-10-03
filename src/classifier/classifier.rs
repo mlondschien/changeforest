@@ -61,3 +61,40 @@ pub trait Classifier {
 
     fn control(&self) -> &Control;
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use crate::testing::TrivialClassifier;
+    use assert_approx_eq::*;
+
+    #[test]
+    fn test_single_likelihood() {
+        let control = Control::default();
+        let classifier = TrivialClassifier {
+            n: 10,
+            control: &control,
+        };
+        let predictions = classifier.predict(0, 10, 5);
+        assert_approx_eq!(
+            classifier.single_likelihood(&predictions, 0, 10, 5),
+            0.809552182
+        );
+    }
+
+    #[test]
+    fn test_full_likelihood() {
+        let control = Control::default();
+        let classifier = TrivialClassifier {
+            n: 10,
+            control: &control,
+        };
+        let predictions = classifier.predict(0, 10, 5);
+        let mut expected = Array2::<f64>::zeros((2, 10));
+        expected[[0, 0]] = 0.8095521826214339; // TODO: Why not 6.0
+        expected[[1, 0]] = -6.0;
+
+        assert_eq!(classifier.full_likelihood(&predictions, 0, 10, 5), expected);
+    }
+}

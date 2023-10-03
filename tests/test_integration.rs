@@ -45,7 +45,8 @@ fn test_integration_letters(#[case] method: &str, #[case] segmentation_type: &st
     let mut reader = ReaderBuilder::new().has_headers(true).from_reader(file);
     let X: Array2<f64> = reader.deserialize_array2((20000, 16)).unwrap();
 
-    let control = Control::default().with_minimal_relative_segment_length(0.02);
+    let mut control = Control::default();
+    control.random_forest_parameters = control.random_forest_parameters.with_n_estimators(20);
 
     let _ = changeforest(&X.view(), method, segmentation_type, &control);
 }

@@ -1,9 +1,19 @@
-[build-system]
-requires = ["maturin>=0.11,<0.12"]
-build-backend = "maturin"
-
 [project]
 name = "changeforest"
+description = "Random Forests for Change Point Detection"
+readme = "README.md"
+version = "1.1.1"
+requires-python = ">=3.8"
+author = "Malte Londschien <malte@londschien.ch>"
+urls = {homepage = "https://github.com/mlondschien/changeforest/"}
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python"
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
 
 [tool.isort]
 multi_line_output = 3
@@ -15,11 +25,11 @@ skip_glob = '\.eggs/*,\.git/*,\.venv/*,build/*,dist/*'
 default_section = 'THIRDPARTY'
 
 [tool.cibuildwheel]
-test-requires = "numpy pytest"
+test-requires = "numpy matplotlib pytest"
 test-command = "pytest {project}/changeforest-py/tests"
 
 # macos arm64 wheels can be built on X86_64, but cannot be tested.
-test-skip = "*-maxosx_arm64"
+test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
 
 # Python 3.6 build are slooow. Possibly because we also compile numpy?
 # pypi builds on macos require compilation of numpy (why?) and are thus super slow
@@ -28,10 +38,8 @@ test-skip = "*-maxosx_arm64"
 # musllinux is sloooow, >1h per build. Why?
 skip = "cp36-* pp*-macosx* pp* *-musllinux*"
 
-# Add cargobin to PATH. This is otherwise achieved by restarting the shellThis 
-# See https://github.com/pypa/pip/issues/7555 for PIP_USE_FEATURE=in-tree-build.
-# This enables relative paths, e.g. in the Cargo.toml.
-environment = { PATH="$PATH:$HOME/.cargo/bin", PIP_USE_FEATURE="in-tree-build"}
+# Add cargobin to PATH. This is otherwise achieved by restarting the shell.
+environment = { PATH="$PATH:$HOME/.cargo/bin" }
 
 [tool.cibuildwheel.linux]
 # Install rust in container before building wheels.

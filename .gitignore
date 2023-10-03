@@ -1,3 +1,8 @@
-/target
+**/target
 Cargo.lock
 *.Rcheck*
+*.o
+*.so
+*.dll
+*.rds
+*.tar.gz

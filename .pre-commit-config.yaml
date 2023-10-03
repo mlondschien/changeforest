@@ -1,23 +1,24 @@
+repos:
 -   repo: https://github.com/doublify/pre-commit-rust
-    rev: master
+    rev: v1.0
     hooks:
     -   id: fmt
     -   id: cargo-check
     -   id: clippy  # This will not check python / r package...
 -   repo: https://github.com/Quantco/pre-commit-mirrors-black
-    rev: 19.10b0
+    rev: 23.1.0
     hooks:
     -   id: black-conda
         args:
         -   --safe
         -   --target-version=py38
 -   repo: https://github.com/Quantco/pre-commit-mirrors-isort
-    rev: 4.3.21
+    rev: '5.12.0'
     hooks:
     -   id: isort-conda
         additional_dependencies: [toml]
 -   repo: https://github.com/Quantco/pre-commit-mirrors-flake8
-    rev: v3.8.4
+    rev: 6.0.0
     hooks:
     -   id: flake8-conda
         args:
