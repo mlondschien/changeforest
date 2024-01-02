@@ -6,9 +6,9 @@ mod result;
 
 use crate::control::MyControl;
 use crate::result::MyBinarySegmentationResult;
+use ::ndarray;
 use changeforest::wrapper;
 use extendr_api::prelude::*;
-use ndarray;
 
 #[extendr]
 fn changeforest_api(

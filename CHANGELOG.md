@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.1.2 - (2024-01-02)
+
+**Other changes:**
+
+- Upgraded `extendr-api` and `ndarray` dependencies in R package.
+
 ## 1.1.1 - (2023-10-03)
 
 **Other changes:**
