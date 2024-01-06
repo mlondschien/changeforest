@@ -62,13 +62,13 @@ be in \code{[1/2, 1)}, with a value close to 1 resulting in many segments. Corre
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Control$new()}}
-\item \href{#method-clone}{\code{Control$clone()}}
+\item \href{#method-control-new}{\code{Control$new()}}
+\item \href{#method-control-clone}{\code{Control$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-control-new"></a>}}
+\if{latex}{\out{\hypertarget{method-control-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new object of class \code{binary_segmentation_resutl}.
 \subsection{Usage}{
@@ -134,8 +134,8 @@ A new object of class \code{binary_segmentation_resutl}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-control-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-control-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
