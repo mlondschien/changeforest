@@ -26,6 +26,6 @@ fn changeforest_api(
 // This ensures exported functions are registered with R.
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
-    mod changeforestr;
+    mod changeforest;
     fn changeforest_api;
 }
