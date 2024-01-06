@@ -18,10 +18,11 @@ URL: https://github.com/mlondschien/changeforest
 BugReports: https://github.com/mlondschien/changeforest
 SystemRequirements: Cargo (>= 1.42.0) for installation from source.
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Imports:
     R6
 Suggests:
     testthat (>= 3.0.0)
 Language: en-US
 Config/testthat/edition: 3
+Config/rextendr/version: 0.3.1.9000
