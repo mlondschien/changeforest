@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.1.3 - (2024-01-06)
+
+**Other changes:**
+
+- Update the `extendr` architecture for the package build. Thanks @JosiahParry!
+
 ## 1.1.2 - (2024-01-02)
 
 **Other changes:**
