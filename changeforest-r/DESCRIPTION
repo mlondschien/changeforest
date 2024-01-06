@@ -1,7 +1,7 @@
 Package: changeforest
 Type: Package
 Title: Random Forests for Change Point Detection
-Version: 1.1.2
+Version: 1.1.3
 Author: Malte Londschien
 Maintainer: Malte Londschien <malte@londschien.ch>
 Description:
