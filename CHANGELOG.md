@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.1.4 - (2024-01-08)
+
+**Other changes:**
+
+- Manually set compilation `target` in `Makevars` of the R-package based on the environment variable `TARGET` to simplify cross-compilation.
+
 ## 1.1.3 - (2024-01-06)
 
 **Other changes:**
