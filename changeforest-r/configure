@@ -1,0 +1,1 @@
+sed -e "s|@RUST_TARGET@|$(rustc -vV | grep host | cut -d' ' -f2)|" src/Makevars.in > src/Makevars

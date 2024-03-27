@@ -1,6 +1,24 @@
 
 # Changelog
 
+## 1.1.4 - (2024-01-08)
+
+**Other changes:**
+
+- Manually set compilation `target` in `Makevars` of the R-package based on the environment variable `TARGET` to simplify cross-compilation.
+
+## 1.1.3 - (2024-01-06)
+
+**Other changes:**
+
+- Update the `extendr` architecture for the package build. Thanks @JosiahParry!
+
+## 1.1.2 - (2024-01-02)
+
+**Other changes:**
+
+- Upgraded `extendr-api` and `ndarray` dependencies in R package.
+
 ## 1.1.1 - (2023-10-03)
 
 **Other changes:**

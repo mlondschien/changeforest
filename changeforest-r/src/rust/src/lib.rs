@@ -6,9 +6,9 @@ mod result;
 
 use crate::control::MyControl;
 use crate::result::MyBinarySegmentationResult;
+use ::ndarray;
 use changeforest::wrapper;
 use extendr_api::prelude::*;
-use ndarray;
 
 #[extendr]
 fn changeforest_api(
@@ -26,6 +26,6 @@ fn changeforest_api(
 // This ensures exported functions are registered with R.
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
-    mod changeforestr;
+    mod changeforest;
     fn changeforest_api;
 }
