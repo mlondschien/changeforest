@@ -102,7 +102,7 @@ jobs:
         with:
           command: sdist
           args: >
-            --manifest-path Cargo.toml
+            --manifest-path Cargo.toml --bindings pyo3
 
       - uses: actions/upload-artifact@v3
         with:
