@@ -97,8 +97,12 @@ jobs:
         run: |
           cd changeforest-py
 
-      - name: Build sdist
-        run: maturin build --sdist -m Cargo.toml -b pyo3
+      - name: Create source distribution
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: >
+            --manifest-path Cargo.toml
 
       - uses: actions/upload-artifact@v3
         with:
