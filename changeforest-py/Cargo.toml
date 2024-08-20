@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 name = "changeforest"
 
 [dependencies]
-numpy = "0.19"
+numpy = "0.22"
 changeforest = { path = "../" }
 ndarray = "0.15"
 pyo3 = {version = "0.22", features = ["extension-module"]}
