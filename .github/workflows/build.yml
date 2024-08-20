@@ -28,8 +28,6 @@ jobs:
             os: macos-latest
           - vers: x86_64
             os: macos-latest
-          - vers: universal2
-            os: macos-latest
 
           - vers: AMD64
             os: windows-2019
@@ -56,11 +54,11 @@ jobs:
           platforms: arm64
 
       - name: Install darwin target for apple silicon
-        if: matrix.vers == 'universal2' || (matrix.vers == 'arm64' && matrix.os == 'macos-latest')
+        if: matrix.vers == 'arm64' && matrix.os == 'macos-latest'
         run: rustup target add aarch64-apple-darwin
 
       - name: Install target for apple x86
-        if: matrix.os == 'macos-latest' && (matrix.vers == 'x86_64' || matrix.vers == 'universal2')
+        if: matrix.os == 'macos-latest' && matrix.vers == 'x86_64'
         run: rustup target add x86_64-apple-darwin
 
       - name: Setup env when not using docker
@@ -73,16 +71,8 @@ jobs:
           pip install cibuildwheel
 
       - name: Build wheels
-        if: matrix.vers != 'universal2'
         run: |
           python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
-
-      - name: Build wheels (universal2)
-        if: matrix.vers == 'universal2'
-        run: |
-          python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
-        env:
-          CIBW_SKIP: "cp313-*"
 
       - uses: actions/upload-artifact@v3
         with:
