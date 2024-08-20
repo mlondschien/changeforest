@@ -73,8 +73,16 @@ jobs:
           pip install cibuildwheel
 
       - name: Build wheels
+        if: matrix.vers != 'universal2'
         run: |
           python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
+
+      - name: Build wheels (universal2)
+        if: matrix.vers == 'universal2'
+        run: |
+          python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
+        env:
+          CIBW_SKIP: "cp313-*"
 
       - uses: actions/upload-artifact@v3
         with:
