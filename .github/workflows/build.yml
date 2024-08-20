@@ -92,22 +92,14 @@ jobs:
 
       - name: Install build dependencies
         run: python -m pip install numpy maturin
-      
-      - name: change into directory
-        run: |
-          cd changeforest-py
 
-      - name: Create source distribution
-        uses: PyO3/maturin-action@v1
-        with:
-          command: sdist
-          args: >
-            --manifest-path Cargo.toml --bindings pyo3
+      - name: Build sdist
+        run: maturin sdist -m changeforest-py/Cargo.toml
 
       - uses: actions/upload-artifact@v3
         with:
           name: wheels
-          path: target/wheels/*.tar.gz
+          path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
     needs: [python-build-wheels, python-build-sdist]
