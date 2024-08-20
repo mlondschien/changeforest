@@ -60,7 +60,7 @@ jobs:
         run: rustup target add aarch64-apple-darwin
 
       - name: Install target for apple x86
-        if: matrix.vers == 'x86_64' && matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-latest' && (matrix.vers == 'x86_64' || matrix.vers == 'universal2')
         run: rustup target add x86_64-apple-darwin
 
       - name: Setup env when not using docker
