@@ -100,7 +100,7 @@ jobs:
           cd changeforest-py
 
       - name: Build sdist
-        run: maturin sdist -m Cargo.toml -b pyo3
+        run: maturin sdist -m Cargo.toml
 
       - uses: actions/upload-artifact@v3
         with:
