@@ -76,7 +76,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          pattern: wheels
           path: ./wheelhouse/*.whl
 
   python-build-sdist:
@@ -98,7 +98,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          pattern: wheels
           path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
