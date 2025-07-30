@@ -22,7 +22,7 @@ jobs:
           # - vers: aarch64
           #   os: ubuntu-20.04
           - vers: x86_64
-            os: ubuntu-20.04
+            os: ubuntu-latest
 
           - vers: arm64
             os: macos-latest
@@ -30,7 +30,7 @@ jobs:
             os: macos-latest
 
           - vers: AMD64
-            os: windows-2019
+            os: windows-latest
           # win32: Build fails with error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
           # - vers: x86
           #   os: windows-2019
