@@ -12,4 +12,4 @@ name = 'changeforestr'
 extendr-api = { version="0.6.0", features = ["ndarray"] }
 changeforest = { path = "../../../" }
 ndarray = "0.16"
-biosphere = "0.3.0"
+biosphere = "0.4.0"
