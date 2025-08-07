@@ -13,6 +13,6 @@ name = "changeforest"
 [dependencies]
 numpy = "0.19"
 changeforest = { path = "../" }
-ndarray = "0.15"
+ndarray = "0.16"
 pyo3 = {version = "0.19", features = ["extension-module"]}
 biosphere = "0.3.0"
