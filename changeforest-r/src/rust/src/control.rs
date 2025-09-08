@@ -18,10 +18,6 @@ impl TryFrom<&Robj> for MyControl {
         let get_real_option =
             |obj: &Robj, name: &str| -> Option<f64> { obj.dollar(name).ok()?.as_real() };
 
-        let get_str_option = |obj: &Robj, name: &str| -> Option<String> {
-            obj.dollar(name).ok()?.as_str().map(|s| s.to_string())
-        };
-
         if let Some(value) = get_real_option(robj, "minimal_relative_segment_length") {
             control = control.with_minimal_relative_segment_length(value);
         }

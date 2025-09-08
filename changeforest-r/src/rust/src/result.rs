@@ -48,12 +48,15 @@ impl From<MyGainResult> for Robj {
                     r!(approx_gain_result.stop as i32),
                     r!(approx_gain_result.guess as i32),
                     r!(approx_gain_result.gain.to_vec()), // Convert ndarray to Vec
-                    // For 2D arrays, convert to nested Vec or flatten
-                    r!(approx_gain_result
-                        .likelihoods
-                        .outer_iter()
-                        .map(|row| row.to_vec())
-                        .collect::<Vec<Vec<f64>>>()),
+                    // For 2D arrays, create a list of row vectors
+                    r!({
+                        let rows: Vec<Robj> = approx_gain_result
+                            .likelihoods
+                            .outer_iter()
+                            .map(|row| r!(row.to_vec()))
+                            .collect();
+                        List::from_values(&rows)
+                    }),
                     r!(approx_gain_result.predictions.to_vec()),
                 ]);
 
