@@ -15,6 +15,9 @@ fn changeforest_api(
     segmentation: &str,
     control: Robj,
 ) -> extendr_api::Result<MyBinarySegmentationResult> {
+    panic::set_hook(Box::new(|_| {
+        // Do nothing on panic instead of calling exit
+    }));
     // Convert control using the standard TryFrom trait
     let control = MyControl::try_from(&control)?;
 
