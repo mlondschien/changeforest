@@ -11,10 +11,9 @@ pub struct MyControl {
 impl TryFrom<&Robj> for MyControl {
     type Error = extendr_api::Error;
 
-    fn try_from(robj: &Robj) -> Result<Self, Self::Error> {
+    fn try_from(robj: &Robj) -> extendr_api::Result<Self> {
         let mut control = Control::default();
 
-        // Helper function to safely get optional values
         let get_real_option =
             |obj: &Robj, name: &str| -> Option<f64> { obj.dollar(name).ok()?.as_real() };
 
