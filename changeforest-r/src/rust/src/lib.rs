@@ -7,6 +7,7 @@ use ::ndarray;
 use changeforest::wrapper;
 use extendr_api::prelude::*;
 use std::convert::TryFrom;
+use std::panic;
 
 #[extendr]
 fn changeforest_api(
