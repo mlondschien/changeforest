@@ -1,8 +1,8 @@
 use biosphere::MaxFeatures;
 use changeforest::Control;
+use extendr_api::prelude::*;
 use extendr_api::Operators;
 use extendr_api::Rinternals;
-use extendr_api::{FromRobj, Robj};
 
 pub struct MyControl {
     pub control: Control,
