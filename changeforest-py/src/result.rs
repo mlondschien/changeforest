@@ -1,3 +1,4 @@
+// result.rs
 // Wrap GainResult, OptimizerResult and BinarySegmentationResult.
 // See https://github.com/PyO3/pyo3/issues/287.
 
@@ -6,6 +7,7 @@ use changeforest::gain::GainResult;
 use changeforest::optimizer::OptimizerResult;
 use numpy::{PyArray1, PyArray2, ToPyArray};
 use pyo3::prelude::*;
+use pyo3::types::PyModuleMethods;
 
 #[pyclass(name = "ModelSelectionResult")]
 #[derive(Clone, Debug)]
@@ -49,7 +51,7 @@ impl MyGainResult {
     }
 
     #[getter]
-    pub fn gain<'py>(&self, py: Python<'py>) -> &'py PyArray1<f64> {
+    pub fn gain<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
         self.result.gain().to_pyarray(py)
     }
 
@@ -59,12 +61,12 @@ impl MyGainResult {
     }
 
     #[getter]
-    pub fn likelihoods<'py>(&self, py: Python<'py>) -> Option<&'py PyArray2<f64>> {
+    pub fn likelihoods<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyArray2<f64>>> {
         self.result.likelihoods().map(|arr| arr.to_pyarray(py))
     }
 
     #[getter]
-    pub fn predictions<'py>(&self, py: Python<'py>) -> Option<&'py PyArray1<f64>> {
+    pub fn predictions<'py>(&self, py: Python<'py>) -> Option<Bound<'py, PyArray1<f64>>> {
         self.result.predictions().map(|arr| arr.to_pyarray(py))
     }
 
@@ -223,7 +225,7 @@ impl MyBinarySegmentationResult {
 }
 
 #[pymodule]
-fn my_module(_py: Python, m: &PyModule) -> PyResult<()> {
+fn my_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<MyBinarySegmentationResult>()?;
     Ok(())
 }

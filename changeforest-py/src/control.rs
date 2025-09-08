@@ -1,10 +1,13 @@
+// control.rs
+
 use biosphere::MaxFeatures;
 use changeforest::Control;
 use pyo3::exceptions;
-use pyo3::prelude::{pyclass, FromPyObject, PyAny, PyErr, PyResult};
-use pyo3::prelude::{PyObject, Python};
+use pyo3::prelude::{pyclass, Bound, FromPyObject, PyAny, PyErr, PyResult};
+use pyo3::prelude::{Py, Python};
+use pyo3::types::PyAnyMethods;
 
-pub fn control_from_pyobj(py: Python, obj: Option<PyObject>) -> PyResult<Control> {
+pub fn control_from_pyobj(py: Python, obj: Option<Py<PyAny>>) -> PyResult<Control> {
     let mut control = Control::default();
 
     if let Some(obj) = obj {
@@ -109,7 +112,7 @@ impl PyMaxFeatures {
 }
 
 impl FromPyObject<'_> for PyMaxFeatures {
-    fn extract(ob: &'_ PyAny) -> PyResult<Self> {
+    fn extract_bound(ob: &Bound<'_, PyAny>) -> PyResult<Self> {
         if let Ok(value) = ob.extract::<usize>() {
             Ok(PyMaxFeatures::new(MaxFeatures::Value(value)))
         } else if let Ok(value) = ob.extract::<f64>() {
@@ -124,19 +127,17 @@ impl FromPyObject<'_> for PyMaxFeatures {
         } else if let Ok(value) = ob.extract::<Option<String>>() {
             if value.is_none() {
                 Ok(PyMaxFeatures::new(MaxFeatures::None))
+            } else if value.as_ref().unwrap() == "sqrt" {
+                Ok(PyMaxFeatures::new(MaxFeatures::Sqrt))
             } else {
-                if value.as_ref().unwrap() == "sqrt" {
-                    Ok(PyMaxFeatures::new(MaxFeatures::Sqrt))
-                } else {
-                    Err(PyErr::new::<exceptions::PyTypeError, _>(format!(
-                        "Unknown value for max_features: {}",
-                        value.unwrap()
-                    )))
-                }
+                Err(PyErr::new::<exceptions::PyTypeError, _>(format!(
+                    "Unknown value for max_features: {}",
+                    value.unwrap()
+                )))
             }
         } else {
             Err(PyErr::new::<exceptions::PyTypeError, _>(format!(
-                "Unknown value for max_features: {}",
+                "Unknown value for max_features: {:?}",
                 ob
             )))
         }

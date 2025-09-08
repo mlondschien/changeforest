@@ -28,7 +28,7 @@ impl<'a, 'b> ChangeInMean<'a, 'b> {
         X_cumsum
     }
 
-    fn get_cumsum(&self) -> Ref<ndarray::Array2<f64>> {
+    fn get_cumsum(&self) -> Ref<'_, ndarray::Array2<f64>> {
         if self.X_cumsum.borrow().is_none() {
             self.X_cumsum.replace(Some(self.calculate_cumsum()));
         }
