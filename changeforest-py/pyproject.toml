@@ -53,3 +53,6 @@ before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stab
 # What is musllinux?
 select = "*-musllinux*"
 before-all = "apk add openssl-dev && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
+
+[tool.cibuildwheel.macos]
+environment = { PATH="$PATH:$HOME/.cargo/bin", MACOSX_DEPLOYMENT_TARGET="10.12" }
