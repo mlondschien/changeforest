@@ -123,7 +123,18 @@ jobs:
         shell: bash -lxu {0}
         if: matrix.os != 'windows-latest'
 
-
+      - name: Show R installation log on failure
+        if: failure()
+        run: |
+          if [ -f "./changeforest-r.Rcheck/00install.out" ]; then
+            echo "=== R Installation Log ==="
+            cat ./changeforest-r.Rcheck/00install.out
+          fi
+          if [ -f "./changeforest-r.Rcheck/00check.log" ]; then
+            echo "=== R Check Log ==="
+            cat ./changeforest-r.Rcheck/00check.log
+          fi
+        
   python-tests:
     name: Python tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

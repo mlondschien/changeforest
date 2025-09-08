@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^src/\.cargo$
 ^\.github$
+^src/.gitignore$
