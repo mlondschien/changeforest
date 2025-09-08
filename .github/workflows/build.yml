@@ -19,10 +19,11 @@ jobs:
       matrix:
         include:  # https://cibuildwheel.readthedocs.io/en/stable/options/#archs
 
-          # - vers: aarch64
-          #   os: ubuntu-20.04
+          - vers: aarch64
+            os: ubuntu-latest
+
           - vers: x86_64
-            os: ubuntu-20.04
+            os: ubuntu-latest
 
           - vers: arm64
             os: macos-latest
@@ -107,6 +108,11 @@ jobs:
     needs: [python-build-wheels, python-build-sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: test_release
+      url: https://test.pypi.org/p/changeforest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v5
         with:
@@ -129,6 +135,11 @@ jobs:
     needs: [python-build-wheels, python-build-sdist, upload-testpypi]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: release
+      url: https://pypi.org/p/changeforest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v5
         with:
