@@ -17,7 +17,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "pyo3"
-include = ["src/**/*", "Cargo.toml"]
+include = ["src/**/*", "Cargo.toml", "README.md"]
 exclude = ["../README.md"]
 
 [tool.isort]
