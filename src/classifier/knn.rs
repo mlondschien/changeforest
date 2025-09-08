@@ -48,7 +48,7 @@ impl<'a, 'b> kNN<'a, 'b> {
         ordering
     }
 
-    fn get_ordering(&self) -> Ref<Array2<usize>> {
+    fn get_ordering(&self) -> Ref<'_, Array2<usize>> {
         if self.ordering.borrow().is_none() {
             self.ordering.replace(Some(self.calculate_ordering()));
         }

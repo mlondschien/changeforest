@@ -1,7 +1,7 @@
 use biosphere::{MaxFeatures, RandomForestParameters};
 
 /// Storage container for hyperparameters.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Control {
     /// Segments with length smaller than `2 * n * minimal_relative_segment_length` will
     /// not be split.
