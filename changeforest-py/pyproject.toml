@@ -17,6 +17,8 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "pyo3"
+include = ["src/**/*", "Cargo.toml"]
+exclude = ["../README.md"]
 
 [tool.isort]
 multi_line_output = 3
