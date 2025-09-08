@@ -16,3 +16,7 @@ changeforest = { path = "../" }
 ndarray = "0.16"
 pyo3 = {version = "0.26", features = ["extension-module"]}
 biosphere = "0.4.0"
+
+[tool.maturin]
+include = ["Cargo.toml", "README.md"]
+exclude = ["../README.md"]
