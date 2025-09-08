@@ -1,8 +1,7 @@
-use extendr_api::prelude::*;
-//use extendr_api::robj_ndarray::TryFrom;
 use changeforest::gain::GainResult;
 use changeforest::optimizer::OptimizerResult;
 use changeforest::{BinarySegmentationResult, ModelSelectionResult};
+use extendr_api::prelude::*;
 
 pub struct MyModelSelectionResult {
     model_selection_result: ModelSelectionResult,
@@ -10,15 +9,17 @@ pub struct MyModelSelectionResult {
 
 impl From<MyModelSelectionResult> for Robj {
     fn from(my_model_selection_result: MyModelSelectionResult) -> Self {
-        List::from_values(&[
+        let mut list = List::from_values(&[
             r!(my_model_selection_result
                 .model_selection_result
                 .is_significant),
             r!(my_model_selection_result.model_selection_result.p_value),
-        ])
-        .into_robj()
-        .set_names(&["is_significant", "p_value"])
-        .expect("From<ModelSelectionResult> failed")
+        ]);
+
+        list.set_names(&["is_significant", "p_value"])
+            .expect("From<ModelSelectionResult> failed");
+
+        list.into_robj()
     }
 }
 
@@ -29,32 +30,45 @@ pub struct MyGainResult {
 impl From<MyGainResult> for Robj {
     fn from(my_gain_result: MyGainResult) -> Self {
         match my_gain_result.gain_result {
-            GainResult::FullGainResult(full_gain_result) => List::from_values(&[
-                r!(full_gain_result.start as i32),
-                r!(full_gain_result.stop as i32),
-                r!(Robj::try_from(&full_gain_result.gain).unwrap()),
-            ])
-            .into_robj()
-            .set_names(&["start", "stop", "gain"])
-            .expect("From<GainResult> failed"),
-            GainResult::ApproxGainResult(approx_gain_result) => List::from_values(&[
-                r!(approx_gain_result.start as i32),
-                r!(approx_gain_result.stop as i32),
-                r!(approx_gain_result.guess as i32),
-                r!(Robj::try_from(&approx_gain_result.gain).unwrap()),
-                r!(Robj::try_from(&approx_gain_result.likelihoods).unwrap()),
-                r!(Robj::try_from(&approx_gain_result.predictions).unwrap()),
-            ])
-            .into_robj()
-            .set_names(&[
-                "start",
-                "stop",
-                "guess",
-                "gain",
-                "likelihoods",
-                "predictions",
-            ])
-            .expect("From<GainResult> failed"),
+            GainResult::FullGainResult(full_gain_result) => {
+                let mut list = List::from_values(&[
+                    r!(full_gain_result.start as i32),
+                    r!(full_gain_result.stop as i32),
+                    r!(full_gain_result.gain.to_vec()), // Convert ndarray to Vec
+                ]);
+
+                list.set_names(&["start", "stop", "gain"])
+                    .expect("From<GainResult> failed");
+
+                list.into_robj()
+            }
+            GainResult::ApproxGainResult(approx_gain_result) => {
+                let mut list = List::from_values(&[
+                    r!(approx_gain_result.start as i32),
+                    r!(approx_gain_result.stop as i32),
+                    r!(approx_gain_result.guess as i32),
+                    r!(approx_gain_result.gain.to_vec()), // Convert ndarray to Vec
+                    // For 2D arrays, convert to nested Vec or flatten
+                    r!(approx_gain_result
+                        .likelihoods
+                        .outer_iter()
+                        .map(|row| row.to_vec())
+                        .collect::<Vec<Vec<f64>>>()),
+                    r!(approx_gain_result.predictions.to_vec()),
+                ]);
+
+                list.set_names(&[
+                    "start",
+                    "stop",
+                    "guess",
+                    "gain",
+                    "likelihoods",
+                    "predictions",
+                ])
+                .expect("From<GainResult> failed");
+
+                list.into_robj()
+            }
         }
     }
 }
@@ -72,16 +86,18 @@ impl From<MyOptimizerResult> for Robj {
             .map(|gain_result| MyGainResult { gain_result }.into())
             .collect();
 
-        List::from_values(&[
+        let mut list = List::from_values(&[
             r!(my_optimizer_result.optimizer_result.start as i32),
             r!(my_optimizer_result.optimizer_result.stop as i32),
             r!(my_optimizer_result.optimizer_result.best_split as i32),
             r!(my_optimizer_result.optimizer_result.max_gain),
             r!(gain_results),
-        ])
-        .into_robj()
-        .set_names(&["start", "stop", "best_split", "max_gain", "gain_results"])
-        .expect("From<OptimizerResult> failed")
+        ]);
+
+        list.set_names(&["start", "stop", "best_split", "max_gain", "gain_results"])
+            .expect("From<OptimizerResult> failed");
+
+        list.into_robj()
     }
 }
 
@@ -136,7 +152,7 @@ impl From<MyBinarySegmentationResult> for Robj {
         }
         .into();
 
-        List::from_values(&[
+        let mut list = List::from_values(&[
             r!(my_result.result.start as i32),
             r!(my_result.result.stop as i32),
             r!(my_result
@@ -156,9 +172,9 @@ impl From<MyBinarySegmentationResult> for Robj {
             r!(segments),
             r!(left),
             r!(right),
-        ])
-        .into_robj()
-        .set_names(&[
+        ]);
+
+        list.set_names(&[
             "start",
             "stop",
             "best_split",
@@ -171,6 +187,8 @@ impl From<MyBinarySegmentationResult> for Robj {
             "left",
             "right",
         ])
-        .expect("From<Tree> failed")
+        .expect("From<Tree> failed");
+
+        list.into_robj()
     }
 }

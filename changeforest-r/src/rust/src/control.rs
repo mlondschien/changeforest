@@ -1,16 +1,17 @@
 use biosphere::MaxFeatures;
 use changeforest::Control;
 use extendr_api::prelude::*;
+use std::convert::TryFrom;
 
 #[derive(Debug, Clone)]
 pub struct MyControl {
     pub control: Control,
 }
 
-impl TryFromRobj for MyControl {
+impl TryFrom<&Robj> for MyControl {
     type Error = extendr_api::Error;
 
-    fn try_from_robj(robj: &Robj) -> Result<Self, Self::Error> {
+    fn try_from(robj: &Robj) -> Result<Self, Self::Error> {
         let mut control = Control::default();
 
         // Helper function to safely get optional values
