@@ -9,9 +9,9 @@ use pyo3::types::PyModuleMethods;
 use pyo3::Py;
 use pyo3::PyAny;
 
-// Note: This has to match the lib.name in Cargo.toml.
 #[allow(non_snake_case)] // Allow capital X for arrays.
 #[pyfunction(name = "changeforest")]
+#[pyo3(signature = (X, method=None, segmentation_type=None, control=None))]
 fn changeforest_fn(
     py: Python<'_>,
     X: PyReadonlyArray2<f64>,
