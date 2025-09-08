@@ -35,12 +35,11 @@ test-command = "pytest {project}/changeforest-py/tests"
 # macos arm64 wheels can be built on X86_64, but cannot be tested.
 test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
 
-# Python 3.6 build are slooow. Possibly because we also compile numpy?
 # pypi builds on macos require compilation of numpy (why?) and are thus super slow
 # fail due to https://github.com/numpy/numpy/issues/15947.
 # What is the difference between cpython and pypi builds?
 # musllinux is sloooow, >1h per build. Why?
-skip = "cp36-* pp*-macosx* pp* *-musllinux*"
+skip = "cp38-* *-musllinux*"
 
 # Add cargobin to PATH. This is otherwise achieved by restarting the shell.
 environment = { PATH="$PATH:$HOME/.cargo/bin" }
