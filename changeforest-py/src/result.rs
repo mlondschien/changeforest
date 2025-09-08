@@ -1,4 +1,3 @@
-// result.rs
 // Wrap GainResult, OptimizerResult and BinarySegmentationResult.
 // See https://github.com/PyO3/pyo3/issues/287.
 

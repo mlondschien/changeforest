@@ -1,5 +1,3 @@
-// control.rs
-
 use biosphere::MaxFeatures;
 use changeforest::Control;
 use pyo3::exceptions;
