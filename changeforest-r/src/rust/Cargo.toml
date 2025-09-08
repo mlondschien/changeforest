@@ -9,7 +9,7 @@ crate-type = [ 'staticlib' ]
 name = 'changeforestr'
 
 [dependencies]
-extendr-api = { version="0.6.0", features = ["ndarray"] }
+extendr-api = { version="0.8", features = ["ndarray"] }
 changeforest = { path = "../../../" }
 ndarray = "0.16"
 biosphere = "0.4.0"
