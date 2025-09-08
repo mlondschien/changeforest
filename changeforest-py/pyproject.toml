@@ -17,6 +17,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "pyo3"
+sdist-include = ["LICENSE", "README.md"]
 
 [tool.isort]
 multi_line_output = 3
