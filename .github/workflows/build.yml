@@ -99,10 +99,10 @@ jobs:
       - name: Build sdist
         run: maturin sdist -m changeforest-py/Cargo.toml
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/upload-artifact@v4
         with:
-          pattern: wheels-*
-          path: dist
+          name: wheels-sdist
+          path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
     needs: [python-build-wheels, python-build-sdist]
@@ -116,14 +116,13 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: wheels-*
+          pattern: wheels*
           path: dist
 
       - name: Flatten dist/ folder
         run: |
           find dist -type f -exec mv {} dist/ \;
           find dist -mindepth 1 -type d -empty -delete
-
 
       - uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
@@ -143,7 +142,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: wheels-*
+          pattern: wheels*
           path: dist
 
       - name: Flatten dist/ folder
