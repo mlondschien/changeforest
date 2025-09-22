@@ -116,7 +116,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: wheels-*
+          pattern: wheels*
           path: dist
 
       - name: Flatten dist/ folder
@@ -142,7 +142,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: wheels-*
+          pattern: wheels*
           path: dist
 
       - name: Flatten dist/ folder
