@@ -101,7 +101,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-sdist
           path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
