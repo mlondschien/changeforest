@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.2.1 - (2025-09-22)
+
+**Bug fixes:**
+
+- Fix PyPI sdist release.
+
 ## 1.2.0 - (2025-09-08)
 
 **Other changes:**
