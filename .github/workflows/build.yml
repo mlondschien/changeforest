@@ -19,10 +19,11 @@ jobs:
       matrix:
         include:  # https://cibuildwheel.readthedocs.io/en/stable/options/#archs
 
-          # - vers: aarch64
-          #   os: ubuntu-20.04
+          - vers: aarch64
+            os: ubuntu-latest
+
           - vers: x86_64
-            os: ubuntu-20.04
+            os: ubuntu-latest
 
           - vers: arm64
             os: macos-latest
@@ -30,18 +31,19 @@ jobs:
             os: macos-latest
 
           - vers: AMD64
-            os: windows-2019
+            os: windows-latest
+
           # win32: Build fails with error: your Rust target architecture (64-bit) does not match your python interpreter (32-bit)
           # - vers: x86
           #   os: windows-2019
       
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       # QEMU emulates an arm64 system on X86. This is needed to build the aarch64 wheels
       # on GH actions. It's slow. See
@@ -74,21 +76,22 @@ jobs:
         run: |
           python -m cibuildwheel changeforest-py --archs ${{ matrix.vers }} --output-dir wheelhouse
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: wheels
           path: ./wheelhouse/*.whl
+          name: wheels-${{ matrix.os }}-${{ matrix.vers }}
+
 
   python-build-sdist:
     name: Python sdist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: '3.8'
+          python-version: '3.11'
 
       - name: Install build dependencies
         run: python -m pip install numpy maturin
@@ -96,22 +99,32 @@ jobs:
       - name: Build sdist
         run: maturin sdist -m changeforest-py/Cargo.toml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          name: wheels-sdist
           path: changeforest-py/target/wheels/*.tar.gz
 
   upload-testpypi:
     needs: [python-build-wheels, python-build-sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: test_release
+      url: https://test.pypi.org/p/changeforest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/download-artifact@v4.1.8
+      - uses: actions/download-artifact@v5
         with:
-          name: wheels
+          pattern: wheels*
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.10.3
+      - name: Flatten dist/ folder
+        run: |
+          find dist -type f -exec mv {} dist/ \;
+          find dist -mindepth 1 -type d -empty -delete
+
+      - uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           user: __token__
           password: ${{ secrets.TESTPYPI_GH_TOKEN }}
@@ -121,13 +134,24 @@ jobs:
     needs: [python-build-wheels, python-build-sdist, upload-testpypi]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: release
+      url: https://pypi.org/p/changeforest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/download-artifact@v4.1.8
+      - uses: actions/download-artifact@v5
         with:
-          name: wheels
+          pattern: wheels*
           path: dist
 
-      - uses: pypa/gh-action-pypi-publish@v1.10.3
+      - name: Flatten dist/ folder
+        run: |
+          find dist -type f -exec mv {} dist/ \;
+          find dist -mindepth 1 -type d -empty -delete
+
+
+      - uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           user: __token__
           password: ${{ secrets.PYPI_GH_TOKEN }}
@@ -136,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: cargo login ${CRATES_IO_TOKEN}
         env:
           CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}

@@ -1,30 +1,29 @@
-// Allow capital X for arrays.
 #![allow(non_snake_case)]
-
 mod control;
 mod result;
-
 use crate::control::MyControl;
 use crate::result::MyBinarySegmentationResult;
 use ::ndarray;
 use changeforest::wrapper;
 use extendr_api::prelude::*;
+use std::convert::TryFrom;
 
 #[extendr]
 fn changeforest_api(
     X: ndarray::ArrayView2<f64>,
     method: &str,
     segmentation: &str,
-    control: MyControl,
-) -> MyBinarySegmentationResult {
-    MyBinarySegmentationResult {
+    control: Robj,
+) -> extendr_api::Result<MyBinarySegmentationResult> {
+    // Convert control using the standard TryFrom trait
+    let control = MyControl::try_from(&control)?;
+
+    Ok(MyBinarySegmentationResult {
         result: wrapper::changeforest(&X, method, segmentation, &control.control),
-    }
+    })
 }
 
 // Macro to generate exports.
-// This ensures exported functions are registered with R.
-// See corresponding C code in `entrypoint.c`.
 extendr_module! {
     mod changeforest;
     fn changeforest_api;

@@ -1,8 +1,8 @@
 [project]
 name = "changeforest"
 description = "Random Forests for Change Point Detection"
+version = "1.2.1"
 readme = "README.md"
-version = "1.1.4"
 requires-python = ">=3.8"
 author = "Malte Londschien <malte@londschien.ch>"
 urls = {homepage = "https://github.com/mlondschien/changeforest/"}
@@ -17,6 +17,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 bindings = "pyo3"
+sdist-include = ["LICENSE", "README.md"]
 
 [tool.isort]
 multi_line_output = 3
@@ -34,12 +35,11 @@ test-command = "pytest {project}/changeforest-py/tests"
 # macos arm64 wheels can be built on X86_64, but cannot be tested.
 test-skip = "*-macosx_arm64 *-macosx_universal2:arm64"
 
-# Python 3.6 build are slooow. Possibly because we also compile numpy?
 # pypi builds on macos require compilation of numpy (why?) and are thus super slow
 # fail due to https://github.com/numpy/numpy/issues/15947.
 # What is the difference between cpython and pypi builds?
 # musllinux is sloooow, >1h per build. Why?
-skip = "cp36-* pp*-macosx* pp* *-musllinux*"
+skip = "cp38-* *-musllinux*"
 
 # Add cargobin to PATH. This is otherwise achieved by restarting the shell.
 environment = { PATH="$PATH:$HOME/.cargo/bin" }
@@ -53,3 +53,6 @@ before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stab
 # What is musllinux?
 select = "*-musllinux*"
 before-all = "apk add openssl-dev && curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
+
+[tool.cibuildwheel.macos]
+environment = { PATH="$PATH:$HOME/.cargo/bin", MACOSX_DEPLOYMENT_TARGET="10.12" }

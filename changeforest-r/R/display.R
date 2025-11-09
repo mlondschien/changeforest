@@ -107,7 +107,7 @@ plot.binary_segmentation_result = function(x, ...) {
 
     depth = length(gains)
 
-    par(mfrow=c(depth, 1))
+    graphics::par(mfrow=c(depth, 1))
     for (idx in 1:depth) {
         min_value = Inf
         max_value = -Inf
@@ -119,13 +119,13 @@ plot.binary_segmentation_result = function(x, ...) {
         plot(NULL, type="n", xlim=c(0, n), ylim=c(min_value, max_value), xlab="t", ylab="gain")
 
         for (jdx in 1:length(gains[[idx]])) {
-            lines(gains[[idx]][[jdx]], col="black", lwd=1)
+            graphics::lines(gains[[idx]][[jdx]], col="black", lwd=1)
             if (length(guesses[[idx]]) >= jdx) {
-                abline(v=guesses[[idx]][[jdx]], col="blue", lwd=2, lty=2)
+                graphics::abline(v=guesses[[idx]][[jdx]], col="blue", lwd=2, lty=2)
             }
-            abline(v=splits[[idx]][[jdx]], col="black", lwd=2)
+            graphics::abline(v=splits[[idx]][[jdx]], col="black", lwd=2)
             if (length(found_changepoints[[idx]]) >= jdx) {
-                abline(v=found_changepoints[[idx]][[jdx]], col="red", lwd=2, lty=3)
+                graphics::abline(v=found_changepoints[[idx]][[jdx]], col="red", lwd=2, lty=3)
             }
         }
     }
@@ -142,10 +142,10 @@ plot.optimizer_result = function(x, ...) {
     if (length(x$gain_results) == 1) {
         gain = x$gain_results[[1]]$gain
         plot(range, gain[2 : length(gain)], type="l", xlab="t", ylab="gain")
-        abline(v=x$best_split, col="red", lty=1, lwd=2)
+        graphics::abline(v=x$best_split, col="red", lty=1, lwd=2)
     } else {
 
-        par(mfrow=c(4, 2), mai=c(0.6, 0.6, 0.2, 0.2))
+        graphics::par(mfrow=c(4, 2), mai=c(0.6, 0.6, 0.2, 0.2))
         min_gain = Inf
         max_gain = -Inf
         for (idx in 1:4) {
@@ -156,12 +156,12 @@ plot.optimizer_result = function(x, ...) {
         for (idx in 1:4) {
             gain = x$gain_results[[idx]]$gain
             plot(range, gain[2 : length(gain)], type="l", xlab="split", ylab="gain", ylim=c(min_gain, max_gain))
-            abline(v=which.max(x$gain_results[[idx]]$gain) - 1 + x$start, col="red", lty=3, lwd=2)
-            abline(v=x$gain_results[[idx]]$guess, col="blue", lty=2, lwd=2)
+            graphics::abline(v=which.max(x$gain_results[[idx]]$gain) - 1 + x$start, col="red", lty=3, lwd=2)
+            graphics::abline(v=x$gain_results[[idx]]$guess, col="blue", lty=2, lwd=2)
             
             
             plot((x$start + 1) : x$stop, x$gain_results[[idx]]$predictions, xlab="t", ylab="proba. predictions", ylim=c(0, 1))
-            abline(v=x$gain_results[[idx]]$guess, col="blue", lty=2, lwd=2)
+            graphics::abline(v=x$gain_results[[idx]]$guess, col="blue", lty=2, lwd=2)
         }
     }
 }

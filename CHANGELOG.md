@@ -1,6 +1,18 @@
 
 # Changelog
 
+## 1.2.1 - (2025-09-22)
+
+**Bug fixes:**
+
+- Fix PyPI sdist release.
+
+## 1.2.0 - (2025-09-08)
+
+**Other changes:**
+
+- Update `ndarray` to 0.16, `biosphere` to 0.4, `numpy` and `pyo3` to 0.26, `r-extendr` to 0.8.
+
 ## 1.1.4 - (2024-01-08)
 
 **Other changes:**

@@ -19,6 +19,19 @@ See [1] for details.
 and an R package (on [`conda-forge`](https://anaconda.org/conda-forge/r-changeforest)
 , linux and MacOS only). See below for their respective user guides.
 
+If you use this code, please consider citing
+```
+@article{londschien2023random,
+  title={Random forests for change point detection},
+  author={Londschien, Malte and B{\"u}hlmann, Peter and Kov{\'a}cs, Solt},
+  journal={Journal of Machine Learning Research},
+  volume={24},
+  number={216},
+  pages={1--45},
+  year={2023}
+}
+```
+
 ## Python
 
 ### Installation
