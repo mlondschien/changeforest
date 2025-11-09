@@ -118,6 +118,7 @@ jobs:
         with:
           pattern: wheels*
           path: dist
+          merge-multiple: true
 
       - name: Flatten dist/ folder
         run: |
@@ -144,6 +145,7 @@ jobs:
         with:
           pattern: wheels*
           path: dist
+          merge-multiple: true
 
       - name: Flatten dist/ folder
         run: |
