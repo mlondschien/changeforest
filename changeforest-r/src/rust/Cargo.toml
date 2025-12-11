@@ -1,7 +1,7 @@
 [package]
 name = 'changeforestr'
 publish = false
-version = '1.2.1'
+version = '1.2.2'
 edition = '2021'
 
 [lib]
@@ -11,5 +11,5 @@ name = 'changeforestr'
 [dependencies]
 extendr-api = { version="0.8", features = ["ndarray"] }
 changeforest = { path = "../../../" }
-ndarray = "0.17"
-biosphere = "0.4.0"
+ndarray = "0.17.1"
+biosphere = "0.4.2"

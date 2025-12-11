@@ -3,7 +3,7 @@ name = "changeforest"
 description = "Random Forests for Change Point Detection"
 authors = ["Malte Londschien <malte@londschien.ch>"]
 repository = "https://github.com/mlondschien/changeforest/"
-version = "1.2.1"
+version = "1.2.2"
 edition = "2021"
 readme = "README.md"
 license = "BSD-3-Clause"
@@ -13,14 +13,14 @@ exclude = ["/.github", "/changeforest-py", "/changeforest-r", "/testdata", ".pre
 name = "changeforest"
 
 [dependencies]
-ndarray = "0.17"
-rand = "0.8"
-biosphere = "0.4.0"
+ndarray = "0.17.1"
+rand = "0.9"
+biosphere = "0.4.2"
 
 [dev-dependencies]
 rstest = "0.26"
 assert_approx_eq = "1.1"
 ndarray-rand = "0.16"
-ndarray = { version = "0.17", features = ["approx"] }
+ndarray = { version = "0.17.1", features = ["approx"] }
 ndarray-csv = "^0.5"
 csv = "^1"

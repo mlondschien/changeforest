@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 1.2.2 - (2025-12-11)
+
+**Other changes:**
+
+- Update `ndarray` to 0.17.1, `biosphere` to 0.4.2, `numpy` and `pyo3` to 0.27.1, `r-extendr` to 0.8.1.
+
 ## 1.2.1 - (2025-09-22)
 
 **Bug fixes:**
