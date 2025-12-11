@@ -1,6 +1,12 @@
 
 # Changelog
 
+## 2.0.0 - (2025-12-11)
+
+**Breaking changes:**
+
+- Update `ndarray` to 0.17.1, `biosphere` to 0.4.2, `numpy` and `pyo3` to 0.27.1, `r-extendr` to 0.8.1, and `rand` from 0.8 to 0.9. As the rust crate `rand` changed the algorithm for the `Uniform` distribution, this breaks backwards reproducibility.
+
 ## 1.2.1 - (2025-09-22)
 
 **Bug fixes:**

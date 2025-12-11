@@ -1,9 +1,9 @@
 use biosphere::MaxFeatures;
 use changeforest::Control;
 use pyo3::exceptions;
-use pyo3::prelude::{pyclass, Bound, FromPyObject, PyAny, PyErr, PyResult};
+use pyo3::prelude::{pyclass, FromPyObject, PyAny, PyErr, PyResult};
 use pyo3::prelude::{Py, Python};
-use pyo3::types::PyAnyMethods;
+use pyo3::Borrowed;
 
 pub fn control_from_pyobj(py: Python, obj: Option<Py<PyAny>>) -> PyResult<Control> {
     let mut control = Control::default();
@@ -109,8 +109,10 @@ impl PyMaxFeatures {
     }
 }
 
-impl FromPyObject<'_> for PyMaxFeatures {
-    fn extract_bound(ob: &Bound<'_, PyAny>) -> PyResult<Self> {
+impl<'py> FromPyObject<'_, 'py> for PyMaxFeatures {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
         if let Ok(value) = ob.extract::<usize>() {
             Ok(PyMaxFeatures::new(MaxFeatures::Value(value)))
         } else if let Ok(value) = ob.extract::<f64>() {
