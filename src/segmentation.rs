@@ -2,7 +2,7 @@ use crate::optimizer::OptimizerResult;
 use crate::ModelSelectionResult;
 use crate::Optimizer;
 use rand::{
-    distributions::{Distribution, Uniform},
+    distr::{Distribution, Uniform},
     rngs::StdRng,
     SeedableRng,
 };
@@ -68,7 +68,7 @@ impl<'a> Segmentation<'a> {
             }
             SegmentationType::WBS => {
                 let mut rng = StdRng::seed_from_u64(optimizer.control().seed);
-                let dist = Uniform::from(0..(optimizer.n() + 1));
+                let dist = Uniform::new(0, optimizer.n() + 1).unwrap();
 
                 let mut start: usize;
                 let mut stop: usize;
