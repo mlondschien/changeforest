@@ -181,7 +181,7 @@ mod tests {
         (50, 100, 62, 3000.0)
     ])]
     #[case(SegmentationType::WBS, vec![
-        (73, 78, 74, 415.0),
+        (56, 78, 74, 415.0),
         (2, 59, 16, 684.0),
         (26, 77, 38, 1836.0),
         (22, 80, 36, 1856.0),
@@ -212,7 +212,7 @@ mod tests {
     #[rstest]
     #[case(SegmentationType::BS, (25, 1000.))]
     #[case(SegmentationType::SBS, (62, 3000.))]
-    #[case(SegmentationType::WBS, (60, 2900.))]
+    #[case(SegmentationType::WBS, (60, 2958.))]
     fn test_optimizer(#[case] segmentation_type: SegmentationType, #[case] expected: (usize, f64)) {
         let control = Control::default();
         let optimizer = testing::TrivialOptimizer { control: &control };

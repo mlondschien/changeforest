@@ -209,7 +209,7 @@ pub fn array() -> Array2<f64> {
     X.slice_mut(s![25..40, 2]).fill(3.);
     X.slice_mut(s![25..80, 1]).fill(-2.);
 
-    X + Array::random_using((100, 5), Uniform::new(0., 1.), &mut rng)
+    X + Array::random_using((100, 5), Uniform::new(0., 1.).unwrap(), &mut rng)
 }
 
 #[cfg(test)]
