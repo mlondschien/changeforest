@@ -109,8 +109,8 @@ impl PyMaxFeatures {
     }
 }
 
-impl FromPyObject<'_> for PyMaxFeatures {
-    fn extract_bound(ob: &Bound<'_, PyAny>) -> PyResult<Self> {
+impl<'py> FromPyObject<'_, 'py> for PyMaxFeatures {
+    fn extract(ob: &Bound<'py, PyAny>) -> PyResult<Self> {
         if let Ok(value) = ob.extract::<usize>() {
             Ok(PyMaxFeatures::new(MaxFeatures::Value(value)))
         } else if let Ok(value) = ob.extract::<f64>() {
