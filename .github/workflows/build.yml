@@ -114,10 +114,11 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           pattern: wheels*
           path: dist
+          merge-multiple: true
 
       - name: Flatten dist/ folder
         run: |
@@ -140,10 +141,11 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           pattern: wheels*
           path: dist
+          merge-multiple: true
 
       - name: Flatten dist/ folder
         run: |
